@@ -4,6 +4,8 @@ import java.security.MessageDigest
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -37,6 +39,7 @@ android {
     buildFeatures {
         buildConfig = true
         viewBinding = true
+        compose = true
     }
 
     signingConfigs {
@@ -92,6 +95,14 @@ android {
 dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.material)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.collection)
@@ -202,7 +213,6 @@ tasks.register("cleanNativeIfBootstrapChanged") {
                 file("${layout.buildDirectory.asFile.get()}/intermediates/stripped_native_libs")
             )
         }
-
         stateFile.parentFile.mkdirs()
         stateFile.writeText("$currentSha\n")
     }
@@ -220,17 +230,6 @@ afterEvaluate {
         dependsOn(tasks.named("generateBootstrapStamp"))
         inputs.file(zip)
         inputs.file(stamp)
-    }
-
-    tasks.matching { it.name == "packageDebug" || it.name == "packageRelease" }.configureEach {
-        doFirst {
-            outputs.files.files.forEach { f ->
-                if (f.exists() && f.isFile) {
-                    logger.lifecycle("Deleting stale APK output before packaging: ${f}")
-                    f.delete()
-                }
-            }
-        }
     }
 }
 

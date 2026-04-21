@@ -2,6 +2,10 @@
 agp = "8.13.0"
 kotlin = "2.2.21"
 coroutines = "1.10.2"
+compose-bom = "2025.01.01"
+activity-compose = "1.10.0"
+navigation-compose = "2.8.5"
+kotlinx-serialization = "1.7.3"
 
 core = "1.17.0"
 appcompat = "1.7.1"
@@ -50,6 +54,14 @@ espresso = "3.4.0"
 [libraries]
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "collection" }
 androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
@@ -124,3 +136,4 @@ treesitter = ["treesitter-core", "treesitter-java", "treesitter-kotlin", "treesi
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
