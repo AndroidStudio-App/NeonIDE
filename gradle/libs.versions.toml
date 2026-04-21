@@ -1,16 +1,126 @@
 [versions]
 agp = "8.13.0"
+kotlin = "2.2.21"
+coroutines = "1.10.2"
+
 core = "1.17.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 constraintlayout = "2.2.1"
+annotation = "1.3.0"
+collection = "1.5.0"
+documentfile = "1.0.1"
+drawerlayout = "1.1.1"
+preference = "1.1.1"
+viewpager = "1.0.0"
+viewpager2 = "1.1.0"
+fragment = "1.6.2"
+lifecycle = "2.7.0"
+recyclerview = "1.3.2"
+window = "1.0.0-alpha09"
 
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
+guava = "33.5.0-jre"
+commons-io = "2.5"
+gson = "2.13.2"
+moshi = "1.15.2"
+javapoet = "1.13.0"
+markwon = "4.6.2"
+monarch = "1.0.3"
+monarch-json = "1.0.2"
+monarch-lang = "1.0.2"
+regex-oniguruma = "1.0.3"
+regex-re2j = "1.0.2"
+treesitter = "4.3.2"
+hiddenapibypass = "6.1"
+termux-am = "v2.0.0"
+jhighlight = "1.1.1"
+jcodings = "1.0.63"
+joni = "2.2.6"
+snakeyaml = "2.10"
+jdt-annotation = "2.4.100"
+lsp4j = "0.24.0"
+desugar = "2.0.4"
+
+junit = "4.13.2"
+robolectric = "4.10"
+core-testing = "2.2.0"
+test-ext-junit = "1.1.3"
+espresso = "3.4.0"
 
 [libraries]
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+androidx-collection = { group = "androidx.collection", name = "collection", version.ref = "collection" }
+androidx-documentfile = { group = "androidx.documentfile", name = "documentfile", version.ref = "documentfile" }
+androidx-drawerlayout = { group = "androidx.drawerlayout", name = "drawerlayout", version.ref = "drawerlayout" }
+androidx-preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+androidx-viewpager = { group = "androidx.viewpager", name = "viewpager", version.ref = "viewpager" }
+androidx-viewpager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "viewpager2" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
+
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commons-io" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+javapoet = { group = "com.squareup", name = "javapoet", version.ref = "javapoet" }
+
+markwon-core = { group = "io.noties.markwon", name = "core", version.ref = "markwon" }
+markwon-strikethrough = { group = "io.noties.markwon", name = "ext-strikethrough", version.ref = "markwon" }
+markwon-linkify = { group = "io.noties.markwon", name = "linkify", version.ref = "markwon" }
+markwon-recycler = { group = "io.noties.markwon", name = "recycler", version.ref = "markwon" }
+
+hiddenapibypass = { group = "org.lsposed.hiddenapibypass", name = "hiddenapibypass", version.ref = "hiddenapibypass" }
+termux-am-library = { group = "com.termux", name = "termux-am-library", version.ref = "termux-am" }
+jhighlight = { group = "org.codelibs", name = "jhighlight", version.ref = "jhighlight" }
+jcodings = { group = "org.jruby.jcodings", name = "jcodings", version.ref = "jcodings" }
+joni = { group = "org.jruby.joni", name = "joni", version.ref = "joni" }
+snakeyaml = { group = "org.snakeyaml", name = "snakeyaml-engine", version.ref = "snakeyaml" }
+jdt-annotation = { group = "org.eclipse.jdt", name = "org.eclipse.jdt.annotation", version.ref = "jdt-annotation" }
+
+monarch-core = { group = "io.github.dingyi222666.monarch", name = "monarch", version.ref = "monarch" }
+monarch-json-loader = { group = "io.github.dingyi222666.monarch", name = "monarch-json-loader", version.ref = "monarch-json" }
+monarch-language-pack = { group = "io.github.dingyi222666.monarch", name = "monarch-language-pack", version.ref = "monarch-lang" }
+
+regex-oniguruma = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-oniguruma", version.ref = "regex-oniguruma" }
+regex-re2j = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-re2j", version.ref = "regex-re2j" }
+
+treesitter-core = { group = "com.itsaky.androidide.treesitter", name = "android-tree-sitter", version.ref = "treesitter" }
+treesitter-java = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-java", version.ref = "treesitter" }
+treesitter-kotlin = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-kotlin", version.ref = "treesitter" }
+treesitter-xml = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-xml", version.ref = "treesitter" }
+treesitter-aidl = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-aidl", version.ref = "treesitter" }
+treesitter-python = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-python", version.ref = "treesitter" }
+treesitter-c = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-c", version.ref = "treesitter" }
+treesitter-cpp = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-cpp", version.ref = "treesitter" }
+treesitter-json = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-json", version.ref = "treesitter" }
+treesitter-log = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-log", version.ref = "treesitter" }
+treesitter-properties = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-properties", version.ref = "treesitter" }
+treesitter-annotations = { group = "com.itsaky.androidide.treesitter", name = "annotations", version.ref = "treesitter" }
+
+lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }
+
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+androidx-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "core-testing" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "test-ext-junit" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
+
+[bundles]
+markwon = ["markwon-core", "markwon-strikethrough", "markwon-linkify", "markwon-recycler"]
+monarch = ["monarch-core", "monarch-json-loader", "monarch-language-pack"]
+regex = ["regex-oniguruma", "regex-re2j"]
+treesitter = ["treesitter-core", "treesitter-java", "treesitter-kotlin", "treesitter-xml", "treesitter-aidl", "treesitter-python", "treesitter-c", "treesitter-cpp", "treesitter-json", "treesitter-log", "treesitter-properties", "treesitter-annotations"]
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
