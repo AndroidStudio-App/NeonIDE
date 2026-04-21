@@ -69,7 +69,6 @@ android {
     ndkVersion = "29.0.14033849"
 
     defaultConfig {
-       
         applicationId = "com.neonide.studio"
         minSdk = 21
         targetSdk = 28
@@ -86,8 +85,9 @@ android {
             "TERMUX_STYLING_APP_NAME" to "NeonIDE Studio:Styling",
             "TERMUX_TASKER_APP_NAME" to "NeonIDE Studio:Tasker",
             "TERMUX_WIDGET_APP_NAME" to "NeonIDE Studio:Widget"
-        )as Map<String, Any>
-            )
+            )as Map<String, Any>
+        )
+        
         ndk {
             abiFilters += "arm64-v8a"
         }
@@ -218,85 +218,7 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 }
 
-tasks.register("prepareBootstraps") {
-    doLast {
-        logger.quiet("prepareBootstraps: skipped (bootstrap is embedded in JNI)")
-    }
-}
-
-tasks.register("setupOniguruma") {
-    val onigDir = File(projectDir, "src/main/cpp/oniguruma/oniguruma")
-    // ✅ FIXED: Use layout.buildDirectory.asFile instead of deprecated buildDir
-    val onigZip = File(layout.buildDirectory.asFile.get(), "oniguruma.zip")
-    val zipRoot = "oniguruma-6.9.10"
-
-    val configFile = File(onigDir, "src/config.h")
-    val templateFile = File(onigDir, "tis-ci/config.h")
-
-    outputs.dir(onigDir)
-    outputs.file(configFile)
-
-    doLast {
-        if (!onigDir.exists() || !File(onigDir, "src/oniguruma.h").exists()) {
-            logger.quiet("Downloading Oniguruma...")
-            onigZip.parentFile.mkdirs()
-            URL("https://github.com/kkos/oniguruma/archive/refs/tags/v6.9.10.zip").openStream().use { input ->
-                onigZip.outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-
-            logger.quiet("Extracting Oniguruma...")
-            copy {
-                from(zipTree(onigZip))
-                into(onigDir.parentFile)
-            }
-            
-            val extractedDir = File(onigDir.parentFile, zipRoot)
-            if (extractedDir.exists()) {
-                if (onigDir.exists()) onigDir.deleteRecursively()
-                extractedDir.renameTo(onigDir)
-            }
-            
-            onigZip.delete()
-        }
-        
-        if (!configFile.exists()) {
-        val template = listOf(
-            File(onigDir, "tis-ci/config.h"),
-            File(onigDir, "ci/config.h"),
-            File(onigDir, "config.h.in")
-        ).firstOrNull { it.exists() }
-        
-        if (template != null) {
-            copy {
-                from(template)
-                into(configFile.parentFile)
-                rename { "config.h" }
-            }
-        } else {
-            // Generate minimal config.h fallback
-            configFile.parentFile.mkdirs()
-            configFile.writeText(
-                """
-                #ifndef CONFIG_H
-                #define CONFIG_H
-                #define HAVE_STDINT_H 1
-                #define HAVE_STDLIB_H 1
-                #define HAVE_STRING_H 1
-                #define PACKAGE_VERSION "6.9.10"
-                #endif
-                """.trimIndent()
-            )
-        }
-    }
-    }
-}
-
 tasks.register("cleanNativeIfBootstrapChanged") {
-    
-
-    // ✅ FIXED: Use layout.buildDirectory.asFile
     val stateFile = file("${layout.buildDirectory.asFile.get()}/bootstrap-embedded.sha256")
     inputs.file(bootstrapZipFile)
     outputs.file(stateFile)
@@ -307,7 +229,6 @@ tasks.register("cleanNativeIfBootstrapChanged") {
 
         if (previousSha == null || previousSha != currentSha) {
             logger.lifecycle("Bootstrap zip changed (old=${previousSha}, new=${currentSha}). Cleaning native intermediates...")
-            // ✅ FIXED: Use layout.buildDirectory.asFile
             delete(
                 file("${layout.buildDirectory.asFile.get()}/intermediates/ndkBuild"),
                 file("${layout.buildDirectory.asFile.get()}/intermediates/cxx"),
@@ -323,10 +244,6 @@ tasks.register("cleanNativeIfBootstrapChanged") {
 
 
 afterEvaluate {
-    android.applicationVariants.all {
-        javaCompileProvider.get().dependsOn(tasks.named("prepareBootstraps"))
-    }
-
     val zip = file("$projectDir/src/main/cpp/bootstrap-aarch64.zip")
     val stamp = file("$projectDir/src/main/cpp/generated/bootstrap-stamp.S")
 
@@ -354,9 +271,7 @@ afterEvaluate {
 
 tasks.named("preBuild") {
     dependsOn(
-        tasks.named("setupOniguruma"),
         tasks.named("generateBootstrapStamp"),
-        tasks.named("cleanNativeIfBootstrapChanged"),
-        tasks.named("generateBootstrapStamp")
+        tasks.named("cleanNativeIfBootstrapChanged")
     )
 }
