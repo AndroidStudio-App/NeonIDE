@@ -1,4 +1,4 @@
-package com.neonide.studio.app
+package com.neonide.studio
 
 import android.content.Intent
 import android.net.Uri
@@ -24,6 +24,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.InstallMobile
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -80,21 +82,26 @@ class MainActivity : FragmentActivity() {
 
         setContent {
             AppTheme {
-                val navController = rememberNavController()
-                Scaffold(
+                Surface(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = if (isSetupComplete) menu else permission,
-                        modifier = Modifier.padding(innerPadding)
-                    ) {
-                        composable<permission> {
-                            PermissionScreen()
-                        }
-                        composable<menu> {
-                            LegacyHomeScreen()
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        containerColor = MaterialTheme.colorScheme.background
+                    ) { innerPadding ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = if (isSetupComplete) menu else permission,
+                            modifier = Modifier.padding(innerPadding)
+                        ) {
+                            composable<permission> {
+                                PermissionScreen()
+                            }
+                            composable<menu> {
+                                LegacyHomeScreen()
+                            }
                         }
                     }
                 }
@@ -103,7 +110,7 @@ class MainActivity : FragmentActivity() {
     }
     // fragment wrapper to past permission screen
     @Composable
-    private fun legacyhomescreen() {
+    private fun LegacyHomeScreen() {
         val context = LocalContext.current
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -147,10 +154,10 @@ class MainActivity : FragmentActivity() {
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text("Permissions Required", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text("Permissions Required To Continue", fontSize = 15.sp, fontWeight = FontWeight.Bold)
 
                     PermissionItem(
-                        icon = Icons.Default.Info,
+                        icon = Icons.Default.Storage,
                         title = "All Files Access",
                         description = "Required to manage files on storage",
                         isGranted = isFilesGranted
@@ -164,9 +171,9 @@ class MainActivity : FragmentActivity() {
                     }
 
                     PermissionItem(
-                        icon = Icons.Default.Build,
+                        icon = Icons.Default.InstallMobile,
                         title = "Install Unknown Apps",
-                        description = "Required to install downloaded APK files",
+                        description = "Required to install Build APK file",
                         isGranted = isInstallGranted
                     ) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -180,7 +187,7 @@ class MainActivity : FragmentActivity() {
                     PermissionItem(
                         icon = Icons.Default.Notifications,
                         title = "Notifications",
-                        description = "Receive updates and alerts from the app",
+                        description = "Receive Notifications from the app",
                         isGranted = isNotificationsGranted
                     ) {
                         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -197,7 +204,7 @@ class MainActivity : FragmentActivity() {
 
                     Button(
                         onClick = { isSetupComplete = true },
-                        enabled = allGranted, // pass when enabled all
+                        enabled = allGranted, // continue when enabled all
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -217,17 +224,17 @@ class MainActivity : FragmentActivity() {
         onClick: () -> Unit
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, Modifier.size(32.dp), tint = MaterialTheme.colorScheme.primary)
+            Icon(icon, null, Modifier.size(32.dp))
             
             Spacer(Modifier.width(16.dp))
             
             Column(Modifier.weight(1f)) {
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                Text(description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(description, fontSize = 12.sp)
             }
 
             if (isGranted) {
-                Text("Granted", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text("Granted", fontWeight = FontWeight.Bold, fontSize = 12.sp)
             } else {
                 Button(
                     onClick = onClick,
