@@ -8,6 +8,7 @@ import android.os.Environment
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.InstallMobile
@@ -71,6 +70,8 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        window.isNavigationBarContrastEnforced = false
         
         // Initial check on startup
         updatePermissionStates()
@@ -95,9 +96,10 @@ class MainActivity : FragmentActivity() {
                             navController = navController,
                             startDestination = if (isSetupComplete) menu else permission,
                             modifier = Modifier.padding(innerPadding)
-                        ) {
+                        ) { 
                             composable<permission> {
                                 PermissionScreen()
+                                
                             }
                             composable<menu> {
                                 LegacyHomeScreen()
@@ -108,7 +110,7 @@ class MainActivity : FragmentActivity() {
             }
         }
     }
-    // fragment wrapper to past permission screen
+    
     @Composable
     private fun LegacyHomeScreen() {
         val context = LocalContext.current
@@ -124,7 +126,6 @@ class MainActivity : FragmentActivity() {
             }
         )
     }
-
     override fun onResume() {
         super.onResume()
         updatePermissionStates()

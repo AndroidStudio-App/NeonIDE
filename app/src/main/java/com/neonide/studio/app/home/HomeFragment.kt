@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.neonide.studio.R
 import com.neonide.studio.app.TermuxActivity
-import com.neonide.studio.app.DevKitSetup
+import com.neonide.studio.DevKitSetup
 import com.neonide.studio.databinding.FragmentHomeBinding
 import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet

@@ -61,12 +61,12 @@ import static com.neonide.studio.shared.termux.TermuxConstants.TERMUX_STAGING_PR
  * <p/>
  * (5.2) For every other zip entry, extract it into $STAGING_PREFIX and set execute permissions if necessary.
  */
-final class TermuxInstaller {
+public final class TermuxInstaller {
 
     private static final String LOG_TAG = "TermuxInstaller";
 
     /** Performs bootstrap setup if necessary. */
-    static void setupBootstrapIfNeeded(final Activity activity, final Runnable whenDone) {
+    public static void setupBootstrapIfNeeded(final Activity activity, final Runnable whenDone) {
         String bootstrapErrorMessage;
         Error filesDirectoryAccessibleError;
 
