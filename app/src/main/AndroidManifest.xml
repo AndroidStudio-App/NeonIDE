@@ -68,10 +68,6 @@
             android:exported="true"
             android:theme="@style/Theme.TermuxApp.DayNight.NoActionBar" />
 
-        <activity
-            android:name=".app.IdeConfigActivity"
-            android:exported="true"
-            android:theme="@style/Theme.TermuxApp.DayNight.DarkActionBar" />
 
         <activity
             android:name=".app.TermuxActivity"

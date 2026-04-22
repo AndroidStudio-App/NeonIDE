@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,13 +54,27 @@ import androidx.fragment.app.commit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.neonide.studio.app.home.HomeFragment
+import com.neonide.studio.app.home.MainMenu
 import com.neonide.studio.ui.theme.AppTheme
+import com.neonide.studio.app.home.create.CreateProjectBottomSheet
+import com.neonide.studio.app.home.open.OpenProjectBottomSheet
+import com.neonide.studio.app.home.clone.CloneRepositoryDialogFragment
+import com.neonide.studio.app.TermuxActivity
+import com.neonide.studio.shared.termux.settings.preferences.TermuxAppSharedPreferences
+import com.neonide.studio.shared.logger.IDEFileLogger
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Switch
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import android.widget.Toast
 import kotlinx.serialization.Serializable
 
 //route for navhost
 @Serializable object permission
-@Serializable object menu
+@Serializable object mainmenu
+@Serializable object ideConfig
 
 class MainActivity : FragmentActivity() {
 
@@ -94,15 +109,25 @@ class MainActivity : FragmentActivity() {
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
-                            startDestination = if (isSetupComplete) menu else permission,
+                            startDestination = if (isSetupComplete) mainmenu else permission,
                             modifier = Modifier.padding(innerPadding)
                         ) { 
                             composable<permission> {
                                 PermissionScreen()
                                 
                             }
-                            composable<menu> {
-                                LegacyHomeScreen()
+                            composable<mainmenu> {
+                                MainMenu(
+                                    onCreateProject = { CreateProjectBottomSheet().show(supportFragmentManager,"create_project") },
+                                    onOpenProject = { OpenProjectBottomSheet().show(supportFragmentManager,"open_project") },
+                                    onCloneRepo = { CloneRepositoryDialogFragment().show(supportFragmentManager,"clone_repo") },
+                                    onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
+                                    onOpenSettings = { navController.navigate(ideConfig) },
+                                    onOpenAbout = { Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show() }
+                                )
+                            }
+                            composable<ideConfig> {
+                                IdeConfigScreen(onBack = { navController.popBackStack() })
                             }
                         }
                     }
@@ -110,8 +135,59 @@ class MainActivity : FragmentActivity() {
             }
         }
     }
-    
+
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
+    private fun IdeConfigScreen(onBack: () -> Unit) {
+        val context = LocalContext.current
+        val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
+        var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("IDE Configurations") },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+            Column(Modifier.padding(padding)) {
+                Text(
+                    text = "Logging",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(16.dp)
+                )
+                
+                ListItem(
+                    headlineContent = { Text("Save IDE logs to Documents") },
+                    supportingContent = { 
+                        Text(if (isLoggingEnabled) {
+                            "Writes logs to ${IDEFileLogger.getLogFile()?.absolutePath ?: "/sdcard/Documents/NeonIDE/logs/ide.log"}"
+                        } else "Disabled")
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = isLoggingEnabled,
+                            onCheckedChange = { enabled ->
+                                isLoggingEnabled = enabled
+                                prefs?.setIdeFileLoggingEnabled(enabled)
+                                if (enabled) {
+                                    IDEFileLogger.log(context, "File logging enabled")
+                                }
+                            }
+                        )
+                    }
+                )
+            }
+        }
+    }
+    
+   /** @Composable
     private fun LegacyHomeScreen() {
         val context = LocalContext.current
         AndroidView(
@@ -125,7 +201,7 @@ class MainActivity : FragmentActivity() {
                 }
             }
         )
-    }
+    }**/
     override fun onResume() {
         super.onResume()
         updatePermissionStates()

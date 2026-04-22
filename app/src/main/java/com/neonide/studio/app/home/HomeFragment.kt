@@ -1,97 +1,106 @@
 package com.neonide.studio.app.home
 
-import android.content.Intent
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import com.neonide.studio.R
-import com.neonide.studio.app.TermuxActivity
-import com.neonide.studio.DevKitSetup
-import com.neonide.studio.databinding.FragmentHomeBinding
-import com.neonide.studio.app.home.create.CreateProjectBottomSheet
-import com.neonide.studio.app.home.open.OpenProjectBottomSheet
-import com.neonide.studio.app.home.clone.CloneRepositoryDialogFragment
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 
-class HomeFragment : Fragment() {
 
-    private var binding: FragmentHomeBinding? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding!!.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val actions = buildActions()
-        binding!!.homeActions.adapter = HomeActionsAdapter(actions)
-    }
-
-    private fun buildActions(): List<HomeAction> {
-        val ctx = requireContext()
-
-        val showComingSoon = {
-            Toast.makeText(ctx, R.string.msg_feature_coming_soon, Toast.LENGTH_SHORT).show()
-        }
-
-        return listOf(
-            HomeAction(
-                id = 0,
-                textRes = R.string.acs_create_project,
-                iconRes = R.drawable.ic_add,
-                summaryRes = R.string.acs_create_project_summary,
-                onClick = { _, _ -> CreateProjectBottomSheet().show(parentFragmentManager, "create_project") },
-            ),
-            HomeAction(
-                id = 1,
-                textRes = R.string.acs_open_existing_project,
-                iconRes = R.drawable.ic_folder,
-                summaryRes = R.string.acs_open_existing_project_summary,
-                onClick = { _, _ -> OpenProjectBottomSheet().show(parentFragmentManager, "open_project") },
-            ),
-            HomeAction(
-                id = 2,
-                textRes = R.string.acs_clone_git_repository,
-                iconRes = R.drawable.ic_git,
-                summaryRes = R.string.acs_clone_git_repository_summary,
-                onClick = { _, _ ->
-                    CloneRepositoryDialogFragment().show(parentFragmentManager, "clone_repo")
-                },
-            ),
-            HomeAction(
-                id = 3,
-                textRes = R.string.acs_terminal,
-                iconRes = R.drawable.ic_terminal,
-                summaryRes = R.string.acs_terminal_summary,
-                onClick = { _, _ -> startActivity(Intent(ctx, TermuxActivity::class.java)) },
-            ),
-            HomeAction(
-                id = 31,
-                textRes = R.string.acs_setup_development_kit,
-                iconRes = R.drawable.ic_gradle,
-                summaryRes = R.string.acs_setup_development_kit_summary,
-                onClick = { _, _ -> DevKitSetup.startSetup(requireActivity()) },
-            ),
-            HomeAction(
-                id = 5,
-                textRes = R.string.acs_ide_configurations,
-                iconRes = R.drawable.ic_settings,
-                summaryRes = R.string.acs_ide_configurations_summary,
-                onClick = { _, _ -> startActivity(Intent(ctx, com.neonide.studio.app.IdeConfigActivity::class.java)) },
-            ),
+@Composable
+fun MainMenu(
+   // onOpenEditor: () -> Unit,
+    onCreateProject: () -> Unit,
+    onOpenProject: () -> Unit,
+    onCloneRepo: () -> Unit,
+    onOpenTerminal: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onOpenAbout: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(60.dp))
+        Icon(
+            imageVector = Icons.Default.Code,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.primary
         )
-    }
+        Text(
+            text = "NeonIDE",
+            style = MaterialTheme.typography.displaySmall,
+            fontWeight = FontWeight.ExtraBold
+        )
+        Text(
+            text = "Modern Mobile Development",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.outline
+        )
+        Spacer(modifier = Modifier.height(48.dp))
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            item { MenuCard("New Project", Icons.Default.Add, onCreateProject) }
+            item { MenuCard("Open Project", Icons.Default.FolderOpen, onOpenProject) }
+            item { MenuCard("Git Clone", Icons.Default.AccountTree, onCloneRepo) }
+            item { MenuCard("Terminal", Icons.Default.Code, onOpenTerminal) }
+            item { MenuCard("Settings", Icons.Default.Settings, onOpenSettings) }
+            item { MenuCard("About", Icons.Default.Info, onOpenAbout) }
+           
+        }
+    }
+}
+
+@Composable
+fun MenuCard(title: String, icon: ImageVector, onClick: () -> Unit) {
+    ElevatedCard(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().height(110.dp),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+            }
+        }
     }
 }
