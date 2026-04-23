@@ -559,6 +559,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_sora_main, menu)
         undoItem = menu.findItem(R.id.sora_text_undo)
         redoItem = menu.findItem(R.id.sora_text_redo)
+        menu.findItem(R.id.sora_symbol_bar_visibility).isChecked = findViewById<View>(R.id.main_bottom_bar).visibility == View.VISIBLE
         updateBtnState()
         return true
     }
@@ -592,6 +593,12 @@ class SoraEditorActivityK : AppCompatActivity() {
             R.id.sora_magnifier -> {
                 item.isChecked = !item.isChecked
                 editor.getComponent(Magnifier::class.java).isEnabled = item.isChecked
+            }
+
+            R.id.sora_symbol_bar_visibility -> {
+                item.isChecked = !item.isChecked
+                val bar = findViewById<View>(R.id.main_bottom_bar)
+                bar.visibility = if (item.isChecked) View.VISIBLE else View.GONE
             }
 
             R.id.sora_text_wordwrap -> {

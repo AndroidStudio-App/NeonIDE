@@ -8,7 +8,8 @@
     <!-- Main content -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <!-- Keep existing RelativeLayout content as a child -->
         <RelativeLayout
@@ -117,6 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
+            android:fitsSystemWindows="true"
             android:orientation="vertical">
 
             <HorizontalScrollView
@@ -149,6 +151,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
+            android:fitsSystemWindows="true"
             app:behavior_hideable="false"
             app:behavior_peekHeight="72dp"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

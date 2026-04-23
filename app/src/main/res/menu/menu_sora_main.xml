@@ -43,6 +43,11 @@
     <item android:title="@string/sora_feature_switches">
         <menu>
             <item
+                android:id="@+id/sora_symbol_bar_visibility"
+                android:checkable="true"
+                android:checked="true"
+                android:title="Symbol Bar Visibility" />
+            <item
                 android:id="@+id/sora_text_wordwrap"
                 android:checkable="true"
                 android:title="@string/sora_wordwrap" />
