@@ -25,22 +25,34 @@ object DevKitSetup {
     private const val SETUP_SCRIPT_ASSET_PATH = "setup.sh"
     private const val SETUP_SCRIPT_FILE_NAME = "setup.sh"
     
+    // Volatile ensures changes are immediately visible across threads
+    @Volatile
+    private var isSetupRunning = false
+    
     @JvmStatic
     fun startSetup(activity: Activity) {
+        val setupScriptFile = File(TermuxConstants.TERMUX_HOME_DIR_PATH, SETUP_SCRIPT_FILE_NAME)
+        if (setupScriptFile.exists()) {
+            // Setup already exists, just run it
+            runScriptInNewTerminalSession(activity, setupScriptFile.absolutePath)
+            activity.startActivity(Intent(activity, TermuxActivity::class.java))
+            return
+        }
+
         TermuxInstaller.setupBootstrapIfNeeded(activity) {
             try {
                 val homeDir = File(TermuxConstants.TERMUX_HOME_DIR_PATH)
                 homeDir.mkdirs()
 
-                val setupScriptFile = File(homeDir, SETUP_SCRIPT_FILE_NAME)
-                copyAssetToFile(activity, SETUP_SCRIPT_ASSET_PATH, setupScriptFile)
+                val newSetupScriptFile = File(homeDir, SETUP_SCRIPT_FILE_NAME)
+                copyAssetToFile(activity, SETUP_SCRIPT_ASSET_PATH, newSetupScriptFile)
 
                 try {
-                    Os.chmod(setupScriptFile.absolutePath, 455)
+                    Os.chmod(newSetupScriptFile.absolutePath, 455)
                 } catch (_: Throwable) {
                 }
 
-                runScriptInNewTerminalSession(activity, setupScriptFile.absolutePath)
+                runScriptInNewTerminalSession(activity, newSetupScriptFile.absolutePath)
 
                 activity.startActivity(Intent(activity, TermuxActivity::class.java))
 

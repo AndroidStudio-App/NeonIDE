@@ -21,6 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Storage
@@ -30,7 +34,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import android.view.View
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -70,7 +73,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import android.widget.Toast
 import kotlinx.serialization.Serializable
-
+import androidx.compose.foundation.layout.navigationBars
 //route for navhost
 @Serializable object permission
 @Serializable object mainmenu
@@ -105,7 +108,8 @@ class MainActivity : FragmentActivity() {
                     val navController = rememberNavController()
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
-                        containerColor = MaterialTheme.colorScheme.background
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentWindowInsets = WindowInsets.navigationBars
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
@@ -118,6 +122,7 @@ class MainActivity : FragmentActivity() {
                             }
                             composable<mainmenu> {
                                 MainMenu(
+                                    onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
                                     onCreateProject = { CreateProjectBottomSheet().show(supportFragmentManager,"create_project") },
                                     onOpenProject = { OpenProjectBottomSheet().show(supportFragmentManager,"open_project") },
                                     onCloneRepo = { CloneRepositoryDialogFragment().show(supportFragmentManager,"clone_repo") },
@@ -135,7 +140,6 @@ class MainActivity : FragmentActivity() {
             }
         }
     }
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun IdeConfigScreen(onBack: () -> Unit) {
@@ -144,9 +148,11 @@ class MainActivity : FragmentActivity() {
         var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
 
         Scaffold(
+            modifier = Modifier.fillMaxSize(),
             topBar = {
                 TopAppBar(
                     title = { Text("IDE Configurations") },
+                    //windowInsets = WindowInsets.statusBars,
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
@@ -154,54 +160,39 @@ class MainActivity : FragmentActivity() {
                     }
                 )
             }
-        ) { padding ->
-            Column(Modifier.padding(padding)) {
-                Text(
-                    text = "Logging",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(16.dp)
-                )
-                
-                ListItem(
-                    headlineContent = { Text("Save IDE logs to Documents") },
-                    supportingContent = { 
-                        Text(if (isLoggingEnabled) {
-                            "Writes logs to ${IDEFileLogger.getLogFile()?.absolutePath ?: "/sdcard/Documents/NeonIDE/logs/ide.log"}"
-                        } else "Disabled")
-                    },
-                    trailingContent = {
-                        Switch(
-                            checked = isLoggingEnabled,
-                            onCheckedChange = { enabled ->
-                                isLoggingEnabled = enabled
-                                prefs?.setIdeFileLoggingEnabled(enabled)
-                                if (enabled) {
-                                    IDEFileLogger.log(context, "File logging enabled")
+        ) { values ->
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(values)) {
+                item {
+                    Text(
+                        text = "Logging",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                item {
+                    ListItem(
+                        headlineContent = { Text("Save IDE logs to Documents") },
+                        supportingContent = { 
+                            Text(if (isLoggingEnabled) {
+                                "Writes logs to ${IDEFileLogger.getLogFile()?.absolutePath ?: "/sdcard/Documents/NeonIDE/logs/ide.log"}"
+                            } else "Disabled")
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = isLoggingEnabled,
+                                onCheckedChange = { enabled ->
+                                    isLoggingEnabled = enabled
+                                    prefs?.setIdeFileLoggingEnabled(enabled)
                                 }
-                            }
-                        )
-                    }
-                )
+                            )
+                        }
+                    )
+                }
             }
         }
     }
     
-   /** @Composable
-    private fun LegacyHomeScreen() {
-        val context = LocalContext.current
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { ctx ->
-                FragmentContainerView(ctx).apply {
-                    id = View.generateViewId()
-                    (context as FragmentActivity).supportFragmentManager.commit {
-                        replace(id, HomeFragment())
-                    }
-                }
-            }
-        )
-    }**/
     override fun onResume() {
         super.onResume()
         updatePermissionStates()

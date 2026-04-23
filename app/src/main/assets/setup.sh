@@ -7,7 +7,7 @@ export DEBIAN_FRONTEND=noninteractive
 #APT_OPTIONS="-o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew"
 
 echo "--- [1/5] Updating system packages ---"
-grep -qxF 'deb https://mart-01-oss.github.io/apt-repo/ stable main' ../usr/etc/apt/sources.list || \ sed -i '$a deb https://mart-01-oss.github.io/apt-repo/ stable main' ../usr/etc/apt/sources.list
+grep -qxF 'deb https://mart-01-oss.github.io/apt-repo/ stable main' ../usr/etc/apt/sources.list || sed -i '$a deb https://mart-01-oss.github.io/apt-repo/ stable main' ../usr/etc/apt/sources.list
 dpkg --configure -a
 apt update
 apt upgrade -y

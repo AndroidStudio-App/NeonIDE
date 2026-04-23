@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.AccountTree
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -33,7 +34,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainMenu(
-   // onOpenEditor: () -> Unit,
+    onSetupDevKit: () -> Unit,
     onCreateProject: () -> Unit,
     onOpenProject: () -> Unit,
     onCloneRepo: () -> Unit,
@@ -75,6 +76,7 @@ fun MainMenu(
             item { MenuCard("New Project", Icons.Default.Add, onCreateProject) }
             item { MenuCard("Open Project", Icons.Default.FolderOpen, onOpenProject) }
             item { MenuCard("Git Clone", Icons.Default.AccountTree, onCloneRepo) }
+            item { MenuCard("Setup Development Kit", Icons.Default.Build, onSetupDevKit) }
             item { MenuCard("Terminal", Icons.Default.Code, onOpenTerminal) }
             item { MenuCard("Settings", Icons.Default.Settings, onOpenSettings) }
             item { MenuCard("About", Icons.Default.Info, onOpenAbout) }
