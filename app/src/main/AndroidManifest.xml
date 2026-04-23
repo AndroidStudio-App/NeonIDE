@@ -66,6 +66,7 @@
         <activity
             android:name=".app.SoraEditorActivityK"
             android:exported="true"
+            android:windowSoftInputMode="adjustNothing"
             android:theme="@style/Theme.TermuxApp.DayNight.NoActionBar" />
 
 

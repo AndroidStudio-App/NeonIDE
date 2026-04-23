@@ -288,6 +288,24 @@ class SoraEditorActivityK : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sora_editor)
 
+        // Sync layout with keyboard animation for smooth opening
+        val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawer_layout)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(drawer) { v, insets ->
+            val imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime())
+            v.setPadding(0, 0, 0, imeInsets.bottom)
+            insets
+        }
+
+        drawer.setWindowInsetsAnimationCallback(object : android.view.WindowInsetsAnimation.Callback(android.view.WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
+            override fun onProgress(insets: android.view.WindowInsets, runningAnimations: MutableList<android.view.WindowInsetsAnimation>): android.view.WindowInsets {
+                val imeInsets = insets.getInsets(android.view.WindowInsets.Type.ime())
+                drawer.setPadding(0, 0, 0, imeInsets.bottom)
+                return insets
+            }
+        })
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_WRITE_EXTERNAL_STORAGE)
