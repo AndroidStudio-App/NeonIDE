@@ -29,7 +29,9 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          sed -i '/android.aapt2FromMavenOverride=/d' gradle.properties
+          ./gradlew assembleDebug
 
       - name: Create GitHub Release (if tag push)
         if: startsWith(github.ref, 'refs/tags/')
@@ -40,7 +42,7 @@ jobs:
             Debug build for ${{ github.ref_name }}
             Built from commit ${{ github.sha }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Upload APK as Artifact (manual run)
         if: github.event_name == 'workflow_dispatch'
