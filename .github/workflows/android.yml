@@ -44,7 +44,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: app/build/outputs/apk/debug/termux-app_*debug*.apk
+          files: app/build/outputs/apk/debug/*.apk
           body: |
             Debug build for ${{ github.ref_name }}
             Built from commit ${{ github.sha }}
@@ -56,5 +56,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: app/build/outputs/apk/debug/termux-app_*debug*.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 7
