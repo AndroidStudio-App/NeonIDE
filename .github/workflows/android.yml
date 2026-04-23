@@ -21,6 +21,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: bootdtrap
+        run: |
+          wget https://github.com/AndroidStudio-App/NeonIDE/releases/download/bootstrap/bootstrap-aarch64.zip
+          cp bootstrap-aarch64.zip app/src/main/cpp
 
       - name: Accept Android licenses
         run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
