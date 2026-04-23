@@ -4,11 +4,11 @@ name: Build and Release Debug APK
 
 on:
   push:
-    branches: [ "master" ]
+    
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
-    tags:
-      - '*'
+    branches: [ "main" ]
+  
   workflow_dispatch:
 
 jobs:
