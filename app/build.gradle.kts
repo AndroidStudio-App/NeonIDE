@@ -234,9 +234,32 @@ afterEvaluate {
     }
 }
 
+val configH = file("src/main/cpp/oniguruma/oniguruma/src/config.h")
+tasks.register("generateOnigConfig") {
+    doLast {
+        configH.parentFile.mkdirs()
+        configH.writeText("""
+            #ifndef ONIGURUMA_CONFIG_H
+            #define ONIGURUMA_CONFIG_H
+            #define HAVE_ALLOCA 1
+            #define HAVE_STDINT_H 1
+            #define HAVE_SYS_TYPES_H 1
+            #define HAVE_UNISTD_H 1
+            #define HAVE_INTTYPES_H 1
+            #define SIZEOF_INT 4
+            #define SIZEOF_LONG 8
+            #define SIZEOF_LONG_LONG 8
+            #define PACKAGE "onig"
+            #define VERSION "6.9.10"
+            #endif
+        """.trimIndent())
+    }
+}
+
 tasks.named("preBuild") {
     dependsOn(
         tasks.named("generateBootstrapStamp"),
+        tasks.named("generateOnigConfig"),
         tasks.named("cleanNativeIfBootstrapChanged")
     )
 }
