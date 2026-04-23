@@ -11,16 +11,10 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <!-- Keep existing RelativeLayout content as a child -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
         <LinearLayout
             android:id="@+id/main_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/main_bottom_bar"
             android:orientation="vertical">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -102,7 +96,8 @@
             <io.github.rosemoe.sora.widget.CodeEditor
                 android:id="@+id/editor"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 app:scrollbarThumbHorizontal="@drawable/sora_scrollbar_thumb"
                 app:scrollbarThumbVertical="@drawable/sora_scrollbar_thumb"
                 app:scrollbarTrackHorizontal="@drawable/sora_scrollbar_track"
@@ -117,7 +112,7 @@
             android:id="@+id/main_bottom_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
             android:fitsSystemWindows="true"
             android:orientation="vertical">
 
@@ -143,7 +138,6 @@
 
         </LinearLayout>
 
-        </RelativeLayout>
 
         <!-- ACS-style persistent bottom sheet (must be a direct child of CoordinatorLayout) -->
         <FrameLayout

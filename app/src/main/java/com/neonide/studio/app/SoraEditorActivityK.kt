@@ -288,20 +288,30 @@ class SoraEditorActivityK : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sora_editor)
 
+        val prefs = getPreferences(Context.MODE_PRIVATE)
+        val isBarVisible = prefs.getBoolean("symbol_bar_visible", true)
+        val bar = findViewById<View>(R.id.main_bottom_bar)
+        
+        bar.visibility = if (isBarVisible) View.VISIBLE else View.GONE
+
         // Sync layout with keyboard animation for smooth opening
         val drawer = findViewById<androidx.drawerlayout.widget.DrawerLayout>(R.id.drawer_layout)
         androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
         
         androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(drawer) { v, insets ->
             val imeInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime())
-            v.setPadding(0, 0, 0, imeInsets.bottom)
+            val systemInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            
+            // Apply bottom padding for IME and top padding for status bar
+            v.setPadding(0, systemInsets.top, 0, imeInsets.bottom)
             insets
         }
 
         drawer.setWindowInsetsAnimationCallback(object : android.view.WindowInsetsAnimation.Callback(android.view.WindowInsetsAnimation.Callback.DISPATCH_MODE_STOP) {
             override fun onProgress(insets: android.view.WindowInsets, runningAnimations: MutableList<android.view.WindowInsetsAnimation>): android.view.WindowInsets {
                 val imeInsets = insets.getInsets(android.view.WindowInsets.Type.ime())
-                drawer.setPadding(0, 0, 0, imeInsets.bottom)
+                val systemInsets = insets.getInsets(android.view.WindowInsets.Type.systemBars())
+                drawer.setPadding(0, systemInsets.top, 0, imeInsets.bottom)
                 return insets
             }
         })
@@ -597,8 +607,9 @@ class SoraEditorActivityK : AppCompatActivity() {
 
             R.id.sora_symbol_bar_visibility -> {
                 item.isChecked = !item.isChecked
-                val bar = findViewById<View>(R.id.main_bottom_bar)
-                bar.visibility = if (item.isChecked) View.VISIBLE else View.GONE
+                val isVisible = item.isChecked
+                findViewById<View>(R.id.main_bottom_bar).visibility = if (isVisible) View.VISIBLE else View.GONE
+                getPreferences(Context.MODE_PRIVATE).edit().putBoolean("symbol_bar_visible", isVisible).apply()
             }
 
             R.id.sora_text_wordwrap -> {

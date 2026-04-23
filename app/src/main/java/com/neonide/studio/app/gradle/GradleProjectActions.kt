@@ -114,7 +114,7 @@ object GradleProjectActions {
     fun createQuickRunPlan(projectDir: File): QuickRunPlan {
         // Most templates are single app module called :app.
         // If user opened a different structure, Gradle will fail, but output will show.
-        val tasks = listOf(":app:assembleDebug")
+        val tasks = listOf("assembleDebug")
 
         val args = baseArgs() + tasks
         val apkSearchDir = File(projectDir, "app/build/outputs/apk")
