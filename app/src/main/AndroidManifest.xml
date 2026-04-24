@@ -88,6 +88,13 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+        
+        <provider
+            android:name=".app.TermuxOpenReceiver$ContentProvider"
+            android:authorities="${TERMUX_PACKAGE_NAME}.files"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="${TERMUX_PACKAGE_NAME}.permission.RUN_COMMAND" />
 
         <provider
             android:name=".DocumentsProvider"
@@ -99,6 +106,10 @@
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
+        
+        <receiver
+            android:name=".app.TermuxOpenReceiver"
+             android:exported="false" />
 
         <service
             android:name=".app.TermuxService"
