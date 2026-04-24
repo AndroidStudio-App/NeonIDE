@@ -898,10 +898,18 @@ class SoraEditorActivityK : AppCompatActivity() {
 
                     val envOverrides = sdk?.env ?: emptyMap()
 
+                    val finalArgs = if (sdk?.aapt2Path != null) {
+                        val override = "-Pandroid.aapt2FromMavenOverride=${sdk.aapt2Path}"
+                        args.toMutableList().apply { 
+                            // Insert before tasks, usually flags first.
+                            add(0, override) 
+                        }
+                    } else args
+
                     com.neonide.studio.app.gradle.GradleRunner.start(
                         context = this@SoraEditorActivityK,
                         projectDir = projectDir,
-                        args = args,
+                        args = finalArgs,
                         envOverrides = envOverrides,
                     ) { line ->
                         runCatching { logFile.appendText(line + "\n") }

@@ -14,7 +14,11 @@ object ApkInstallUtils {
      * Uses TermuxOpenReceiver.ContentProvider authority: ${TermuxConstants.TERMUX_FILE_SHARE_URI_AUTHORITY}
      */
     fun installApk(context: Context, apkFile: File) {
-        val uri: Uri = UriUtils.getContentUri(TermuxConstants.TERMUX_FILE_SHARE_URI_AUTHORITY, apkFile.absolutePath)
+        val uri = androidx.core.content.FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            apkFile
+        )
         val intent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, "application/vnd.android.package-archive")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

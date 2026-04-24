@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Map everything starting from the root of internal storage -->
+    <files-path name="internal" path="/" />
+    <root-path name="root" path="/" />
+</paths>

@@ -1,4 +1,4 @@
-package com.neonide.studio.app.home
+package com.neonide.studio.layout
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun MainMenu(
+fun MainLayout(
     onSetupDevKit: () -> Unit,
     onCreateProject: () -> Unit,
     onOpenProject: () -> Unit,
@@ -73,20 +73,20 @@ fun MainMenu(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            item { MenuCard("New Project", Icons.Default.Add, onCreateProject) }
-            item { MenuCard("Open Project", Icons.Default.FolderOpen, onOpenProject) }
-            item { MenuCard("Git Clone", Icons.Default.AccountTree, onCloneRepo) }
-            item { MenuCard("Setup Development Kit", Icons.Default.Build, onSetupDevKit) }
-            item { MenuCard("Terminal", Icons.Default.Code, onOpenTerminal) }
-            item { MenuCard("Settings", Icons.Default.Settings, onOpenSettings) }
-            item { MenuCard("About", Icons.Default.Info, onOpenAbout) }
+            item { Layout("New Project", Icons.Default.Add, onCreateProject) }
+            item { Layout("Open Project", Icons.Default.FolderOpen, onOpenProject) }
+            item { Layout("Git Clone", Icons.Default.AccountTree, onCloneRepo) }
+            item { Layout("Setup Development Kit", Icons.Default.Build, onSetupDevKit) }
+            item { Layout("Terminal", Icons.Default.Code, onOpenTerminal) }
+            item { Layout("Settings", Icons.Default.Settings, onOpenSettings) }
+            item { Layout("About", Icons.Default.Info, onOpenAbout) }
            
         }
     }
 }
 
 @Composable
-fun MenuCard(title: String, icon: ImageVector, onClick: () -> Unit) {
+fun Layout(title: String, icon: ImageVector, onClick: () -> Unit) {
     ElevatedCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().height(110.dp),

@@ -97,10 +97,10 @@ object GradleProjectActions {
      * We use `help` and `projects`/`tasks` to force Gradle to resolve settings and plugins.
      * `dependencies` can be too heavy on large projects.
      */
-    fun createSyncPlan(): SyncPlan {
+    fun createSyncPlan(aapt2Path: String? = null): SyncPlan {
         // `projects` is a good cheap proxy for "sync": it resolves settings.gradle and includes.
         // `tasks --all` tends to trigger plugin configuration and is useful for diagnosing.
-        val args = baseArgs() + listOf("projects")
+        val args = baseArgs(aapt2Path) + listOf("projects")
         return SyncPlan(args = args, description = "Gradle projects")
     }
 
@@ -111,12 +111,12 @@ object GradleProjectActions {
      * - Prefer :app:assembleDebug
      * - Fall back to assembleDebug (single-module)
      */
-    fun createQuickRunPlan(projectDir: File): QuickRunPlan {
+    fun createQuickRunPlan(projectDir: File, aapt2Path: String? = null): QuickRunPlan {
         // Most templates are single app module called :app.
         // If user opened a different structure, Gradle will fail, but output will show.
         val tasks = listOf("assembleDebug")
 
-        val args = baseArgs() + tasks
+        val args = baseArgs(aapt2Path) + tasks
         val apkSearchDir = File(projectDir, "app/build/outputs/apk")
 
         return QuickRunPlan(
@@ -126,15 +126,19 @@ object GradleProjectActions {
         )
     }
 
-    fun baseArgs(): List<String> {
+    fun baseArgs(aapt2Path: String? = null): List<String> {
         // NOTE: don't use --no-daemon: wrapper itself downloads gradle distributions and
         // running without daemon can be slower but safer memory-wise. We still keep it off
         // by default for constrained Android env.
-        return listOf(
+        val args = mutableListOf(
             "--no-daemon",
             "--stacktrace",
             "--console=plain",
         )
+        if (aapt2Path != null) {
+            args.add("-Pandroid.aapt2FromMavenOverride=$aapt2Path")
+        }
+        return args
     }
 
     /**

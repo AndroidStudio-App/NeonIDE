@@ -6,9 +6,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
+import android.widget.Toast
+import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.commit
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,12 +27,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.layout.statusBars
+
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.InstallMobile
@@ -37,6 +47,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Switch
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,14 +66,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.commit
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.neonide.studio.app.home.MainMenu
+
+import kotlinx.serialization.Serializable
+import com.neonide.studio.layout.MainLayout
 import com.neonide.studio.ui.theme.AppTheme
 import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
@@ -65,26 +79,22 @@ import com.neonide.studio.app.home.clone.CloneRepositoryDialogFragment
 import com.neonide.studio.app.TermuxActivity
 import com.neonide.studio.shared.termux.settings.preferences.TermuxAppSharedPreferences
 import com.neonide.studio.shared.logger.IDEFileLogger
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Switch
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import android.widget.Toast
-import kotlinx.serialization.Serializable
-import androidx.compose.foundation.layout.navigationBars
+
 //route for navhost
 @Serializable object permission
-@Serializable object mainmenu
+@Serializable object mainlayout
 @Serializable object ideConfig
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private var isFilesGranted by mutableStateOf(false)
     private var isInstallGranted by mutableStateOf(false)
     private var isNotificationsGranted by mutableStateOf(false)
     private var isSetupComplete by mutableStateOf(false)
+    
+    private val fm: FragmentManager by lazy {
+        (this as FragmentActivity).supportFragmentManager
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,19 +123,19 @@ class MainActivity : FragmentActivity() {
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
-                            startDestination = if (isSetupComplete) mainmenu else permission,
+                            startDestination = if (isSetupComplete) mainlayout else permission,
                             modifier = Modifier.padding(innerPadding)
                         ) { 
                             composable<permission> {
                                 PermissionScreen()
                                 
                             }
-                            composable<mainmenu> {
-                                MainMenu(
+                            composable<mainlayout> {
+                                MainLayout(
                                     onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
-                                    onCreateProject = { CreateProjectBottomSheet().show(supportFragmentManager,"create_project") },
-                                    onOpenProject = { OpenProjectBottomSheet().show(supportFragmentManager,"open_project") },
-                                    onCloneRepo = { CloneRepositoryDialogFragment().show(supportFragmentManager,"clone_repo") },
+                                    onCreateProject = { CreateProjectBottomSheet().show(fm,"create_project") },
+                                    onOpenProject = { OpenProjectBottomSheet().show(fm,"open_project") },
+                                    onCloneRepo = { CloneRepositoryDialogFragment().show(fm,"clone_repo") },
                                     onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
                                     onOpenSettings = { navController.navigate(ideConfig) },
                                     onOpenAbout = { Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show() }

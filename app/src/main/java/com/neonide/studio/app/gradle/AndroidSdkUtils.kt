@@ -9,6 +9,7 @@ object AndroidSdkUtils {
     data class SdkConfig(
         val sdkDir: File,
         val env: Map<String, String>,
+        val aapt2Path: String? = null,
     )
 
     /**
@@ -67,17 +68,6 @@ object AndroidSdkUtils {
     /** Ensure project local.properties has sdk.dir so AGP doesn't complain. */
     fun ensureSdkDir(projectDir: File, sdkDir: File) {
         ensureLocalProperty(projectDir, "sdk.dir", sdkDir.absolutePath)
-    }
-
-    /** Ensure project gradle.properties contains a property (used for aapt2 override). */
-    private fun ensureGradleProperty(projectDir: File, key: String, value: String) {
-        val gp = File(projectDir, "gradle.properties")
-        val prefix = "$key="
-
-        val lines = if (gp.exists()) runCatching { gp.readLines() }.getOrDefault(emptyList()) else emptyList()
-        val filtered = lines.filterNot { it.trim().startsWith(prefix) }
-        val newLines = filtered + (prefix + value)
-        runCatching { gp.writeText(newLines.joinToString("\n") + "\n") }
     }
 
     /**
@@ -210,11 +200,8 @@ object AndroidSdkUtils {
 
         // Patch aapt2 override in gradle.properties if a compatible build-tools aapt2 is found.
         val aapt2 = resolveBestBionicAapt2(context, sdkDir)
-        if (aapt2 != null) {
-            ensureGradleProperty(projectDir, "android.aapt2FromMavenOverride", aapt2.absolutePath)
-        }
-
+        
         val env = buildEnvOverrides(baseEnv, sdkDir)
-        return SdkConfig(sdkDir = sdkDir, env = env)
+        return SdkConfig(sdkDir = sdkDir, env = env, aapt2Path = aapt2?.absolutePath)
     }
 }
