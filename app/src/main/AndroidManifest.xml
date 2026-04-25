@@ -51,11 +51,12 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
-        android:theme="@style/Theme.TermuxApp.DayNight.DarkActionBar"
+        android:theme="@style/AppTheme"
         tools:targetApi="m">
 
         <activity
             android:name=".MainActivity"
+            android:theme="@style/AppTheme"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -66,7 +67,7 @@
         <activity
             android:name=".app.SoraEditorActivityK"
             android:exported="true"
-            android:theme="@style/Theme.TermuxApp.DayNight.NoActionBar" />
+            android:theme="@style/AppTheme" />
 
 
         <activity
