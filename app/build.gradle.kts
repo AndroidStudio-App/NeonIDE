@@ -49,10 +49,18 @@ android {
             storePassword = "xrj45yWGLbsO7W0v"
             keyPassword = "xrj45yWGLbsO7W0v"
         }
+
+        create("release") {
+            storeFile = file("release.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = "release"
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
