@@ -43,6 +43,7 @@ joni = "2.2.6"
 snakeyaml = "2.10"
 jdt-annotation = "2.4.100"
 lsp4j = "0.24.0"
+jgit = "6.8.0.202311291450-r"
 desugar = "2.0.4"
 
 junit = "4.13.2"
@@ -119,6 +120,7 @@ treesitter-properties = { group = "com.itsaky.androidide.treesitter", name = "tr
 treesitter-annotations = { group = "com.itsaky.androidide.treesitter", name = "annotations", version.ref = "treesitter" }
 
 lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }
+jgit = { group = "org.eclipse.jgit", name = "org.eclipse.jgit", version.ref = "jgit" }
 
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 

@@ -139,6 +139,7 @@ dependencies {
     implementation(libs.snakeyaml)
     implementation(libs.jdt.annotation)
     implementation(libs.lsp4j)
+    implementation(libs.jgit)
 
     annotationProcessor(files("libs/annotation-processors.jar", "libs/annotations.jar"))
     annotationProcessor(libs.javapoet)
@@ -208,10 +209,7 @@ tasks.register("cleanNativeIfBootstrapChanged") {
         if (previousSha == null || previousSha != currentSha) {
             logger.lifecycle("Bootstrap zip changed (old=${previousSha}, new=${currentSha}). Cleaning native intermediates...")
             delete(
-                file("${layout.buildDirectory.asFile.get()}/intermediates/ndkBuild"),
-                file("${layout.buildDirectory.asFile.get()}/intermediates/cxx"),
-                file("${layout.buildDirectory.asFile.get()}/intermediates/merged_native_libs"),
-                file("${layout.buildDirectory.asFile.get()}/intermediates/stripped_native_libs")
+                file("${layout.buildDirectory.asFile.get()}/intermediates/cxx")
             )
         }
         stateFile.parentFile.mkdirs()

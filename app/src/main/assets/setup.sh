@@ -16,7 +16,6 @@ echo "--- [2/5] Installing dependencies ---"
 
 apt install -y $APT_OPTIONS \
     openjdk-17 \
-    git \
     wget \
     zip \
     unzip \
