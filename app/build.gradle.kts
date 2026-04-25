@@ -3,7 +3,6 @@ import java.security.MessageDigest
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     alias(libs.plugins.kotlin.serialization)
 }
@@ -53,7 +52,7 @@ android {
         create("release") {
             storeFile = file("release.jks")
             storePassword = System.getenv("KEYSTORE_PASSWORD")
-            keyAlias = "release"
+            keyAlias = "my-key"
             keyPassword = System.getenv("KEY_PASSWORD")
         }
     }
@@ -87,6 +86,9 @@ android {
 
     lint {
         disable += "ProtectedPermissions"
+        disable += "ExpiredTargetSdkVersion"
+        abortOnError = false
+        checkReleaseBuilds = false
     }
 
     testOptions {

@@ -23,3 +23,21 @@
 
 # Keep LSP server bridge services (started by Intent and referenced by name in manifest).
 -keep class com.neonide.studio.app.lsp.server.** { *; }
+
+# --- JGit & SLF4J fixes for Android ---
+# JGit uses GSS-API (Kerberos) which is not available on Android.
+-dontwarn org.ietf.jgss.**
+
+# JGit also references these which are missing on Android or in the compilation classpath
+-dontwarn java.lang.management.**
+-dontwarn javax.management.**
+-dontwarn javax.naming.**
+-dontwarn java.lang.ProcessHandle
+
+# SLF4J might warn about missing StaticLoggerBinder if no implementation is provided.
+-dontwarn org.slf4j.impl.StaticLoggerBinder
+
+# If R8 still complains about missing classes from these packages, we can ignore them all
+-dontwarn org.eclipse.jgit.transport.HttpAuthMethod$Negotiate
+-dontwarn org.eclipse.jgit.util.GSSManagerFactory$DefaultGSSManagerFactory
+-dontwarn org.eclipse.jgit.util.Monitoring

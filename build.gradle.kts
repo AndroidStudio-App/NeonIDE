@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     // Kotlin 2.2.x is required for sora-editor 0.24.x (compiled with Kotlin metadata 2.2.0)
-    id("org.jetbrains.kotlin.android") version "2.2.21" apply false
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.21" apply false
 }
 
