@@ -111,39 +111,34 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             AppTheme {
-                Surface(
+                val navController = rememberNavController()
+                Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentWindowInsets = WindowInsets.navigationBars
-                    ) { innerPadding ->
-                        NavHost(
-                            navController = navController,
-                            startDestination = if (isSetupComplete) mainlayout else permission,
-                            modifier = Modifier.padding(innerPadding)
-                        ) { 
-                            composable<permission> {
-                                PermissionScreen()
-                                
-                            }
-                            composable<mainlayout> {
-                                MainLayout(
-                                    onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
-                                    onCreateProject = { CreateProjectBottomSheet().show(fm,"create_project") },
-                                    onOpenProject = { OpenProjectBottomSheet().show(fm,"open_project") },
-                                    onCloneRepo = { CloneRepositoryDialogFragment().show(fm,"clone_repo") },
-                                    onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
-                                    onOpenSettings = { navController.navigate(ideConfig) },
-                                    onOpenAbout = { Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show() }
-                                )
-                            }
-                            composable<ideConfig> {
-                                IdeConfigScreen(onBack = { navController.popBackStack() })
-                            }
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentWindowInsets = WindowInsets.navigationBars
+                ) { innerPadding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = if (isSetupComplete) mainlayout else permission,
+                        modifier = Modifier.padding(innerPadding)
+                    ) { 
+                        composable<permission> {
+                            PermissionScreen()
+                            
+                        }
+                        composable<mainlayout> {
+                            MainLayout(
+                                onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
+                                onCreateProject = { CreateProjectBottomSheet().show(fm,"create_project") },
+                                onOpenProject = { OpenProjectBottomSheet().show(fm,"open_project") },
+                                onCloneRepo = { CloneRepositoryDialogFragment().show(fm,"clone_repo") },
+                                onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
+                                onOpenSettings = { navController.navigate(ideConfig) },
+                                onOpenAbout = { Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show() }
+                            )
+                        }
+                        composable<ideConfig> {
+                            IdeConfigScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }
@@ -157,21 +152,16 @@ class MainActivity : AppCompatActivity() {
         val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
         var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
 
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = { Text("IDE Configurations") },
-                    //windowInsets = WindowInsets.statusBars,
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
+        Column(modifier = Modifier.fillMaxSize()) {
+            TopAppBar(
+                title = { Text("IDE Configurations") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
-                )
-            }
-        ) { values ->
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(values)) {
+                }
+            )
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     Text(
                         text = "Logging",
