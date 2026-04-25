@@ -11,8 +11,12 @@ on:
     inputs:
       buildType:
         description: "debug or release"
-        required: false
-        default: "debug"
+        required: true
+        type: choice
+        options:
+          - debug
+          - release
+        default: debug
 
 jobs:
   build:
