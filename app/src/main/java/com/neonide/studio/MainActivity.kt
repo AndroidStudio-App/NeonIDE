@@ -8,11 +8,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.widget.Toast
 import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.commit
 import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -91,16 +87,12 @@ import com.neonide.studio.shared.logger.IDEFileLogger
 @Serializable object ideConfig
 @Serializable object gitlayout
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private var isFilesGranted by mutableStateOf(false)
     private var isInstallGranted by mutableStateOf(false)
     private var isNotificationsGranted by mutableStateOf(false)
     private var isSetupComplete by mutableStateOf(false)
-    
-    private val fm: FragmentManager by lazy {
-        (this as FragmentActivity).supportFragmentManager
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -133,10 +125,25 @@ class MainActivity : AppCompatActivity() {
                             
                         }
                         composable<mainlayout> {
+                            val showOpenProject = remember { mutableStateOf(false) }
+                            val showCreateProject = remember { mutableStateOf(false) }
+                            
+                            if (showOpenProject.value) {
+                                OpenProjectBottomSheet(
+                                    onDismiss = { showOpenProject.value = false }
+                                )
+                            }
+                            
+                            if (showCreateProject.value) {
+                                CreateProjectBottomSheet(
+                                    onDismiss = { showCreateProject.value = false }
+                                )
+                            }
+                            
                             MainLayout(
                                 onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
-                                onCreateProject = { CreateProjectBottomSheet().show(fm,"create_project") },
-                                onOpenProject = { OpenProjectBottomSheet().show(fm,"open_project") },
+                                onCreateProject = { showCreateProject.value = true },
+                                onOpenProject = { showOpenProject.value = true },
                                 onCloneRepo = { navController.navigate(gitlayout) },
                                 onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
                                 onOpenSettings = { navController.navigate(ideConfig) },

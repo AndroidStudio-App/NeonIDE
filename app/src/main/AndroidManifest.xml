@@ -53,7 +53,8 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:targetApi="m">
-
+        
+        <!--app activity -->
         <activity
             android:name=".MainActivity"
             android:theme="@style/AppTheme"
@@ -63,13 +64,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        
+        <!--editor activity -->
         <activity
             android:name=".app.SoraEditorActivityK"
             android:exported="true"
             android:theme="@style/AppTheme" />
 
-
+        <!--terminal activity-->
         <activity
             android:name=".app.TermuxActivity"
             android:exported="true"
@@ -90,13 +92,18 @@
                 android:resource="@xml/shortcuts" />
         </activity>
         
+        <!-- default intent for xdg-open/termux-open-->
         <provider
             android:name=".app.TermuxOpenReceiver$ContentProvider"
             android:authorities="${TERMUX_PACKAGE_NAME}.files"
             android:exported="true"
             android:grantUriPermissions="true"
             android:permission="${TERMUX_PACKAGE_NAME}.permission.RUN_COMMAND" />
-
+        <receiver
+            android:name=".app.TermuxOpenReceiver"
+            android:exported="false" />
+            
+        <!--saf provider to control inteal ide files-->    
         <provider
             android:name=".DocumentsProvider"
             android:authorities="${TERMUX_PACKAGE_NAME}.documents"
@@ -107,15 +114,12 @@
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-        
-        <receiver
-            android:name=".app.TermuxOpenReceiver"
-             android:exported="false" />
 
         <service
             android:name=".app.TermuxService"
             android:exported="false" />
-
+            
+        <!-- needed to install .apk-->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${TERMUX_PACKAGE_NAME}.provider"
@@ -136,7 +140,8 @@
         <service
             android:name="com.neonide.studio.app.lsp.server.XmlLanguageServerService"
             android:exported="false" />
-
+            
+        <!--for executing command without view-->
         <service
             android:name=".app.RunCommandService"
             android:exported="true"
