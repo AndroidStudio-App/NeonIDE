@@ -51,10 +51,15 @@ jobs:
           sed -i '/android.aapt2FromMavenOverride=/d' gradle.properties
 
           if [ "${{ github.event.inputs.buildType }}" = "release" ]; then
-            ./gradlew assembleRelease
+            ./gradlew assembleRelease \
+              -PKEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} \
+              -PKEY_PASSWORD=${{ secrets.KEY_PASSWORD }}
           else
             ./gradlew assembleDebug
           fi
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Create GitHub Release
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release'
