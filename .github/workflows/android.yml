@@ -9,6 +9,9 @@ on:
 
   workflow_dispatch:
     inputs:
+      releasetag:
+        description: Enter the tag name
+        type: string
       buildType:
         description: "debug or release"
         required: true
@@ -65,7 +68,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v0.1-${{ github.run_id }}
+          tag_name: ${{ inputs.releasetag }}
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
