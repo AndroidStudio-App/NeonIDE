@@ -65,6 +65,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release'
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: v0.1-${{ github.run_id }}
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
