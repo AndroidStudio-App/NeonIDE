@@ -51,9 +51,11 @@ android {
 
         create("release") {
             storeFile = file("release.jks")
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            storePassword = project.findProperty("KEYSTORE_PASSWORD")?.toString()
+                ?: System.getenv("KEYSTORE_PASSWORD")
             keyAlias = "my-key"
-            keyPassword = System.getenv("KEY_PASSWORD")
+            keyPassword = project.findProperty("KEY_PASSWORD")?.toString()
+                ?: System.getenv("KEY_PASSWORD")
         }
     }
 
