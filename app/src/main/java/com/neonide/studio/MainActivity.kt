@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,6 +55,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +74,9 @@ import androidx.navigation.compose.rememberNavController
 
 import kotlinx.serialization.Serializable
 import com.neonide.studio.layout.MainLayout
+import com.neonide.studio.layout.GitLayout
+import com.neonide.studio.layout.GitViewModel
+import com.neonide.studio.layout.GitLayoutState
 import com.neonide.studio.ui.theme.AppTheme
 import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
@@ -80,10 +85,12 @@ import com.neonide.studio.app.TermuxActivity
 import com.neonide.studio.shared.termux.settings.preferences.TermuxAppSharedPreferences
 import com.neonide.studio.shared.logger.IDEFileLogger
 
+
 //route for navhost
 @Serializable object permission
 @Serializable object mainlayout
 @Serializable object ideConfig
+@Serializable object gitlayout
 
 class MainActivity : AppCompatActivity() {
 
@@ -131,7 +138,7 @@ class MainActivity : AppCompatActivity() {
                                 onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
                                 onCreateProject = { CreateProjectBottomSheet().show(fm,"create_project") },
                                 onOpenProject = { OpenProjectBottomSheet().show(fm,"open_project") },
-                                onCloneRepo = { CloneRepositoryDialogFragment().show(fm,"clone_repo") },
+                                onCloneRepo = { navController.navigate(gitlayout) },
                                 onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
                                 onOpenSettings = { navController.navigate(ideConfig) },
                                 onOpenAbout = { Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show() }
@@ -140,6 +147,11 @@ class MainActivity : AppCompatActivity() {
                         composable<ideConfig> {
                             IdeConfigScreen(onBack = { navController.popBackStack() })
                         }
+                        composable<gitlayout> {
+                           val viewModel: GitViewModel = viewModel()
+                           val state by viewModel.uiState.collectAsState()
+                           GitLayout(onBack = {navController.popBackStack()}, state = state, viewModel = viewModel)
+                       }
                     }
                 }
             }
