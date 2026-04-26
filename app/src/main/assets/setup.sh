@@ -16,13 +16,8 @@ echo "--- [2/5] Installing dependencies ---"
 
 apt install -y $APT_OPTIONS \
     openjdk-17 \
-    wget \
-    zip \
     unzip \
-    jq \
-    cmake \
-    ninja \
-    build-essential
+    jq 
 
 echo "--- [3/5] Configuring Environment Variables ---"
 
@@ -234,7 +229,7 @@ if [ ! -d "cmdline-tools/latest/bin" ]; then
     TEMP_DIR=$(mktemp -d)
     cd "$TEMP_DIR"
     
-    wget -q --show-progress https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+    curl -O -L https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
     unzip -oq commandlinetools-linux-13114758_latest.zip
     
     mkdir -p "$ANDROID_HOME/cmdline-tools"
@@ -260,7 +255,7 @@ if [ ! -d "platform-tools" ] || [ ! -d "build-tools/35.0.2" ]; then
     TEMP_DIR=$(mktemp -d)
     cd "$TEMP_DIR"
     
-    wget -q --show-progress https://github.com/lzhiyong/android-sdk-tools/releases/download/35.0.2/android-sdk-tools-static-aarch64.zip
+    curl -O -L https://github.com/lzhiyong/android-sdk-tools/releases/download/35.0.2/android-sdk-tools-static-aarch64.zip
     unzip -oq android-sdk-tools-static-aarch64.zip
     
     # Create proper directory structure
@@ -306,7 +301,7 @@ create_build_tools_metadata
 if [ ! -d "ndk/29.0.14206865" ]; then
     echo "Downloading Android NDK (Termux compatible)..."
     cd "$ANDROID_HOME"
-    wget -q --show-progress https://github.com/AndroidCSOfficial/acs-build-system/releases/download/v29.0.14033849/android-ndk-r29-aarch64-linux-android.tar.xz
+    curl -O -L https://github.com/AndroidCSOfficial/acs-build-system/releases/download/v29.0.14033849/android-ndk-r29-aarch64-linux-android.tar.xz
     tar -xJf android-ndk-r29-aarch64-linux-android.tar.xz
     mkdir -p ndk
     mv android-ndk-r29 ndk/29.0.14206865
