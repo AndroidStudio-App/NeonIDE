@@ -6,6 +6,9 @@
 #
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
+-keep class org.eclipse.tm4e.languageconfiguration.internal.model.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
 
 -dontobfuscate
 #-renamesourcefileattribute SourceFile
