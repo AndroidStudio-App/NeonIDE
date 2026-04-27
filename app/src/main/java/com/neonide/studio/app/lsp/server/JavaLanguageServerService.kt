@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.LocalServerSocket
 import android.os.IBinder
 import android.util.Log
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

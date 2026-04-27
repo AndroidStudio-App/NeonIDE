@@ -37,7 +37,7 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val prefs = application.getSharedPreferences("acs_clone_prefs", Context.MODE_PRIVATE)
         val lastDest = prefs.getString("dest", null)
-            ?: com.neonide.studio.shared.termux.TermuxConstants.TERMUX_HOME_DIR_PATH + "/projects"
+            ?: com.termux.shared.termux.TermuxConstants.TERMUX_HOME_DIR_PATH + "/projects"
         val savedUrl = prefs.getString("url", "") ?: ""
         val savedRepoName = if (savedUrl.isNotBlank()) inferRepoName(savedUrl) ?: "" else ""
 

@@ -77,8 +77,8 @@ import com.neonide.studio.ui.theme.AppTheme
 import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
 import com.neonide.studio.app.TermuxActivity
-import com.neonide.studio.shared.termux.settings.preferences.TermuxAppSharedPreferences
-import com.neonide.studio.shared.logger.IDEFileLogger
+import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences
+import com.termux.shared.logger.IDEFileLogger
 
 
 //route for navhost

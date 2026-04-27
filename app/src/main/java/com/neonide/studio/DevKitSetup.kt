@@ -8,10 +8,10 @@ import android.system.Os
 import android.widget.Toast
 
 import com.neonide.studio.R
-import com.neonide.studio.shared.shell.command.ExecutionCommand.Runner
-import com.neonide.studio.shared.shell.command.ExecutionCommand.ShellCreateMode
-import com.neonide.studio.shared.termux.TermuxConstants
-import com.neonide.studio.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_SERVICE
+import com.termux.shared.shell.command.ExecutionCommand.Runner
+import com.termux.shared.shell.command.ExecutionCommand.ShellCreateMode
+import com.termux.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_SERVICE
 import com.neonide.studio.app.TermuxInstaller
 import com.neonide.studio.app.TermuxService
 import com.neonide.studio.app.TermuxActivity

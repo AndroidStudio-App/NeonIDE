@@ -5,10 +5,10 @@ import android.app.Service;
 import androidx.annotation.NonNull;
 
 import com.neonide.studio.app.TermuxService;
-import com.neonide.studio.shared.termux.shell.command.runner.terminal.TermuxSession;
-import com.neonide.studio.shared.termux.terminal.TermuxTerminalSessionClientBase;
-import com.neonide.studio.terminal.TerminalSession;
-import com.neonide.studio.terminal.TerminalSessionClient;
+import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
+import com.termux.shared.termux.terminal.TermuxTerminalSessionClientBase;
+import com.termux.terminal.TerminalSession;
+import com.termux.terminal.TerminalSessionClient;
 
 /** The {@link TerminalSessionClient} implementation that may require a {@link Service} for its interface methods. */
 public class TermuxTerminalSessionServiceClient extends TermuxTerminalSessionClientBase {

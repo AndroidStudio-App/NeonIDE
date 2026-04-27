@@ -1,7 +1,7 @@
 package com.neonide.studio.app.gradle
 
 import android.content.Context
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 object AndroidSdkUtils {

@@ -20,10 +20,10 @@ import androidx.core.content.ContextCompat;
 
 import com.neonide.studio.R;
 import com.neonide.studio.app.TermuxActivity;
-import com.neonide.studio.shared.termux.shell.command.runner.terminal.TermuxSession;
-import com.neonide.studio.shared.theme.NightMode;
-import com.neonide.studio.shared.theme.ThemeUtils;
-import com.neonide.studio.terminal.TerminalSession;
+import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
+import com.termux.shared.theme.NightMode;
+import com.termux.shared.theme.ThemeUtils;
+import com.termux.terminal.TerminalSession;
 
 import java.util.List;
 

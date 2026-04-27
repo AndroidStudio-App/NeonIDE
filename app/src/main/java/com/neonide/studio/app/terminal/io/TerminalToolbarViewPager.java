@@ -11,8 +11,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.neonide.studio.R;
 import com.neonide.studio.app.TermuxActivity;
-import com.neonide.studio.shared.termux.extrakeys.ExtraKeysView;
-import com.neonide.studio.terminal.TerminalSession;
+import com.termux.shared.termux.extrakeys.ExtraKeysView;
+import com.termux.terminal.TerminalSession;
 
 public class TerminalToolbarViewPager {
 

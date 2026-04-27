@@ -17,20 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.neonide.studio.R;
-import com.neonide.studio.shared.interact.ShareUtils;
-import com.neonide.studio.shared.termux.shell.command.runner.terminal.TermuxSession;
-import com.neonide.studio.shared.termux.interact.TextInputDialogUtils;
+import com.termux.shared.interact.ShareUtils;
+import com.termux.shared.termux.shell.command.runner.terminal.TermuxSession;
+import com.termux.shared.termux.interact.TextInputDialogUtils;
 import com.neonide.studio.app.TermuxActivity;
-import com.neonide.studio.shared.termux.terminal.TermuxTerminalSessionClientBase;
-import com.neonide.studio.shared.termux.TermuxConstants;
+import com.termux.shared.termux.terminal.TermuxTerminalSessionClientBase;
+import com.termux.shared.termux.TermuxConstants;
 import com.neonide.studio.app.TermuxService;
-import com.neonide.studio.shared.termux.settings.properties.TermuxPropertyConstants;
-import com.neonide.studio.shared.termux.terminal.io.BellHandler;
-import com.neonide.studio.shared.logger.Logger;
-import com.neonide.studio.terminal.TerminalColors;
-import com.neonide.studio.terminal.TerminalSession;
-import com.neonide.studio.terminal.TerminalSessionClient;
-import com.neonide.studio.terminal.TextStyle;
+import com.termux.shared.termux.settings.properties.TermuxPropertyConstants;
+import com.termux.shared.termux.terminal.io.BellHandler;
+import com.termux.shared.logger.Logger;
+import com.termux.terminal.TerminalColors;
+import com.termux.terminal.TerminalSession;
+import com.termux.terminal.TerminalSessionClient;
+import com.termux.terminal.TextStyle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -271,8 +271,7 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
                     .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).build()).build();
 
             try {
-                mBellSoundId = mBellSoundPool.load(mActivity, R.raw.bell, 1);
-            } catch (Exception e){
+                mBellSoundId = mBellSoundPool.load(mActivity, com.termux.shared.R.raw.bell, 1);            } catch (Exception e){
                 // Catch java.lang.RuntimeException: Unable to resume activity {com.neonide.studio/com.neonide.studio.app.TermuxActivity}: android.content.res.Resources$NotFoundException: File res/raw/bell.ogg from drawable resource ID
                 Logger.logStackTraceWithMessage(LOG_TAG, "Failed to load bell sound pool", e);
             }

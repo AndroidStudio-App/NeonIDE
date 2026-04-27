@@ -252,7 +252,7 @@ string setStringField(JNIEnv *env, jobject obj, jclass clazz, const string field
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_createServerSocketNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_createServerSocketNative(JNIEnv *env, jclass clazz,
                                                                                     jstring logTitle,
                                                                                     jbyteArray pathArray,
                                                                                     jint backlog) {
@@ -316,7 +316,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_createServerS
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_closeSocketNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_closeSocketNative(JNIEnv *env, jclass clazz,
                                                                              jstring logTitle, jint fd) {
     if (fd < 0) {
         return getJniResult(env, logTitle, -1, "closeSocketNative(): Invalid fd \"" + to_string(fd) + "\" passed");
@@ -332,7 +332,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_closeSocketNa
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_acceptNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_acceptNative(JNIEnv *env, jclass clazz,
                                                                         jstring logTitle, jint fd) {
     if (fd < 0) {
         return getJniResult(env, logTitle, -1, "acceptNative(): Invalid fd \"" + to_string(fd) + "\" passed");
@@ -350,7 +350,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_acceptNative(
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_readNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_readNative(JNIEnv *env, jclass clazz,
                                                                       jstring logTitle,
                                                                       jint fd, jbyteArray dataArray,
                                                                       jlong deadline) {
@@ -413,7 +413,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_readNative(JN
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_sendNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_sendNative(JNIEnv *env, jclass clazz,
                                                                       jstring logTitle,
                                                                       jint fd, jbyteArray dataArray,
                                                                       jlong deadline) {
@@ -470,7 +470,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_sendNative(JN
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_availableNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_availableNative(JNIEnv *env, jclass clazz,
                                                                            jstring logTitle, jint fd) {
     if (fd < 0) {
         return getJniResult(env, logTitle, -1, "availableNative(): Invalid fd \"" + to_string(fd) + "\" passed");
@@ -495,7 +495,7 @@ int set_socket_timeout(int fd, int option, int timeout) {
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_setSocketReadTimeoutNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_setSocketReadTimeoutNative(JNIEnv *env, jclass clazz,
                                                                                       jstring logTitle,
                                                                                       jint fd, jint timeout) {
     if (fd < 0) {
@@ -513,7 +513,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_setSocketRead
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_setSocketSendTimeoutNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_setSocketSendTimeoutNative(JNIEnv *env, jclass clazz,
                                                                                       jstring logTitle,
                                                                                       jint fd, jint timeout) {
     if (fd < 0) {
@@ -532,7 +532,7 @@ Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_setSocketSend
 
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_neonide_studio_shared_net_socket_local_LocalSocketManager_getPeerCredNative(JNIEnv *env, jclass clazz,
+Java_com_termux_shared_net_socket_local_LocalSocketManager_getPeerCredNative(JNIEnv *env, jclass clazz,
                                                                              jstring logTitle,
                                                                              jint fd, jobject peerCred) {
     if (fd < 0) {

@@ -105,6 +105,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":termux-shared"))
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(platform(libs.androidx.compose.bom))

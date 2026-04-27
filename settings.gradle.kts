@@ -18,3 +18,6 @@ dependencyResolutionManagement {
 rootProject.name = "NeonIDE Studio"
 
 include(":app")
+include(":terminal-emulator")
+include(":terminal-view")
+include(":termux-shared")

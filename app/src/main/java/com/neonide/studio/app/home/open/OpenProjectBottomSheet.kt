@@ -64,7 +64,7 @@ import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.neonide.studio.app.utils.DisplayNameUtils
 import com.neonide.studio.app.utils.SafeDirLister
 import com.neonide.studio.app.utils.SafeFileDeleter
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

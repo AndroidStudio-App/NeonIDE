@@ -29,15 +29,15 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import androidx.viewpager2.widget.ViewPager2
 import com.neonide.studio.R
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import com.neonide.studio.app.bottomsheet.model.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetTabAdapter
 import com.neonide.studio.app.lsp.LspClient
 import com.neonide.studio.app.buildoutput.BuildOutputBuffer
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.bottomsheet.model.NavigationItem
-import com.neonide.studio.view.treeview.model.TreeNode
-import com.neonide.studio.view.treeview.view.AndroidTreeView
+import com.termux.view.treeview.model.TreeNode
+import com.termux.view.treeview.view.AndroidTreeView
 import com.neonide.studio.app.utils.DisplayNameUtils
 import com.neonide.studio.app.utils.SafeDirLister
 import io.github.rosemoe.sora.event.ContentChangeEvent
@@ -1144,7 +1144,7 @@ class SoraEditorActivityK : AppCompatActivity() {
     }
 
     private fun openIdeFileLog() {
-        val logFile = com.neonide.studio.shared.logger.IDEFileLogger.getLogFile()
+        val logFile = com.termux.shared.logger.IDEFileLogger.getLogFile()
         if (logFile == null || !logFile.exists()) {
             android.widget.Toast.makeText(this, "IDE file log not found. Enable it in IDE Configurations first.", android.widget.Toast.LENGTH_LONG).show()
             return
@@ -1634,9 +1634,9 @@ class SoraEditorActivityK : AppCompatActivity() {
 
         // Hook pinch scale gesture to file-tree UI scaling (icons/text/indent), not canvas scaling.
         // Apply scale to currently visible rows in-place for smooth zoom.
-        (treeRootView as? com.neonide.studio.view.treeview.view.TwoDScrollView)?.setOnScaleChangedListener(object : com.neonide.studio.view.treeview.view.TwoDScrollView.OnScaleChangedListener {
+        (treeRootView as? com.termux.view.treeview.view.TwoDScrollView)?.setOnScaleChangedListener(object : com.termux.view.treeview.view.TwoDScrollView.OnScaleChangedListener {
             private var pendingScale = 1.0f
-            private val treeItems by lazy { treeRootView.findViewById<android.view.ViewGroup>(com.neonide.studio.R.id.tree_items) }
+            private val treeItems by lazy { treeRootView.findViewById<android.view.ViewGroup>(com.termux.view.R.id.tree_items) }
 
             override fun onScaleBegin() {
                 pendingScale = 1.0f
@@ -1680,7 +1680,7 @@ class SoraEditorActivityK : AppCompatActivity() {
                         // Update
                         val vh = node.viewHolder
                         val cached = vh?.cachedView
-                        val wrapper = cached as? com.neonide.studio.view.treeview.view.TreeNodeWrapperView
+                        val wrapper = cached as? com.termux.view.treeview.view.TreeNodeWrapperView
                         val row = wrapper?.nodeContainer?.getChildAt(0)
                         if (row != null) {
                             com.neonide.studio.app.FileTreeNodeViewHolder.applyScaleToRowView(ctx, row, node.level)
@@ -1956,7 +1956,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         execIntent.putExtra(TermuxConstants.TERMUX_APP.TERMUX_SERVICE.EXTRA_WORKDIR, d.absolutePath)
         execIntent.putExtra(
             TermuxConstants.TERMUX_APP.TERMUX_SERVICE.EXTRA_RUNNER,
-            com.neonide.studio.shared.shell.command.ExecutionCommand.Runner.TERMINAL_SESSION.getName()
+            com.termux.shared.shell.command.ExecutionCommand.Runner.TERMINAL_SESSION.getName()
         )
         // Use a new session and bring Termux UI to foreground
         execIntent.putExtra(
@@ -1965,7 +1965,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         )
         execIntent.putExtra(
             TermuxConstants.TERMUX_APP.TERMUX_SERVICE.EXTRA_SHELL_CREATE_MODE,
-            com.neonide.studio.shared.shell.command.ExecutionCommand.ShellCreateMode.ALWAYS.getMode()
+            com.termux.shared.shell.command.ExecutionCommand.ShellCreateMode.ALWAYS.getMode()
         )
         execIntent.putExtra(TermuxConstants.TERMUX_APP.TERMUX_SERVICE.EXTRA_SHELL_NAME, "file-tree")
         execIntent.putExtra(TermuxConstants.TERMUX_APP.TERMUX_SERVICE.EXTRA_COMMAND_LABEL, "Terminal")
@@ -1994,7 +1994,7 @@ class SoraEditorActivityK : AppCompatActivity() {
 
             val vh = node.viewHolder
             val cached = vh?.cachedView
-            val wrapper = cached as? com.neonide.studio.view.treeview.view.TreeNodeWrapperView
+            val wrapper = cached as? com.termux.view.treeview.view.TreeNodeWrapperView
             val row = wrapper?.nodeContainer?.getChildAt(0)
 
             if (row != null && item != null && !item.isDirectory) {

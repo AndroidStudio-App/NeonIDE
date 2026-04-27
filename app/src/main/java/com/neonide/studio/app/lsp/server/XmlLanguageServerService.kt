@@ -4,8 +4,8 @@ import android.app.Service
 import android.content.Intent
 import android.net.LocalServerSocket
 import android.os.IBinder
-import com.neonide.studio.shared.logger.Logger
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.logger.Logger
+import com.termux.shared.termux.TermuxConstants
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

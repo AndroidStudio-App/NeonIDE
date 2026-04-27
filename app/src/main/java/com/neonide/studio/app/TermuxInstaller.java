@@ -12,20 +12,20 @@ import android.view.WindowManager;
 
 import com.neonide.studio.BuildConfig;
 import com.neonide.studio.R;
-import com.neonide.studio.shared.file.FileUtils;
-import com.neonide.studio.shared.shell.command.ExecutionCommand;
-import com.neonide.studio.shared.shell.command.runner.app.AppShell;
-import com.neonide.studio.shared.termux.TermuxBootstrap;
-import com.neonide.studio.shared.termux.crash.TermuxCrashUtils;
-import com.neonide.studio.shared.termux.file.TermuxFileUtils;
-import com.neonide.studio.shared.interact.MessageDialogUtils;
-import com.neonide.studio.shared.logger.Logger;
-import com.neonide.studio.shared.markdown.MarkdownUtils;
-import com.neonide.studio.shared.errors.Error;
-import com.neonide.studio.shared.android.PackageUtils;
-import com.neonide.studio.shared.termux.TermuxConstants;
-import com.neonide.studio.shared.termux.TermuxUtils;
-import com.neonide.studio.shared.termux.shell.command.environment.TermuxShellEnvironment;
+import com.termux.shared.file.FileUtils;
+import com.termux.shared.shell.command.ExecutionCommand;
+import com.termux.shared.shell.command.runner.app.AppShell;
+import com.termux.shared.termux.TermuxBootstrap;
+import com.termux.shared.termux.crash.TermuxCrashUtils;
+import com.termux.shared.termux.file.TermuxFileUtils;
+import com.termux.shared.interact.MessageDialogUtils;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.markdown.MarkdownUtils;
+import com.termux.shared.errors.Error;
+import com.termux.shared.android.PackageUtils;
+import com.termux.shared.termux.TermuxConstants;
+import com.termux.shared.termux.TermuxUtils;
+import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -37,10 +37,10 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static com.neonide.studio.shared.termux.TermuxConstants.TERMUX_PREFIX_DIR;
-import static com.neonide.studio.shared.termux.TermuxConstants.TERMUX_PREFIX_DIR_PATH;
-import static com.neonide.studio.shared.termux.TermuxConstants.TERMUX_STAGING_PREFIX_DIR;
-import static com.neonide.studio.shared.termux.TermuxConstants.TERMUX_STAGING_PREFIX_DIR_PATH;
+import static com.termux.shared.termux.TermuxConstants.TERMUX_PREFIX_DIR;
+import static com.termux.shared.termux.TermuxConstants.TERMUX_PREFIX_DIR_PATH;
+import static com.termux.shared.termux.TermuxConstants.TERMUX_STAGING_PREFIX_DIR;
+import static com.termux.shared.termux.TermuxConstants.TERMUX_STAGING_PREFIX_DIR_PATH;
 
 /**
  * Install the Termux bootstrap packages if necessary by following the below steps:

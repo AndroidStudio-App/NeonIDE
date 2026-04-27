@@ -107,7 +107,7 @@ class LspManager {
         // org.javacs requires a valid workspace root URI. If it's missing/invalid,
         // it won't be able to create the compiler and may appear to "never start".
         // We default to Termux HOME here.
-        val rootPath = com.neonide.studio.shared.termux.TermuxConstants.TERMUX_HOME_DIR_PATH
+        val rootPath = com.termux.shared.termux.TermuxConstants.TERMUX_HOME_DIR_PATH
 
         // Ensure proper file:// URI
         params.rootUri = java.io.File(rootPath).toURI().toASCIIString()

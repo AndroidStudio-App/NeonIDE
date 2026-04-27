@@ -31,31 +31,31 @@ import com.neonide.studio.app.api.file.FileReceiverActivity;
 import com.neonide.studio.app.terminal.TermuxActivityRootView;
 import com.neonide.studio.app.terminal.TermuxTerminalSessionActivityClient;
 import com.neonide.studio.app.terminal.io.TermuxTerminalExtraKeys;
-import com.neonide.studio.shared.activities.ReportActivity;
-import com.neonide.studio.shared.activity.ActivityUtils;
-import com.neonide.studio.shared.activity.media.AppCompatActivityUtils;
-import com.neonide.studio.shared.data.IntentUtils;
-import com.neonide.studio.shared.android.PermissionUtils;
-import com.neonide.studio.shared.data.DataUtils;
-import com.neonide.studio.shared.termux.TermuxConstants;
-import com.neonide.studio.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY;
-import com.neonide.studio.shared.termux.crash.TermuxCrashUtils;
-import com.neonide.studio.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+import com.termux.shared.activities.ReportActivity;
+import com.termux.shared.activity.ActivityUtils;
+import com.termux.shared.activity.media.AppCompatActivityUtils;
+import com.termux.shared.data.IntentUtils;
+import com.termux.shared.android.PermissionUtils;
+import com.termux.shared.data.DataUtils;
+import com.termux.shared.termux.TermuxConstants;
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_ACTIVITY;
+import com.termux.shared.termux.crash.TermuxCrashUtils;
+import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
 import com.neonide.studio.app.terminal.TermuxSessionsListViewController;
 import com.neonide.studio.app.terminal.io.TerminalToolbarViewPager;
 import com.neonide.studio.app.terminal.TermuxTerminalViewClient;
-import com.neonide.studio.shared.termux.extrakeys.ExtraKeysView;
-import com.neonide.studio.shared.termux.interact.TextInputDialogUtils;
-import com.neonide.studio.shared.logger.Logger;
-import com.neonide.studio.shared.termux.TermuxUtils;
-import com.neonide.studio.shared.termux.settings.properties.TermuxAppSharedProperties;
-import com.neonide.studio.shared.termux.theme.TermuxThemeUtils;
-import com.neonide.studio.shared.theme.NightMode;
-import com.neonide.studio.shared.view.ViewUtils;
-import com.neonide.studio.terminal.TerminalSession;
-import com.neonide.studio.terminal.TerminalSessionClient;
-import com.neonide.studio.view.TerminalView;
-import com.neonide.studio.view.TerminalViewClient;
+import com.termux.shared.termux.extrakeys.ExtraKeysView;
+import com.termux.shared.termux.interact.TextInputDialogUtils;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.termux.TermuxUtils;
+import com.termux.shared.termux.settings.properties.TermuxAppSharedProperties;
+import com.termux.shared.termux.theme.TermuxThemeUtils;
+import com.termux.shared.theme.NightMode;
+import com.termux.shared.view.ViewUtils;
+import com.termux.terminal.TerminalSession;
+import com.termux.terminal.TerminalSessionClient;
+import com.termux.view.TerminalView;
+import com.termux.view.TerminalViewClient;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -755,7 +755,7 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
 
                 // If permission is granted, then also setup storage symlinks.
                 if(PermissionUtils.checkAndRequestLegacyOrManageExternalStoragePermission(
-                    TermuxActivity.this, requestCode, true, !isPermissionCallback)) {
+                    TermuxActivity.this, requestCode, true)) {
                     if (isPermissionCallback)
                         Logger.logInfoAndShowToast(TermuxActivity.this, LOG_TAG,
                             getString(R.string.msg_storage_permission_granted_on_request));

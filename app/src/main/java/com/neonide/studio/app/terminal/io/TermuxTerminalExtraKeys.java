@@ -10,13 +10,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.neonide.studio.app.TermuxActivity;
 import com.neonide.studio.app.terminal.TermuxTerminalSessionActivityClient;
 import com.neonide.studio.app.terminal.TermuxTerminalViewClient;
-import com.neonide.studio.shared.logger.Logger;
-import com.neonide.studio.shared.termux.extrakeys.ExtraKeysConstants;
-import com.neonide.studio.shared.termux.extrakeys.ExtraKeysInfo;
-import com.neonide.studio.shared.termux.settings.properties.TermuxPropertyConstants;
-import com.neonide.studio.shared.termux.settings.properties.TermuxSharedProperties;
-import com.neonide.studio.shared.termux.terminal.io.TerminalExtraKeys;
-import com.neonide.studio.view.TerminalView;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.termux.extrakeys.ExtraKeysConstants;
+import com.termux.shared.termux.extrakeys.ExtraKeysInfo;
+import com.termux.shared.termux.settings.properties.TermuxPropertyConstants;
+import com.termux.shared.termux.settings.properties.TermuxSharedProperties;
+import com.termux.shared.termux.terminal.io.TerminalExtraKeys;
+import com.termux.view.TerminalView;
 
 import org.json.JSONException;
 

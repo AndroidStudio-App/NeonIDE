@@ -9,12 +9,12 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.neonide.studio.shared.data.IntentUtils;
-import com.neonide.studio.shared.logger.Logger;
-import com.neonide.studio.shared.termux.TermuxUtils;
-import com.neonide.studio.shared.termux.file.TermuxFileUtils;
-import com.neonide.studio.shared.termux.shell.command.environment.TermuxShellEnvironment;
-import com.neonide.studio.shared.termux.shell.TermuxShellManager;
+import com.termux.shared.data.IntentUtils;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.termux.TermuxUtils;
+import com.termux.shared.termux.file.TermuxFileUtils;
+import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment;
+import com.termux.shared.termux.shell.TermuxShellManager;
 
 public class SystemEventReceiver extends BroadcastReceiver {
 

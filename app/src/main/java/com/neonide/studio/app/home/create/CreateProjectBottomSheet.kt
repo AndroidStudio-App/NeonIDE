@@ -68,7 +68,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.neonide.studio.R
 import com.neonide.studio.app.SoraEditorActivityK
 import com.neonide.studio.app.home.preferences.WizardPreferences
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import kotlinx.coroutines.launch
 import java.io.File
 

@@ -2,7 +2,7 @@ package com.neonide.studio.app.gradle
 
 import android.content.Context
 import com.neonide.studio.R
-import com.neonide.studio.shared.termux.shell.command.environment.TermuxShellEnvironment
+import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
 import java.io.File
 
 /**

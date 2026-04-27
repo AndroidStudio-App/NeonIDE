@@ -150,6 +150,16 @@
                 <action android:name="${TERMUX_PACKAGE_NAME}.RUN_COMMAND" />
             </intent-filter>
         </service>
+        
+        <!--crash report activity-->
+        <activity
+            android:name="com.termux.shared.activities.ReportActivity"
+            android:documentLaunchMode="intoExisting" />
+
+        <receiver
+            android:name="com.termux.shared.activities.ReportActivity$ReportActivityBroadcastReceiver"
+            android:exported="false" />
+
 
 
         <!-- This (or rather, value 2.1 or higher) is needed to make the Samsung Galaxy S8 mark the

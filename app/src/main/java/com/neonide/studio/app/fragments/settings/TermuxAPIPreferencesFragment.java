@@ -9,7 +9,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.neonide.studio.R;
-import com.neonide.studio.shared.termux.settings.preferences.TermuxAPIAppSharedPreferences;
+import com.termux.shared.termux.settings.preferences.TermuxAPIAppSharedPreferences;
 
 @Keep
 public class TermuxAPIPreferencesFragment extends PreferenceFragmentCompat {

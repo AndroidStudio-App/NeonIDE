@@ -10,21 +10,21 @@ import android.os.Build;
 import android.os.IBinder;
 
 import com.neonide.studio.R;
-import com.neonide.studio.shared.data.DataUtils;
-import com.neonide.studio.shared.data.IntentUtils;
-import com.neonide.studio.shared.termux.plugins.TermuxPluginUtils;
-import com.neonide.studio.shared.termux.file.TermuxFileUtils;
-import com.neonide.studio.shared.file.filesystem.FileType;
-import com.neonide.studio.shared.errors.Errno;
-import com.neonide.studio.shared.errors.Error;
-import com.neonide.studio.shared.termux.TermuxConstants;
-import com.neonide.studio.shared.termux.TermuxConstants.TERMUX_APP.RUN_COMMAND_SERVICE;
-import com.neonide.studio.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_SERVICE;
-import com.neonide.studio.shared.file.FileUtils;
-import com.neonide.studio.shared.logger.Logger;
-import com.neonide.studio.shared.notification.NotificationUtils;
-import com.neonide.studio.shared.shell.command.ExecutionCommand;
-import com.neonide.studio.shared.shell.command.ExecutionCommand.Runner;
+import com.termux.shared.data.DataUtils;
+import com.termux.shared.data.IntentUtils;
+import com.termux.shared.termux.plugins.TermuxPluginUtils;
+import com.termux.shared.termux.file.TermuxFileUtils;
+import com.termux.shared.file.filesystem.FileType;
+import com.termux.shared.errors.Errno;
+import com.termux.shared.errors.Error;
+import com.termux.shared.termux.TermuxConstants;
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.RUN_COMMAND_SERVICE;
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_SERVICE;
+import com.termux.shared.file.FileUtils;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.notification.NotificationUtils;
+import com.termux.shared.shell.command.ExecutionCommand;
+import com.termux.shared.shell.command.ExecutionCommand.Runner;
 
 /**
  * A service that receives {@link RUN_COMMAND_SERVICE#ACTION_RUN_COMMAND} intent from third party apps and

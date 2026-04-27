@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.neonide.studio.app.gradle.AndroidSdkUtils
 import com.neonide.studio.app.gradle.GradleProjectActions
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 /**

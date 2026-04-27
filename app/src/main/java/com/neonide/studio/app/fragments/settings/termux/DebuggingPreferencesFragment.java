@@ -13,8 +13,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.neonide.studio.R;
-import com.neonide.studio.shared.termux.settings.preferences.TermuxAppSharedPreferences;
-import com.neonide.studio.shared.logger.Logger;
+import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences;
+import com.termux.shared.logger.Logger;
 
 @Keep
 public class DebuggingPreferencesFragment extends PreferenceFragmentCompat {
@@ -136,7 +136,7 @@ class DebuggingPreferencesDataStore extends PreferenceDataStore {
                 mPreferences.setIdeFileLoggingEnabled(value);
                 if (value) {
                     // Write a test entry so user can immediately verify the log file was created.
-                    com.neonide.studio.shared.logger.IDEFileLogger.log(mContext, "File logging enabled");
+                    com.termux.shared.logger.IDEFileLogger.log(mContext, "File logging enabled");
                 }
                 break;
             default:

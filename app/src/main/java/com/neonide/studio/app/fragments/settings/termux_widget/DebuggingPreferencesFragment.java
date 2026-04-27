@@ -13,7 +13,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
 import com.neonide.studio.R;
-import com.neonide.studio.shared.termux.settings.preferences.TermuxWidgetAppSharedPreferences;
+import com.termux.shared.termux.settings.preferences.TermuxWidgetAppSharedPreferences;
 
 @Keep
 public class DebuggingPreferencesFragment extends PreferenceFragmentCompat {

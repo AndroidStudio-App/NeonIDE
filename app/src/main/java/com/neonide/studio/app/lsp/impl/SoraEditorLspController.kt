@@ -3,7 +3,7 @@ package com.neonide.studio.app.lsp.impl
 import android.content.Intent
 import android.net.LocalSocket
 import android.net.LocalSocketAddress
-import com.neonide.studio.shared.logger.Logger
+import com.termux.shared.logger.Logger
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.neonide.studio.app.lsp.EditorLspController
@@ -14,7 +14,7 @@ import com.neonide.studio.app.lsp.server.KotlinLanguageServer
 import com.neonide.studio.app.lsp.server.KotlinLanguageServerService
 import com.neonide.studio.app.lsp.server.XMLLanguageServer
 import com.neonide.studio.app.lsp.server.XmlLanguageServerService
-import com.neonide.studio.shared.termux.TermuxConstants
+import com.termux.shared.termux.TermuxConstants
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.lsp.client.connection.CustomConnectProvider
 import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
