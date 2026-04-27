@@ -277,67 +277,67 @@ object AndroidProjectGenerator {
         // (useKts only changes file extension; content is identical enough for both).
         val reposBlock = if (useKts) {
             """
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
+repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
             """.trimIndent()
         } else {
             """
-            repositories {
-                google()
-                mavenCentral()
-                gradlePluginPortal()
-            }
+repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
             """.trimIndent()
         }
 
         val depResBlock = if (useKts) {
             """
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-                google()
-                mavenCentral()
-            }
+repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
             """.trimIndent()
         } else {
             """
-            repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-            repositories {
-                google()
-                mavenCentral()
-            }
+repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
             """.trimIndent()
         }
 
         return if (useKts) {
             """
-            pluginManagement {
-                $reposBlock
-            }
+pluginManagement {
+    $reposBlock
+}
 
-            dependencyResolutionManagement {
-                $depResBlock
-            }
+dependencyResolutionManagement {
+    $depResBlock
+}
 
-            rootProject.name = "$name"
+rootProject.name = "$name"
 
-            include(":app")
+include(":app")
             """.trimIndent() + "\n"
         } else {
             """
-            pluginManagement {
-                $reposBlock
-            }
+pluginManagement {
+    $reposBlock
+}
 
-            dependencyResolutionManagement {
-                $depResBlock
-            }
+dependencyResolutionManagement {
+    $depResBlock
+}
 
-            rootProject.name = "$name"
+rootProject.name = "$name"
 
-            include(":app")
+include(":app")
             """.trimIndent() + "\n"
         }
     }
@@ -517,73 +517,73 @@ object AndroidProjectGenerator {
 
         return if (useKts) {
             """
-            plugins {
-                $plugins
-            }
+plugins {
+    $plugins
+}
 
-            android {
-                namespace = \"$appId\"
-                compileSdk = 35
-                $ndkVersionStr
+android {
+    namespace = "$appId"
+    compileSdk = 35
+    $ndkVersionStr
 
-                defaultConfig {
-                    applicationId = \"$appId\"
-                    minSdk = $minSdk
-                    targetSdk = 35
-                    versionCode = 1
-                    versionName = \"1.0\"
-                }
+    defaultConfig {
+        applicationId = "$appId"
+        minSdk = $minSdk
+        targetSdk = 35
+        versionCode = 1
+        versionName = "1.0"
+     }
 
-                $buildFeatures
+    $buildFeatures
 
-                compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_17
-                    targetCompatibility = JavaVersion.VERSION_17
-                }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+     }
 
-                ${if (useKotlin) "kotlinOptions { jvmTarget = \"17\" }" else ""}
+    ${if (useKotlin) "kotlinOptions { jvmTarget = \"17\" }" else ""}
 
-                $ndkBlock
-            }
+        $ndkBlock
+    }
 
-            dependencies {
-                $depsBlock
-            }
+dependencies {
+    $depsBlock
+}
             """.trimIndent() + "\n"
         } else {
             """
-            plugins {
-                $plugins
-            }
+plugins {
+    $plugins
+}
 
-            android {
-                namespace '$appId'
-                compileSdk 35
-                $ndkVersionStr
+android {
+    namespace '$appId'
+    compileSdk 35
+    $ndkVersionStr
 
-                defaultConfig {
-                    applicationId '$appId'
-                    minSdk $minSdk
-                    targetSdk 35
-                    versionCode 1
-                    versionName '1.0'
-                }
+    defaultConfig {
+        applicationId '$appId'
+        minSdk $minSdk
+        targetSdk 35
+        versionCode 1
+        versionName '1.0'
+    }
 
-                $buildFeatures
+    $buildFeatures
 
-                compileOptions {
-                    sourceCompatibility JavaVersion.VERSION_17
-                    targetCompatibility JavaVersion.VERSION_17
-                }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
-                ${if (useKotlin) "kotlinOptions { jvmTarget = '17' }" else ""}
+    ${if (useKotlin) "kotlinOptions { jvmTarget = '17' }" else ""}
 
-                $ndkBlock
-            }
+        $ndkBlock
+    }
 
-            dependencies {
-                $depsBlock
-            }
+dependencies {
+    $depsBlock
+}
             """.trimIndent() + "\n"
         }
     }
