@@ -207,7 +207,7 @@ class DocumentsProvider : DocumentsProvider() {
             ) ?: "application/octet-stream"
         }
 
-        private fun getDocIdForFile(file: File): String {
+        fun getDocIdForFile(file: File): String {
             val path = file.absolutePath
             val basePath = TermuxConstants.TERMUX_HOME_DIR.absolutePath
             return when {
@@ -217,7 +217,7 @@ class DocumentsProvider : DocumentsProvider() {
             }
         }
 
-        private fun getFileForDocId(docId: String): File {
+        fun getFileForDocId(docId: String): File {
             val file = if (docId == "/") {
                 TermuxConstants.TERMUX_HOME_DIR
             } else {
@@ -229,24 +229,18 @@ class DocumentsProvider : DocumentsProvider() {
     }
 
     private class SearchHelper(
-        private val fileOpsHelper: FileOpsHelper =
-            FileOpsHelper()
+        private val fileOpsHelper: FileOpsHelper = FileOpsHelper()
     ) {
         fun search(
-            query: String, projection: Array<out String>?
+            query: String,
+            projection: Array<out String>?
         ): Cursor {
             val result = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
             TermuxConstants.TERMUX_HOME_DIR.walkTopDown()
                 .filter { it.name.contains(query, ignoreCase = true) }
                 .take(MAX_SEARCH_RESULTS)
                 .forEach {
-                    fileOpsHelper.includeFile(
-                        result,
-                        null,
-                        it,
-                        ::getDocIdForFile,
-                        ::getFileForDocId
-                    )
+                    fileOpsHelper.includeFile(result, null, it)
                 }
             return result
         }
