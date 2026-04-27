@@ -24,6 +24,8 @@ object DevKitSetup {
 
     private const val SETUP_SCRIPT_ASSET_PATH = "setup.sh"
     private const val SETUP_SCRIPT_FILE_NAME = "setup.sh"
+    private const val SETUP_SCRIPT_MODE = 455
+    private const val BUFFER_SIZE = 8192
     
     // Volatile ensures changes are immediately visible across threads
     @Volatile
@@ -48,15 +50,15 @@ object DevKitSetup {
                 copyAssetToFile(activity, SETUP_SCRIPT_ASSET_PATH, newSetupScriptFile)
 
                 try {
-                    Os.chmod(newSetupScriptFile.absolutePath, 455)
-                } catch (_: Throwable) {
+                    Os.chmod(newSetupScriptFile.absolutePath, SETUP_SCRIPT_MODE)
+                } catch (_: android.system.ErrnoException) {
                 }
 
                 runScriptInNewTerminalSession(activity, newSetupScriptFile.absolutePath)
 
                 activity.startActivity(Intent(activity, TermuxActivity::class.java))
 
-            } catch (e: Exception) {
+            } catch (e: android.content.ActivityNotFoundException) {
                 Toast.makeText(
                     activity,
                     "Failed to start setup: ${e.message}",
@@ -113,7 +115,7 @@ object DevKitSetup {
     ) {
         activity.assets.open(assetPath).use { input ->
             FileOutputStream(destinationFile, false).use { output ->
-                val buffer = ByteArray(8192)
+                val buffer = ByteArray(BUFFER_SIZE)
                 while (true) {
                     val read = input.read(buffer)
                     if (read == -1) break

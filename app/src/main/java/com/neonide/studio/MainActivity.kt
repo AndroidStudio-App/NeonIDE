@@ -82,10 +82,10 @@ import com.termux.shared.logger.IDEFileLogger
 
 
 //route for navhost
-@Serializable object permission
-@Serializable object mainlayout
-@Serializable object ideConfig
-@Serializable object gitlayout
+@Serializable object PermissionRoute
+@Serializable object MainLayoutRoute
+@Serializable object IdeConfigRoute
+@Serializable object GitLayoutRoute
 
 class MainActivity : ComponentActivity() {
 
@@ -109,63 +109,71 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                val navController = rememberNavController()
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentWindowInsets = WindowInsets.navigationBars
-                ) { innerPadding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = if (isSetupComplete) mainlayout else permission,
-                        modifier = Modifier.padding(innerPadding)
-                    ) { 
-                        composable<permission> {
-                            PermissionScreen()
-                            
-                        }
-                        composable<mainlayout> {
-                            val showOpenProject = remember { mutableStateOf(false) }
-                            val showCreateProject = remember { mutableStateOf(false) }
-                            
-                            if (showOpenProject.value) {
-                                OpenProjectBottomSheet(
-                                    onDismiss = { showOpenProject.value = false }
-                                )
-                            }
-                            
-                            if (showCreateProject.value) {
-                                CreateProjectBottomSheet(
-                                    onDismiss = { showCreateProject.value = false }
-                                )
-                            }
-                            
-                            MainLayout(
-                                onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
-                                onCreateProject = { showCreateProject.value = true },
-                                onOpenProject = { showOpenProject.value = true },
-                                onCloneRepo = { navController.navigate(gitlayout) },
-                                onOpenTerminal = { startActivity(Intent(this@MainActivity, TermuxActivity::class.java)) },
-                                onOpenSettings = { navController.navigate(ideConfig) },
-                                onOpenAbout = { Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show() }
-                            )
-                        }
-                        composable<ideConfig> {
-                            IdeConfigScreen(onBack = { navController.popBackStack() })
-                        }
-                        composable<gitlayout> {
-                           val viewModel: GitViewModel = viewModel()
-                           val state by viewModel.uiState.collectAsState()
-                           GitLayout(onBack = {navController.popBackStack()}, state = state, viewModel = viewModel)
-                       }
-                    }
+                mainNavigation()
+            }
+        }
+    }
+
+    @Composable
+    private fun mainNavigation() {
+        val navController = rememberNavController()
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.background,
+            contentWindowInsets = WindowInsets.navigationBars
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = if (isSetupComplete) MainLayoutRoute else PermissionRoute,
+                modifier = Modifier.padding(innerPadding)
+            ) { 
+                composable<PermissionRoute> {
+                    permissionScreen()
                 }
+                composable<MainLayoutRoute> {
+                    val showOpenProject = remember { mutableStateOf(false) }
+                    val showCreateProject = remember { mutableStateOf(false) }
+                    
+                    if (showOpenProject.value) {
+                        OpenProjectBottomSheet(
+                            onDismiss = { showOpenProject.value = false }
+                        )
+                    }
+                    
+                    if (showCreateProject.value) {
+                        CreateProjectBottomSheet(
+                            onDismiss = { showCreateProject.value = false }
+                        )
+                    }
+                    
+                    MainLayout(
+                        onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
+                        onCreateProject = { showCreateProject.value = true },
+                        onOpenProject = { showOpenProject.value = true },
+                        onCloneRepo = { navController.navigate(GitLayoutRoute) },
+                        onOpenTerminal = {
+                            startActivity(Intent(this@MainActivity, TermuxActivity::class.java))
+                        },
+                        onOpenSettings = { navController.navigate(IdeConfigRoute) },
+                        onOpenAbout = {
+                            Toast.makeText(this@MainActivity, "NeonIDE v1.0", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+                composable<IdeConfigRoute> {
+                    ideConfigScreen(onBack = { navController.popBackStack() })
+                }
+                composable<GitLayoutRoute> {
+                   val viewModel: GitViewModel = viewModel()
+                   val state by viewModel.uiState.collectAsState()
+                   GitLayout(onBack = {navController.popBackStack()}, state = state, viewModel = viewModel)
+               }
             }
         }
     }
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun IdeConfigScreen(onBack: () -> Unit) {
+    private fun ideConfigScreen(onBack: () -> Unit) {
         val context = LocalContext.current
         val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
         var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
@@ -229,80 +237,85 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun PermissionScreen() {
-        val context = LocalContext.current
-        val allGranted = isFilesGranted && isInstallGranted && isNotificationsGranted
-
+    private fun permissionScreen() {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Card(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
-                Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text("Permissions Required To Continue", fontSize = 15.sp, fontWeight = FontWeight.Bold)
-
-                    PermissionItem(
-                        icon = Icons.Default.Storage,
-                        title = "All Files Access",
-                        description = "Required to manage files on storage",
-                        isGranted = isFilesGranted
-                    ) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                                data = Uri.parse("package:${context.packageName}")
-                            }
-                            context.startActivity(intent)
-                        }
-                    }
-
-                    PermissionItem(
-                        icon = Icons.Default.InstallMobile,
-                        title = "Install Unknown Apps",
-                        description = "Required to install Build APK file",
-                        isGranted = isInstallGranted
-                    ) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                                data = Uri.parse("package:${context.packageName}")
-                            }
-                            context.startActivity(intent)
-                        }
-                    }
-
-                    PermissionItem(
-                        icon = Icons.Default.Notifications,
-                        title = "Notifications",
-                        description = "Receive Notifications from the app",
-                        isGranted = isNotificationsGranted
-                    ) {
-                        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                            }
-                        } else {
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                data = Uri.parse("package:${context.packageName}")
-                            }
-                        }
-                        context.startActivity(intent)
-                    }
-
-                    Button(
-                        onClick = { isSetupComplete = true },
-                        enabled = allGranted, // continue when enabled all
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Continue", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    }
-                }
+                permissionContent()
             }
         }
     }
 
     @Composable
-    private fun PermissionItem(
+    private fun permissionContent() {
+        val context = LocalContext.current
+        val allGranted = isFilesGranted && isInstallGranted && isNotificationsGranted
+
+        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text("Permissions Required To Continue", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+
+            permissionItem(
+                icon = Icons.Default.Storage,
+                title = "All Files Access",
+                description = "Required to manage files on storage",
+                isGranted = isFilesGranted
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                    }
+                    context.startActivity(intent)
+                }
+            }
+
+            permissionItem(
+                icon = Icons.Default.InstallMobile,
+                title = "Install Unknown Apps",
+                description = "Required to install Build APK file",
+                isGranted = isInstallGranted
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                    }
+                    context.startActivity(intent)
+                }
+            }
+
+            permissionItem(
+                icon = Icons.Default.Notifications,
+                title = "Notifications",
+                description = "Receive Notifications from the app",
+                isGranted = isNotificationsGranted
+            ) {
+                val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                    }
+                } else {
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                    }
+                }
+                context.startActivity(intent)
+            }
+
+            Button(
+                onClick = { isSetupComplete = true },
+                enabled = allGranted,
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text("Continue", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            }
+        }
+    }
+
+    @Composable
+    private fun permissionItem(
         icon: ImageVector,
         title: String,
         description: String,
