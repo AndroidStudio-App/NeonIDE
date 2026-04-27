@@ -195,6 +195,14 @@ class GradleService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        currentHandle?.cancel()
+        currentJob?.cancel()
+        GradleBuildStatus.isRunning = false
+        stopSelf()
+    }
+
     override fun onDestroy() {
         serviceScope.cancel()
         super.onDestroy()
