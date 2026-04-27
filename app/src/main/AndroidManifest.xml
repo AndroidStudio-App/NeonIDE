@@ -116,6 +116,12 @@
         </provider>
 
         <service
+            android:name=".app.gradle.GradleService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            tools:ignore="ForegroundServiceType" />
+
+        <service
             android:name=".app.TermuxService"
             android:exported="false" />
             

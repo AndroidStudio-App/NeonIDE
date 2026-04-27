@@ -113,8 +113,12 @@ class SoraEditorActivityK : AppCompatActivity() {
 
     private val uiScope = MainScope()
 
-    private var gradleJob: Job? = null
-    private var gradleHandle: com.neonide.studio.app.gradle.GradleRunner.Handle? = null
+    private val gradleStatusListener: (Boolean) -> Unit = { isRunning ->
+        gradleRunning = isRunning
+        runOnUiThread {
+            updateBtnState()
+        }
+    }
     @Volatile private var gradleRunning: Boolean = false
 
     private val lspController by lazy { com.neonide.studio.app.lsp.EditorLspControllerFactory.createOrNoop(this) }
@@ -499,15 +503,26 @@ class SoraEditorActivityK : AppCompatActivity() {
         }
 
         // Allow launching the editor with a specific project directory
-        projectRoot = intent.getStringExtra(EXTRA_PROJECT_DIR)?.let { File(it) }
+        projectRoot = savedInstanceState?.getString("project_root_path")?.let { File(it) }
+            ?: intent.getStringExtra(EXTRA_PROJECT_DIR)?.let { File(it) }
 
         // Load themes/grammars
         setupTextmate()
         setupMonarch()
         ensureTextmateTheme()
 
-        // Load sample (no LSP) - use Java sample to demonstrate Tree-sitter integration
-        openAssetsFile("samples/sample.java")
+        // Restore last file or load sample
+        val restoredFilePath = savedInstanceState?.getString("current_file_path")
+        val restoredFile = restoredFilePath?.let { File(it) }
+        if (restoredFile != null && restoredFile.exists()) {
+            openFileInEditor(restoredFile, restoredFile.name)
+            val line = savedInstanceState.getInt("cursor_line", 0)
+            val column = savedInstanceState.getInt("cursor_column", 0)
+            editor.setSelection(line, column)
+        } else {
+            // Load sample (no LSP) - use Java sample to demonstrate Tree-sitter integration
+            openAssetsFile("samples/sample.java")
+        }
 
         // Prefill IDE logs tab with crash log (if any)
         runCatching {
@@ -525,6 +540,18 @@ class SoraEditorActivityK : AppCompatActivity() {
         // and shown via CodeEditor diagnostics tooltip.
 
         // LSP tree-sitter libs are heavy; do NOT load tree-sitter native libs automatically.
+        com.neonide.studio.app.gradle.GradleBuildStatus.addListener(gradleStatusListener)
+        gradleRunning = com.neonide.studio.app.gradle.GradleBuildStatus.isRunning
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        currentFile?.let { outState.putString("current_file_path", it.absolutePath) }
+        projectRoot?.let { outState.putString("project_root_path", it.absolutePath) }
+        if (this::editor.isInitialized) {
+            outState.putInt("cursor_line", editor.cursor.leftLine)
+            outState.putInt("cursor_column", editor.cursor.leftColumn)
+        }
     }
 
     override fun onBackPressed() {
@@ -553,8 +580,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         // Stop pending XML diagnostics update
         runCatching { editor.removeCallbacks(xmlDiagnosticsRunnable) }
 
-        runCatching { gradleHandle?.cancel() }
-        runCatching { gradleJob?.cancel() }
+        com.neonide.studio.app.gradle.GradleBuildStatus.removeListener(gradleStatusListener)
         runCatching { uiScope.cancel() }
         runCatching { lspController.dispose() }
         editor.release()
@@ -778,8 +804,7 @@ class SoraEditorActivityK : AppCompatActivity() {
 
         // Cancel if already running
         if (gradleRunning) {
-            android.widget.Toast.makeText(this, getString(R.string.acs_cancel_build), android.widget.Toast.LENGTH_SHORT).show()
-            gradleHandle?.cancel()
+            com.neonide.studio.app.gradle.GradleService.stopBuild(this)
             return
         }
 
@@ -814,7 +839,9 @@ class SoraEditorActivityK : AppCompatActivity() {
         }
 
         if (gradleRunning) {
-            gradleHandle?.cancel()
+            com.neonide.studio.app.gradle.GradleService.stopBuild(this)
+            gradleRunning = false
+            updateBtnState()
             return
         }
 
@@ -868,144 +895,20 @@ class SoraEditorActivityK : AppCompatActivity() {
             status.visibility = View.VISIBLE
         }
 
-        // Store output so user can inspect build/sync logs later
-        val logFile = File(filesDir, GRADLE_LOG_FILE)
-        runCatching { logFile.writeText("") }
-
         // IMPORTANT: clear live buffer so the Build Output tab shows only the new run.
         BuildOutputBuffer.clear()
         // Also clear diagnostics on new run.
         bottomSheetVm.setDiagnostics(emptyList())
 
-        gradleJob?.cancel()
-        gradleJob = uiScope.launch(Dispatchers.Main) {
-            val handle = withContext(Dispatchers.IO) {
-                try {
-                    // Make Gradle execution environment match what users typically set in Termux.
-                    // This avoids "SDK location not found" when running from the IDE UI.
-                    val baseEnv = com.neonide.studio.app.gradle.GradleProjectActions.getGradleEnvironment(this@SoraEditorActivityK)
-                    val sdk = com.neonide.studio.app.gradle.AndroidSdkUtils.configureForProject(
-                        context = this@SoraEditorActivityK,
-                        projectDir = projectDir,
-                        baseEnv = baseEnv,
-                    )
-
-                    if (sdk == null) {
-                        val msg = getString(R.string.acs_android_sdk_missing)
-                        BuildOutputBuffer.appendLine(msg)
-                        bottomSheetVm.setDiagnostics(listOf(msg))
-                    }
-
-                    val envOverrides = sdk?.env ?: emptyMap()
-
-                    val finalArgs = if (sdk?.aapt2Path != null) {
-                        val override = "-Pandroid.aapt2FromMavenOverride=${sdk.aapt2Path}"
-                        args.toMutableList().apply { 
-                            // Insert before tasks, usually flags first.
-                            add(0, override) 
-                        }
-                    } else args
-
-                    com.neonide.studio.app.gradle.GradleRunner.start(
-                        context = this@SoraEditorActivityK,
-                        projectDir = projectDir,
-                        args = finalArgs,
-                        envOverrides = envOverrides,
-                    ) { line ->
-                        runCatching { logFile.appendText(line + "\n") }
-                        BuildOutputBuffer.appendLine(line)
-                    }
-                } catch (t: Throwable) {
-                    // Don't crash the UI thread
-                    runCatching { logFile.appendText("ERROR: ${t.message}\n") }
-                    BuildOutputBuffer.appendLine("ERROR: ${t.message}")
-                    null
-                }
-            }
-
-            if (handle == null) {
-                gradleRunning = false
-                gradleHandle = null
-                updateBtnState()
-                android.widget.Toast.makeText(
-                    this@SoraEditorActivityK,
-                    "Gradle start failed. See build log.",
-                    android.widget.Toast.LENGTH_LONG,
-                ).show()
-                return@launch
-            }
-
-            gradleHandle = handle
-
-            val result = withContext(Dispatchers.IO) { handle.waitFor() }
-
-            gradleRunning = false
-            gradleHandle = null
-            updateBtnState()
-
-            if (result.wasCancelled) {
-                // Keep status visible with a cancelled state.
-                runCatching {
-                    val sheet = findViewById<View>(R.id.acs_bottom_sheet)
-                    val status = sheet.findViewById<android.widget.TextView>(R.id.acs_bottom_sheet_status)
-                    status.text = "$actionLabel: ${getString(R.string.acs_status_cancelled)}"
-                    status.visibility = View.VISIBLE
-                }
-                android.widget.Toast.makeText(this@SoraEditorActivityK, getString(R.string.acs_cancel_build), android.widget.Toast.LENGTH_SHORT).show()
-                return@launch
-            }
-
-            if (!result.isSuccessful) {
-                // Basic diagnostics: extract common Gradle/AGP errors from build output snapshot.
-                runCatching {
-                    val diags = com.neonide.studio.app.gradle.GradleDiagnostics.extract(BuildOutputBuffer.getSnapshot())
-                    bottomSheetVm.setDiagnostics(diags)
-                }
-
-                // Update status label
-                runCatching {
-                    val sheet = findViewById<View>(R.id.acs_bottom_sheet)
-                    val status = sheet.findViewById<android.widget.TextView>(R.id.acs_bottom_sheet_status)
-                    status.text = "$actionLabel: ${getString(R.string.acs_status_failed)}"
-                    status.visibility = View.VISIBLE
-                }
-
-                val toastRes = if (kind == GradleActionKind.SYNC) R.string.acs_sync_failed else R.string.acs_build_failed
-                android.widget.Toast.makeText(this@SoraEditorActivityK, getString(toastRes), android.widget.Toast.LENGTH_LONG).show()
-                return@launch
-            }
-
-            // Successful.
-            runCatching {
-                val sheet = findViewById<View>(R.id.acs_bottom_sheet)
-                val status = sheet.findViewById<android.widget.TextView>(R.id.acs_bottom_sheet_status)
-                status.text = "$actionLabel: ${getString(R.string.acs_status_success)}"
-                status.visibility = View.VISIBLE
-            }
-
-            val toastRes = if (kind == GradleActionKind.SYNC) R.string.acs_sync_finished else R.string.acs_build_finished
-            android.widget.Toast.makeText(this@SoraEditorActivityK, getString(toastRes), android.widget.Toast.LENGTH_SHORT).show()
-
-            if (installApkOnSuccess) {
-                // Try standard AGP output path first: app/build/outputs/apk/debug/app-debug.apk
-                val debugApk = File(projectDir, "app/build/outputs/apk/debug/app-debug.apk")
-                val apk = if (debugApk.exists()) {
-                    debugApk
-                } else {
-                    // Fallback: search recursively in app/build/outputs/apk/
-                    val apkDir = File(projectDir, "app/build/outputs/apk")
-                    val apks = apkDir.walkTopDown().filter { it.isFile && it.extension == "apk" }.toList()
-                    // Prefer one with 'debug' in name/path, otherwise take first found
-                    apks.firstOrNull { it.path.contains("debug", ignoreCase = true) } ?: apks.firstOrNull()
-                }
-
-                if (apk != null) {
-                    runCatching { com.neonide.studio.app.gradle.ApkInstallUtils.installApk(this@SoraEditorActivityK, apk) }
-                } else {
-                    android.widget.Toast.makeText(this@SoraEditorActivityK, "APK not found", android.widget.Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
+        // Start build in foreground service
+        com.neonide.studio.app.gradle.GradleService.startBuild(
+            context = this,
+            projectDir = projectDir,
+            args = args,
+            actionLabel = actionLabel,
+            installOnSuccess = installApkOnSuccess,
+            logFilePath = File(filesDir, GRADLE_LOG_FILE).absolutePath
+        )
     }
 
     private fun updatePositionText() {
