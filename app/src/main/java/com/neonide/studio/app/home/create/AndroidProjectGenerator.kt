@@ -442,38 +442,43 @@ include(":app")
         val enableCompose = templateKind == ProjectTemplate.Kind.COMPOSE_ACTIVITY
 
         val deps = mutableListOf<String>()
-        if (useKotlin) deps += "implementation 'androidx.core:core-ktx:1.13.1'" else deps += "implementation 'androidx.core:core:1.13.1'"
-        if (addAndroidX) deps += "implementation 'androidx.appcompat:appcompat:1.6.1'"
-        deps += "implementation 'com.google.android.material:material:1.12.0'"
+
+        fun imp(notation: String): String {
+            return if (useKts) "implementation(\"$notation\")" else "implementation '$notation'"
+        }
+
+        if (useKotlin) deps += imp("androidx.core:core-ktx:1.13.1") else deps += imp("androidx.core:core:1.13.1")
+        if (addAndroidX) deps += imp("androidx.appcompat:appcompat:1.6.1")
+        deps += imp("com.google.android.material:material:1.12.0")
 
         when (templateKind) {
             ProjectTemplate.Kind.BOTTOM_NAV_ACTIVITY,
             ProjectTemplate.Kind.NAV_DRAWER_ACTIVITY -> {
-                deps += "implementation 'androidx.navigation:navigation-fragment-ktx:2.8.0'"
-                deps += "implementation 'androidx.navigation:navigation-ui-ktx:2.8.0'"
-                deps += "implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.4'"
-                deps += "implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4'"
+                deps += imp("androidx.navigation:navigation-fragment-ktx:2.8.0")
+                deps += imp("androidx.navigation:navigation-ui-ktx:2.8.0")
+                deps += imp("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
+                deps += imp("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
             }
 
             ProjectTemplate.Kind.TABBED_ACTIVITY -> {
-                deps += "implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.4'"
-                deps += "implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4'"
-                deps += "implementation 'androidx.viewpager:viewpager:1.0.0'"
+                deps += imp("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
+                deps += imp("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.4")
+                deps += imp("androidx.viewpager:viewpager:1.0.0")
             }
 
             ProjectTemplate.Kind.EMPTY_ACTIVITY,
             ProjectTemplate.Kind.BASIC_ACTIVITY,
             ProjectTemplate.Kind.CPP_ACTIVITY -> {
-                deps += "implementation 'androidx.constraintlayout:constraintlayout:2.1.4'"
+                deps += imp("androidx.constraintlayout:constraintlayout:2.1.4")
             }
 
             else -> {}
         }
 
         if (enableCompose) {
-            deps += "implementation 'androidx.activity:activity-compose:1.9.2'"
-            deps += "implementation 'androidx.compose.material3:material3:1.3.1'"
-            deps += "implementation 'androidx.compose.ui:ui-tooling-preview:1.7.3'"
+            deps += imp("androidx.activity:activity-compose:1.9.2")
+            deps += imp("androidx.compose.material3:material3:1.3.1")
+            deps += imp("androidx.compose.ui:ui-tooling-preview:1.7.3")
         }
 
         // Plugins (use version catalog aliases to match ACS style)
@@ -481,24 +486,24 @@ include(":app")
             buildString {
                 appendLine("alias(libs.plugins.android.application)")
                 if (useKotlin) {
-                    appendLine("alias(libs.plugins.kotlin.android)")
-                    if (enableCompose) appendLine("alias(libs.plugins.kotlin.compose)")
+                    appendLine("    alias(libs.plugins.kotlin.android)")
+                    if (enableCompose) appendLine("    alias(libs.plugins.kotlin.compose)")
                 }
             }.trimEnd()
         } else {
             buildString {
                 appendLine("alias(libs.plugins.android.application)")
                 if (useKotlin) {
-                    appendLine("alias(libs.plugins.kotlin.android)")
-                    if (enableCompose) appendLine("alias(libs.plugins.kotlin.compose)")
+                    appendLine("    alias(libs.plugins.kotlin.android)")
+                    if (enableCompose) appendLine("    alias(libs.plugins.kotlin.compose)")
                 }
             }.trimEnd()
         }
 
         val buildFeatures = if (enableCompose) {
-            """buildFeatures { compose true }""".trimIndent()
+            if (useKts) "buildFeatures { compose = true }" else "buildFeatures { compose true }"
         } else {
-            "buildFeatures { viewBinding true }"
+            if (useKts) "buildFeatures { viewBinding = true }" else "buildFeatures { viewBinding true }"
         }
 
         val ndkVersionStr = if (enableNdkBuild) {
@@ -544,7 +549,7 @@ android {
     ${if (useKotlin) "kotlinOptions { jvmTarget = \"17\" }" else ""}
 
         $ndkBlock
-    }
+}
 
 dependencies {
     $depsBlock
@@ -579,7 +584,7 @@ android {
     ${if (useKotlin) "kotlinOptions { jvmTarget = '17' }" else ""}
 
         $ndkBlock
-    }
+}
 
 dependencies {
     $depsBlock
