@@ -9,9 +9,13 @@ import androidx.annotation.Nullable;
 
 import com.termux.shared.termux.TermuxConstants;
 import com.termux.shared.termux.settings.preferences.TermuxPreferenceConstants;
+import android.os.Bundle;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,7 +35,8 @@ public final class IDEFileLogger {
     private static final long MAX_LOG_BYTES = 2L * 1024L * 1024L; // 2MB
 
     private static final String LOG_FILE_NAME = "ide.log";
-
+    
+    
     private IDEFileLogger() {
     }
 
@@ -53,6 +58,18 @@ public final class IDEFileLogger {
         File docs = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
         File dir = new File(docs, "NeonIDE/logs");
         return new File(dir, LOG_FILE_NAME);
+        
+    }
+
+    /**
+     * Deletes the existing log file if it exists.
+     */
+    public static void clearLogFile() {
+        File logFile = getLogFile();
+        if (logFile != null && logFile.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            logFile.delete();
+        }
     }
 
     public static void log(@NonNull Context context, @NonNull String line) {

@@ -96,6 +96,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        IDEFileLogger.clearLogFile()
         enableEdgeToEdge()
         window.isNavigationBarContrastEnforced = false
         

@@ -6,6 +6,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import com.termux.shared.errors.Error;
+import com.termux.shared.logger.IDEFileLogger;
 import com.termux.shared.logger.Logger;
 import com.termux.shared.termux.TermuxBootstrap;
 import com.termux.shared.termux.TermuxConstants;
@@ -47,10 +48,14 @@ public class TermuxApplication extends Application {
         // Set crash handler for the app
         TermuxCrashUtils.setDefaultCrashHandler(this);
 
+        // Initialize Logger with context
+        Logger.setApplicationContext(this);
+
         // Set log config for the app
         setLogConfig(context);
 
         Logger.logInfo(LOG_TAG,"Starting Application");
+
 
         // Set TermuxBootstrap.TERMUX_APP_PACKAGE_MANAGER and TermuxBootstrap.TERMUX_APP_PACKAGE_VARIANT
         //TermuxBootstrap.setTermuxPackageManagerAndVariant(BuildConfig.TERMUX_PACKAGE_VARIANT);
@@ -82,6 +87,9 @@ public class TermuxApplication extends Application {
         // Load the log level from shared preferences and set it to the {@link Logger.CURRENT_LOG_LEVEL}
         TermuxAppSharedPreferences preferences = TermuxAppSharedPreferences.build(context);
         if (preferences == null) return;
-        preferences.setLogLevel(null, preferences.getLogLevel());
+        
+        // Pass context to properly initialize the log level in the Logger static instance
+        int logLevel = preferences.getLogLevel();
+        Logger.setLogLevel(context, logLevel);
     }
 }

@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.termux.shared.logger.IDEFileLogger;
+
 import androidx.annotation.NonNull;
 
 import com.termux.shared.R;
@@ -53,6 +55,12 @@ public class Logger {
 
 
 
+    private static Context sApplicationContext;
+
+    public static void setApplicationContext(Context context) {
+        sApplicationContext = context.getApplicationContext();
+    }
+
     public static void logMessage(int logPriority, String tag, String message) {
         if (logPriority == Log.ERROR && CURRENT_LOG_LEVEL >= LOG_LEVEL_NORMAL)
             Log.e(getFullTag(tag), message);
@@ -64,6 +72,10 @@ public class Logger {
             Log.d(getFullTag(tag), message);
         else if (logPriority == Log.VERBOSE && CURRENT_LOG_LEVEL >= LOG_LEVEL_VERBOSE)
             Log.v(getFullTag(tag), message);
+
+        if (sApplicationContext != null) {
+            IDEFileLogger.log(sApplicationContext, getFullTag(tag) + ": " + message);
+        }
     }
 
     public static void logExtendedMessage(int logLevel, String tag, String message) {
@@ -465,9 +477,6 @@ public class Logger {
             CURRENT_LOG_LEVEL = logLevel;
         else
             CURRENT_LOG_LEVEL = DEFAULT_LOG_LEVEL;
-
-        if (context != null)
-            showToast(context, context.getString(R.string.log_level_value, getLogLevelLabel(context, CURRENT_LOG_LEVEL, false)),true);
 
         return CURRENT_LOG_LEVEL;
     }
