@@ -99,6 +99,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.tm4e.core.registry.IThemeSource
+import com.neonide.studio.app.gradle.GradleService
+import com.neonide.studio.app.gradle.GradleBuildStatus
+import com.neonide.studio.app.gradle.GradleProjectActions
+import com.neonide.studio.app.gradle.ApkInstallUtils
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -540,8 +544,8 @@ class SoraEditorActivityK : AppCompatActivity() {
         // and shown via CodeEditor diagnostics tooltip.
 
         // LSP tree-sitter libs are heavy; do NOT load tree-sitter native libs automatically.
-        com.neonide.studio.app.gradle.GradleBuildStatus.addListener(gradleStatusListener)
-        gradleRunning = com.neonide.studio.app.gradle.GradleBuildStatus.isRunning
+        GradleBuildStatus.addListener(gradleStatusListener)
+        gradleRunning = GradleBuildStatus.isRunning
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -580,7 +584,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         // Stop pending XML diagnostics update
         runCatching { editor.removeCallbacks(xmlDiagnosticsRunnable) }
 
-        com.neonide.studio.app.gradle.GradleBuildStatus.removeListener(gradleStatusListener)
+        GradleBuildStatus.removeListener(gradleStatusListener)
         runCatching { uiScope.cancel() }
         runCatching { lspController.dispose() }
         editor.release()
@@ -804,24 +808,24 @@ class SoraEditorActivityK : AppCompatActivity() {
 
         // Cancel if already running
         if (gradleRunning) {
-            com.neonide.studio.app.gradle.GradleService.stopBuild(this)
+            GradleService.stopBuild(this)
             return
         }
 
         // Ensure wrapper is present (repair missing wrapper jar if possible)
-        val wrapperStatus = com.neonide.studio.app.gradle.GradleProjectActions.ensureWrapperPresent(this, root)
-        com.neonide.studio.app.gradle.GradleProjectActions.wrapperStatusMessage(this, wrapperStatus)?.let { msg ->
+        val wrapperStatus = GradleProjectActions.ensureWrapperPresent(this, root)
+        GradleProjectActions.wrapperStatusMessage(this, wrapperStatus)?.let { msg ->
             android.widget.Toast.makeText(this, msg, android.widget.Toast.LENGTH_LONG).show()
         }
-        if (wrapperStatus == com.neonide.studio.app.gradle.GradleProjectActions.WrapperStatus.MissingScriptOrProps ||
-            wrapperStatus == com.neonide.studio.app.gradle.GradleProjectActions.WrapperStatus.RepairFailed
+        if (wrapperStatus == GradleProjectActions.WrapperStatus.MissingScriptOrProps ||
+            wrapperStatus == GradleProjectActions.WrapperStatus.RepairFailed
         ) {
             return
         }
 
         // Run "sync" plan
         android.widget.Toast.makeText(this, getString(R.string.acs_sync_started), android.widget.Toast.LENGTH_SHORT).show()
-        val plan = com.neonide.studio.app.gradle.GradleProjectActions.createSyncPlan()
+        val plan = GradleProjectActions.createSyncPlan()
         runGradle(
             projectDir = root,
             args = plan.args,
@@ -839,26 +843,26 @@ class SoraEditorActivityK : AppCompatActivity() {
         }
 
         if (gradleRunning) {
-            com.neonide.studio.app.gradle.GradleService.stopBuild(this)
+            GradleService.stopBuild(this)
             gradleRunning = false
             updateBtnState()
             return
         }
 
         // Ensure wrapper is present (repair missing wrapper jar if possible)
-        val wrapperStatus = com.neonide.studio.app.gradle.GradleProjectActions.ensureWrapperPresent(this, root)
-        com.neonide.studio.app.gradle.GradleProjectActions.wrapperStatusMessage(this, wrapperStatus)?.let { msg ->
+        val wrapperStatus = GradleProjectActions.ensureWrapperPresent(this, root)
+        GradleProjectActions.wrapperStatusMessage(this, wrapperStatus)?.let { msg ->
             android.widget.Toast.makeText(this, msg, android.widget.Toast.LENGTH_LONG).show()
         }
-        if (wrapperStatus == com.neonide.studio.app.gradle.GradleProjectActions.WrapperStatus.MissingScriptOrProps ||
-            wrapperStatus == com.neonide.studio.app.gradle.GradleProjectActions.WrapperStatus.RepairFailed
+        if (wrapperStatus == GradleProjectActions.WrapperStatus.MissingScriptOrProps ||
+            wrapperStatus == GradleProjectActions.WrapperStatus.RepairFailed
         ) {
             return
         }
 
         android.widget.Toast.makeText(this, getString(R.string.acs_build_started), android.widget.Toast.LENGTH_SHORT).show()
 
-        val plan = com.neonide.studio.app.gradle.GradleProjectActions.createQuickRunPlan(root)
+        val plan = GradleProjectActions.createQuickRunPlan(root)
         runGradle(
             projectDir = root,
             args = plan.args,
@@ -901,7 +905,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         bottomSheetVm.setDiagnostics(emptyList())
 
         // Start build in foreground service
-        com.neonide.studio.app.gradle.GradleService.startBuild(
+        GradleService.startBuild(
             context = this,
             projectDir = projectDir,
             args = args,
@@ -1446,7 +1450,7 @@ class SoraEditorActivityK : AppCompatActivity() {
                     }
                 } else {
                     if (item.name.endsWith(".apk", ignoreCase = true)) {
-                        com.neonide.studio.app.gradle.ApkInstallUtils.installApk(this@SoraEditorActivityK, File(item.path))
+                        ApkInstallUtils.installApk(this@SoraEditorActivityK, File(item.path))
                     } else {
                         openFileInEditor(File(item.path), DisplayNameUtils.safeForUi(item.name))
                         drawerLayout.closeDrawer(GravityCompat.START)
