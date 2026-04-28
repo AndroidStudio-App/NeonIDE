@@ -1,3 +1,0 @@
-[submodule "app/src/main/cpp/oniguruma/oniguruma"]
-	path = app/src/main/cpp/oniguruma/oniguruma
-	url = https://github.com/kkos/oniguruma.git
