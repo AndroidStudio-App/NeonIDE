@@ -1,10 +1,12 @@
 import java.math.BigInteger
 import java.security.MessageDigest
+import de.undercouch.gradle.tasks.download.Download
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
     alias(libs.plugins.kotlin.serialization)
+    id("de.undercouch.download") version "5.7.0"
 }
 
 android {
@@ -185,7 +187,14 @@ val bootstrapStampFile = file("$projectDir/src/main/cpp/generated/bootstrap-stam
 val bootstrapZipSha256 = if (bootstrapZipFile.exists()) sha256Of(bootstrapZipFile) else "missing"
 val bootstrapZipSize = if (bootstrapZipFile.exists()) bootstrapZipFile.length() else -1L
 
+tasks.register<Download>("downloadFile") {
+    src("https://github.com/AndroidStudio-App/NeonIDE/releases/download/bootstrap/bootstrap-aarch64.zip")
+    dest(bootstrapZipFile)
+    overwrite(false)
+}
+
 tasks.register("generateBootstrapStamp") {
+    dependsOn("downloadFile")
     inputs.file(bootstrapZipFile)
     outputs.file(bootstrapStampFile)
     doLast {
@@ -211,6 +220,7 @@ tasks.register("generateBootstrapStamp") {
 }
 
 tasks.register("cleanNativeIfBootstrapChanged") {
+    dependsOn("downloadFile")
     val stateFile = file("${layout.buildDirectory.asFile.get()}/bootstrap-embedded.sha256")
     inputs.file(bootstrapZipFile)
     outputs.file(stateFile)
