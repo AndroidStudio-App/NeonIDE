@@ -3,10 +3,10 @@ package com.neonide.studio.app.home.open
 import android.content.Context
 import android.content.Intent
 import android.os.Environment
-import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -75,6 +75,8 @@ import java.util.Locale
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+import com.neonide.studio.utils.FileUtil
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun OpenProjectBottomSheet(
@@ -88,10 +90,6 @@ fun OpenProjectBottomSheet(
     var searchQuery by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
 
-    // Constants from original Fragment
-    val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
-    val TERMUX_DOCS_AUTHORITY = "com.neonide.studio.documents"
-
     // Load projects initially
     LaunchedEffect(Unit) {
         projects = withContext(Dispatchers.IO) { loadProjectsInternal(context) }
@@ -101,33 +99,7 @@ fun OpenProjectBottomSheet(
     val startForResult = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data ?: return@rememberLauncherForActivityResult
         
-        val pickedDir = DocumentFile.fromTreeUri(context, uri)
-        if (pickedDir == null || !pickedDir.exists()) {
-            Toast.makeText(context, R.string.acs_err_invalid_picked_dir, Toast.LENGTH_SHORT).show()
-            return@rememberLauncherForActivityResult
-        }
-
-        val treeDocId = DocumentsContract.getTreeDocumentId(uri)
-        val docUri = DocumentsContract.buildDocumentUriUsingTree(uri, treeDocId)
-        val docId = DocumentsContract.getDocumentId(docUri)
-        val authority = docUri.authority
-
-        val dir: File? = when (authority) {
-            TERMUX_DOCS_AUTHORITY -> File(docId)
-            ANDROID_DOCS_AUTHORITY -> {
-                val split = docId.split(':')
-                if (split.size < 2 || split[0] != "primary") {
-                    Toast.makeText(context, R.string.acs_err_select_primary_storage, Toast.LENGTH_LONG).show()
-                    null
-                } else {
-                    File(Environment.getExternalStorageDirectory(), split[1])
-                }
-            }
-            else -> {
-                Toast.makeText(context, context.getString(R.string.acs_err_authority_not_allowed, authority), Toast.LENGTH_LONG).show()
-                null
-            }
-        }
+        val dir = FileUtil.resolveUriToFile(uri)
 
         if (dir != null) {
             if (!dir.exists() || !dir.isDirectory) {
@@ -139,6 +111,8 @@ fun OpenProjectBottomSheet(
                 }
                 openProject(context, dir)
             }
+        } else {
+            Toast.makeText(context, R.string.acs_err_invalid_picked_dir, Toast.LENGTH_SHORT).show()
         }
     }
 

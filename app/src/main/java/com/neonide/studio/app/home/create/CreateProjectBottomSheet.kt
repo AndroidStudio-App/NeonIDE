@@ -72,6 +72,8 @@ import com.termux.shared.termux.TermuxConstants
 import kotlinx.coroutines.launch
 import java.io.File
 
+import com.neonide.studio.utils.FileUtil
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateProjectBottomSheet(
@@ -99,29 +101,12 @@ fun CreateProjectBottomSheet(
 
     val templates = remember { ProjectTemplateRegistry.all() }
 
-    val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
-    val TERMUX_DOCS_AUTHORITY = "com.neonide.studio.documents"
-
     val folderPickerLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data ?: return@rememberLauncherForActivityResult
-        val docId = DocumentsContract.getTreeDocumentId(uri)
-        val docUri = DocumentsContract.buildDocumentUriUsingTree(uri, docId)
-        val authority = docUri.authority
-        val documentId = DocumentsContract.getDocumentId(docUri)
+        val dir = FileUtil.resolveUriToFile(uri)
 
-        val dirPath: String? = when (authority) {
-            TERMUX_DOCS_AUTHORITY -> documentId
-            ANDROID_DOCS_AUTHORITY -> {
-                val split = documentId.split(':')
-                if (split.size >= 2 && split[0] == "primary") {
-                    File(Environment.getExternalStorageDirectory(), split[1]).absolutePath
-                } else null
-            }
-            else -> null
-        }
-
-        if (dirPath != null) {
-            saveLocation = dirPath
+        if (dir != null) {
+            saveLocation = dir.absolutePath
         } else {
             Toast.makeText(context, R.string.acs_err_invalid_picked_dir, Toast.LENGTH_SHORT).show()
         }

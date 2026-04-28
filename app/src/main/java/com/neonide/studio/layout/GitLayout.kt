@@ -64,7 +64,7 @@ fun GitLayout(
     val dirPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocumentTree()
     ) { uri ->
-        uri?.let { viewModel.onDirectoryPicked(context, it) }
+        uri?.let { viewModel.onDirectoryPicked(it) }
     }
 
     Scaffold(

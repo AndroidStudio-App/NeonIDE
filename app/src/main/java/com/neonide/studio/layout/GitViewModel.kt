@@ -26,6 +26,8 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 import java.net.URI
 
+import com.neonide.studio.utils.FileUtil
+
 class GitViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(GitLayoutState())
     val uiState: StateFlow<GitLayoutState> = _uiState.asStateFlow()
@@ -93,28 +95,8 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // ---- SAF directory picker ----
-    fun onDirectoryPicked(context: Context, uri: Uri) {
-        val treeDocId = DocumentsContract.getTreeDocumentId(uri)
-        val docUri = DocumentsContract.buildDocumentUriUsingTree(uri, treeDocId)
-        val authority = docUri.authority ?: return
-
-        val dir: File? = when (authority) {
-            "com.neonide.studio.documents" -> File(DocumentsContract.getDocumentId(docUri))
-            "com.android.externalstorage.documents" -> {
-                val docId = DocumentsContract.getDocumentId(docUri)
-                val split = docId.split(':')
-                if (split.size >= 2) {
-                    val type = split[0]
-                    val path = split[1]
-                    if ("primary".equals(type, ignoreCase = true)) {
-                        File(Environment.getExternalStorageDirectory(), path)
-                    } else {
-                        File("/storage/" + type + "/" + path)
-                    }
-                } else null
-            }
-            else -> null
-        }
+    fun onDirectoryPicked(uri: Uri) {
+        val dir = FileUtil.resolveUriToFile(uri)
 
         if (dir != null && dir.exists() && dir.isDirectory) {
             updateDestination(dir.absolutePath)
@@ -150,15 +132,6 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        val dest = File(s.destination)
-        if (!dest.exists() || !dest.isDirectory) {
-            update { it.copy(destinationError = "Destination does not exist") }
-            valid = false
-        } else if (File(dest, s.repoName).exists()) {
-            update { it.copy(destinationError = "Project directory already exists") }
-            valid = false
-        }
-
         if (s.useCredentials) {
             if (s.username.isBlank()) {
                 update { it.copy(usernameError = "Username required") }
@@ -170,71 +143,29 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
+        val dest = File(s.destination)
+        if (!dest.exists() || !dest.isDirectory) {
+            // Attempt to create it
+            if (!dest.mkdirs()) {
+                update { it.copy(destinationError = "Destination does not exist and cannot be created") }
+                valid = false
+            }
+        }
+
+        if (valid && File(dest, s.repoName).exists()) {
+            update { it.copy(destinationError = "Project directory already exists") }
+            valid = false
+        }
+
         return valid
     }
 
     // ---- clone ----
     fun startClone(context: Context, onSuccess: (File) -> Unit) {
+        if (!validate()) return
+
         val state = _uiState.value
-
-        // Validate everything here instead of calling a separate validate function
-        var valid = true
-
-        if (state.url.isBlank()) {
-            update { it.copy(urlError = "Repository URL cannot be empty") }
-            valid = false
-        } else if (inferRepoName(state.url) == null) {
-            update { it.copy(urlError = "Invalid repository URL") }
-            valid = false
-        }
-
-        if (state.repoName.isBlank()) {
-            update { it.copy(repoNameError = "Name cannot be empty") }
-            valid = false
-        } else if (!state.repoName.matches(Regex("[A-Za-z0-9._-]+"))) {
-            update { it.copy(repoNameError = "Only letters, numbers, . _ -") }
-            valid = false
-        }
-
-        if (state.shallowClone) {
-            val d = state.depth.toIntOrNull()
-            if (d == null || d < 1) {
-                update { it.copy(depthError = "Depth must be a positive number") }
-                valid = false
-            }
-        }
-
-        if (state.useCredentials) {
-            if (state.username.isBlank()) {
-                update { it.copy(usernameError = "Username required") }
-                valid = false
-            }
-            if (state.password.isBlank()) {
-                update { it.copy(passwordError = "Password required") }
-                valid = false
-            }
-        }
-
-        if (!valid) return
-
         val targetDir = File(state.destination, state.repoName)
-        val baseDir = File(state.destination)
-
-        // Attempt to create the directory if it doesn't exist.
-        if (!baseDir.exists()) {
-            baseDir.mkdirs()
-        }
-
-        // Final check after potential creation.
-        if (!baseDir.exists() || !baseDir.isDirectory) {
-            update { it.copy(destinationError = "Destination does not exist: ${baseDir.absolutePath}") }
-            return
-        }
-
-        if (targetDir.exists()) {
-            update { it.copy(destinationError = "Directory already exists: ${targetDir.name}") }
-            return
-        }
 
         // persist current settings
         context.getSharedPreferences("acs_clone_prefs", Context.MODE_PRIVATE)
@@ -254,94 +185,107 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
             }
 
         viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update {
-                it.copy(isCloning = true, isCancelled = false, progressPercent = 0,
-                    progressText = "", statusText = "Cloning…",
-                    urlError = null, destinationError = null)
-            }
+            performClone(targetDir, onSuccess)
+        }
+    }
 
-            val progressMonitor = object : ProgressMonitor {
-                private var totalWork = 0
-                private var completedWork = 0
-                private var taskName = ""
+    private suspend fun performClone(targetDir: File, onSuccess: (File) -> Unit) {
+        val state = _uiState.value
+        _uiState.update {
+            it.copy(isCloning = true, isCancelled = false, progressPercent = 0,
+                progressText = "", statusText = "Cloning…",
+                urlError = null, destinationError = null)
+        }
 
-                override fun start(totalTasks: Int) {}
-                override fun beginTask(title: String?, totalWork: Int) {
-                    this.taskName = title ?: ""
-                    this.totalWork = totalWork
-                    this.completedWork = 0
-                    pushProgress()
-                }
-                override fun update(completed: Int) {
-                    completedWork += completed
-                    pushProgress()
-                }
-                override fun showDuration(show: Boolean) {}
-                override fun endTask() {}
-                override fun isCancelled(): Boolean = _uiState.value.isCancelled
+        val progressMonitor = createProgressMonitor()
 
-                private fun pushProgress() {
-                    viewModelScope.launch(Dispatchers.Main) {
-                        _uiState.update {
-                            it.copy(
-                                progressText = taskName,
-                                progressPercent = if (totalWork > 0) (completedWork * 100) / totalWork else 0,
-                                statusText = if (totalWork > 0) "$completedWork / $totalWork objects" else "$completedWork objects"
-                            )
-                        }
-                    }
-                }
-            }
+        try {
+            val cmd = Git.cloneRepository()
+                .setURI(state.url)
+                .setDirectory(targetDir)
+                .setProgressMonitor(progressMonitor)
 
-            try {
-                val cmd = Git.cloneRepository()
-                    .setURI(state.url)
-                    .setDirectory(targetDir)
-                    .setProgressMonitor(progressMonitor)
+            configureCloneCommand(cmd, state)
+            cmd.call().close()
 
-                if (state.branch.isNotBlank()) cmd.setBranch(state.branch)
-                if (!state.singleBranch) cmd.setCloneAllBranches(true)
+            handleCloneResult(targetDir, onSuccess)
+        } catch (e: org.eclipse.jgit.api.errors.GitAPIException) {
+            handleCloneError(targetDir, e)
+        } catch (e: Exception) {
+            handleCloneError(targetDir, e)
+        }
+    }
 
-                if (state.shallowClone) {
-                    cmd.setDepth(state.depth.toIntOrNull() ?: 1)
-                }
+    private fun createProgressMonitor() = object : ProgressMonitor {
+        private var totalWork = 0
+        private var completedWork = 0
+        private var taskName = ""
 
-                if (state.recurseSubmodules) {
-                    cmd.setCloneSubmodules(true)
-                }
+        override fun start(totalTasks: Int) { /* no-op */ }
+        override fun beginTask(title: String?, totalWork: Int) {
+            this.taskName = title ?: ""
+            this.totalWork = totalWork
+            this.completedWork = 0
+            pushProgress()
+        }
+        override fun update(completed: Int) {
+            completedWork += completed
+            pushProgress()
+        }
+        override fun showDuration(show: Boolean) { /* no-op */ }
+        override fun endTask() { /* no-op */ }
+        override fun isCancelled(): Boolean = _uiState.value.isCancelled
 
-                if (state.useCredentials) {
-                    cmd.setCredentialsProvider(
-                        UsernamePasswordCredentialsProvider(state.username, state.password)
+        private fun pushProgress() {
+            viewModelScope.launch(Dispatchers.Main) {
+                _uiState.update {
+                    it.copy(
+                        progressText = taskName,
+                        progressPercent = if (totalWork > 0) (completedWork * 100) / totalWork else 0,
+                        statusText = if (totalWork > 0) "$completedWork / $totalWork objects" else "$completedWork objects"
                     )
                 }
+            }
+        }
+    }
 
-                cmd.call().close()
+    private fun configureCloneCommand(cmd: org.eclipse.jgit.api.CloneCommand, state: GitLayoutState) {
+        if (state.branch.isNotBlank()) cmd.setBranch(state.branch)
+        if (!state.singleBranch) cmd.setCloneAllBranches(true)
+        if (state.shallowClone) cmd.setDepth(state.depth.toIntOrNull() ?: 1)
+        if (state.recurseSubmodules) cmd.setCloneSubmodules(true)
+        if (state.useCredentials) {
+            cmd.setCredentialsProvider(
+                UsernamePasswordCredentialsProvider(state.username, state.password)
+            )
+        }
+    }
 
-                withContext(Dispatchers.Main) {
-                    if (_uiState.value.isCancelled) {
-                        targetDir.deleteRecursively()
-                        _uiState.update { it.copy(isCloning = false, statusText = "Cancelled") }
-                    } else {
-                        _uiState.update {
-                            it.copy(isCloning = false, statusText = "Done – ${targetDir.absolutePath}")
-                        }
-                        if (state.openProjectAfter) {
-                            onSuccess(targetDir)
-                        }
-                    }
-                }
-            } catch (e: Exception) {
+    private suspend fun handleCloneResult(targetDir: File, onSuccess: (File) -> Unit) {
+        withContext(Dispatchers.Main) {
+            if (_uiState.value.isCancelled) {
                 targetDir.deleteRecursively()
-                withContext(Dispatchers.Main) {
-                    _uiState.update {
-                        it.copy(
-                            isCloning = false,
-                            statusText = "Failed",
-                            destinationError = e.localizedMessage ?: e.message ?: "Unknown error"
-                        )
-                    }
+                _uiState.update { it.copy(isCloning = false, statusText = "Cancelled") }
+            } else {
+                _uiState.update {
+                    it.copy(isCloning = false, statusText = "Done – ${targetDir.absolutePath}")
                 }
+                if (_uiState.value.openProjectAfter) {
+                    onSuccess(targetDir)
+                }
+            }
+        }
+    }
+
+    private suspend fun handleCloneError(targetDir: File, e: Exception) {
+        targetDir.deleteRecursively()
+        withContext(Dispatchers.Main) {
+            _uiState.update {
+                it.copy(
+                    isCloning = false,
+                    statusText = "Failed",
+                    destinationError = e.localizedMessage ?: e.message ?: "Unknown error"
+                )
             }
         }
     }
@@ -355,4 +299,4 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
         val path = URI(trimmed).path ?: trimmed.substringAfterLast(':')
         path.split('/').lastOrNull { it.isNotBlank() }?.removeSuffix(".git")
     } catch (_: Exception) { null }
-}
+    }
