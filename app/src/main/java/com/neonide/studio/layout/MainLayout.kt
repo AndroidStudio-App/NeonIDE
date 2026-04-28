@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun MainLayout(
+fun mainLayout(
     onSetupDevKit: () -> Unit,
     onCreateProject: () -> Unit,
     onOpenProject: () -> Unit,
@@ -75,20 +75,20 @@ fun MainLayout(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            item { Layout("New Project", Icons.Default.Add, onCreateProject) }
-            item { Layout("Open Project", Icons.Default.FolderOpen, onOpenProject) }
-            item { Layout("Git Clone", Icons.Default.AccountTree, onCloneRepo) }
-            item { Layout("Setup Development Kit", Icons.Default.Build, onSetupDevKit) }
-            item { Layout("Terminal", Icons.Default.Code, onOpenTerminal) }
-            item { Layout("Settings", Icons.Default.Settings, onOpenSettings) }
-            item { Layout("About", Icons.Default.Info, onOpenAbout) }
+            item { layoutItem("New Project", Icons.Default.Add, onCreateProject) }
+            item { layoutItem("Open Project", Icons.Default.FolderOpen, onOpenProject) }
+            item { layoutItem("Git Clone", Icons.Default.AccountTree, onCloneRepo) }
+            item { layoutItem("Setup Development Kit", Icons.Default.Build, onSetupDevKit) }
+            item { layoutItem("Terminal", Icons.Default.Code, onOpenTerminal) }
+            item { layoutItem("Settings", Icons.Default.Settings, onOpenSettings) }
+            item { layoutItem("About", Icons.Default.Info, onOpenAbout) }
            
         }
     }
 }
 
 @Composable
-fun Layout(title: String, icon: ImageVector, onClick: () -> Unit) {
+fun layoutItem(title: String, icon: ImageVector, onClick: () -> Unit) {
     ElevatedCard(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().height(110.dp),

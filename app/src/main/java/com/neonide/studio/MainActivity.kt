@@ -69,7 +69,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import kotlinx.serialization.Serializable
-import com.neonide.studio.layout.MainLayout
+import com.neonide.studio.layout.mainLayout
 import com.neonide.studio.layout.GitLayout
 import com.neonide.studio.layout.GitViewModel
 import com.neonide.studio.layout.GitLayoutState
@@ -147,7 +147,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     
-                    MainLayout(
+                    mainLayout(
                         onSetupDevKit = { DevKitSetup.startSetup(this@MainActivity) },
                         onCreateProject = { showCreateProject.value = true },
                         onOpenProject = { showOpenProject.value = true },
