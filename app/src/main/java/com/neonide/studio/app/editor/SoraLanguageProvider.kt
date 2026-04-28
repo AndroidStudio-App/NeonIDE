@@ -106,8 +106,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageJava.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
             localsCaptureSpec = javaLocalsCaptureSpec,
         )
@@ -150,8 +150,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageKotlin.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -189,8 +189,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageXml.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = "",
         )
 
@@ -218,8 +218,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageJson.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -245,8 +245,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguagePython.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -277,8 +277,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageC.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -306,8 +306,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageCpp.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -334,8 +334,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageProperties.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -361,8 +361,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageLog.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 
@@ -391,8 +391,8 @@ class SoraLanguageProvider(private val context: Context) {
         val spec = TsLanguageSpec(
             language = TSLanguageAidl.getInstance(),
             highlightScmSource = highlights,
-            codeBlocksScmSource = blocks,
-            bracketsScmSource = brackets,
+            codeBlocksScmSource = blocks.takeIf { it.isNotBlank() } ?: " ",
+            bracketsScmSource = brackets.takeIf { it.isNotBlank() } ?: " ",
             localsScmSource = locals,
         )
 

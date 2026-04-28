@@ -45,6 +45,7 @@ jdt-annotation = "2.4.100"
 lsp4j = "0.24.0"
 jgit = "6.8.0.202311291450-r"
 desugar = "2.0.4"
+rosemoe-editor = "0.24.5"
 
 junit = "4.13.2"
 robolectric = "4.10"
@@ -122,6 +123,15 @@ treesitter-annotations = { group = "com.itsaky.androidide.treesitter", name = "a
 lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }
 jgit = { group = "org.eclipse.jgit", name = "org.eclipse.jgit", version.ref = "jgit" }
 
+rosemoe-editor = { group = "io.github.rosemoe", name = "editor", version.ref = "rosemoe-editor" }
+rosemoe-editor-bom = { group = "io.github.rosemoe", name = "editor-bom", version.ref = "rosemoe-editor" }
+rosemoe-editor-lsp = { group = "io.github.rosemoe", name = "editor-lsp", version.ref = "rosemoe-editor" }
+rosemoe-language-java = { group = "io.github.rosemoe", name = "language-java", version.ref = "rosemoe-editor" }
+rosemoe-language-monarch = { group = "io.github.rosemoe", name = "language-monarch", version.ref = "rosemoe-editor" }
+rosemoe-language-textmate = { group = "io.github.rosemoe", name = "language-textmate", version.ref = "rosemoe-editor" }
+rosemoe-language-treesitter = { group = "io.github.rosemoe", name = "language-treesitter", version.ref = "rosemoe-editor" }
+rosemoe-oniguruma-native = { group = "io.github.rosemoe", name = "oniguruma-native", version.ref = "rosemoe-editor" }
+
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -135,6 +145,7 @@ markwon = ["markwon-core", "markwon-strikethrough", "markwon-linkify", "markwon-
 monarch = ["monarch-core", "monarch-json-loader", "monarch-language-pack"]
 regex = ["regex-oniguruma", "regex-re2j"]
 treesitter = ["treesitter-core", "treesitter-java", "treesitter-kotlin", "treesitter-xml", "treesitter-aidl", "treesitter-python", "treesitter-c", "treesitter-cpp", "treesitter-json", "treesitter-log", "treesitter-properties", "treesitter-annotations"]
+rosemoe = ["rosemoe-editor", "rosemoe-editor-lsp", "rosemoe-language-java", "rosemoe-language-monarch", "rosemoe-language-textmate", "rosemoe-language-treesitter", "rosemoe-oniguruma-native"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

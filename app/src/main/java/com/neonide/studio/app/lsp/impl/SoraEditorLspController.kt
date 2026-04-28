@@ -21,6 +21,7 @@ import io.github.rosemoe.sora.lsp.client.connection.StreamConnectionProvider
 import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.CustomLanguageServerDefinition
 import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.LanguageServerDefinition
 import io.github.rosemoe.sora.lsp.editor.LspEditor
+import io.github.rosemoe.sora.lsp.editor.LspLanguage
 import io.github.rosemoe.sora.lsp.editor.LspProject
 import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
@@ -106,6 +107,11 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
 
         lspEditor.editor = editor
         lspEditor.wrapperLanguage = wrapperLanguage
+
+        val lspLang = editor.editorLanguage
+        if (lspLang is LspLanguage) {
+            editor.setEditorLanguage(com.neonide.studio.app.editor.completion.NeonLspLanguageWrapper(lspLang, editor, lspEditor, wrapperLanguage))
+        }
 
         // Launch connection in background to avoid blocking main thread
         scope.launch {
@@ -350,10 +356,12 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
             private lateinit var socket: LocalSocket
             private lateinit var _inputStream: java.io.InputStream
             private lateinit var _outputStream: java.io.OutputStream
+            private var _isClosed = false
 
             override fun start() {
                 val deadlineMs = System.currentTimeMillis() + 30000L
                 var lastErr: IOException? = null
+                _isClosed = false
 
                 while (System.currentTimeMillis() < deadlineMs) {
                     try {
@@ -383,7 +391,11 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
             override val outputStream: java.io.OutputStream
                 get() = _outputStream
 
+            override val isClosed: Boolean
+                get() = _isClosed
+
             override fun close() {
+                _isClosed = true
                 runCatching { socket.close() }
             }
         }
