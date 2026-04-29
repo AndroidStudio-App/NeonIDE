@@ -1,4 +1,4 @@
-package com.neonide.studio.app.gradle
+package com.neonide.studio.utils
 
 import android.content.Context
 import com.neonide.studio.R
@@ -27,48 +27,47 @@ object GradleProjectActions {
         val wrapperProps = File(projectDir, "gradle/wrapper/gradle-wrapper.properties")
         val wrapperJar = File(projectDir, "gradle/wrapper/gradle-wrapper.jar")
 
-        if (!gradlew.exists() || !wrapperProps.exists()) {
-            return WrapperStatus.MissingScriptOrProps
+        var status = if (!gradlew.exists() || !wrapperProps.exists()) {
+            WrapperStatus.MissingScriptOrProps
+        } else {
+            runCatching { gradlew.setExecutable(true) }
+            if (wrapperJar.exists()) WrapperStatus.Ok else repairWrapper(context, wrapperJar, wrapperProps)
         }
+        return status
+    }
 
-        // Make sure gradlew is executable (best-effort).
-        runCatching { gradlew.setExecutable(true) }
-
-        if (wrapperJar.exists()) {
-            return WrapperStatus.Ok
-        }
-
-        // Try to repair by copying a known-good wrapper jar from app assets.
+    private fun repairWrapper(context: Context, wrapperJar: File, wrapperProps: File): WrapperStatus {
         return runCatching {
             wrapperJar.parentFile?.mkdirs()
-            // Prefer new path aligned with ACS assets layout.
-            val jarAsset = listOf(
-                "gradle/wrapper/gradle-wrapper.jar",
-                "gradle-wrapper/gradle-wrapper.jar",
-            ).firstOrNull { p ->
-                runCatching { context.assets.open(p).close(); true }.getOrDefault(false)
-            } ?: "gradle-wrapper/gradle-wrapper.jar"
-
+            val jarAsset = findAsset(
+                context,
+                listOf("gradle/wrapper/gradle-wrapper.jar", "gradle-wrapper/gradle-wrapper.jar"),
+                "gradle-wrapper/gradle-wrapper.jar"
+            )
+            
             context.assets.open(jarAsset).use { input ->
                 wrapperJar.outputStream().use { out -> input.copyTo(out) }
             }
-            // Also add properties as fallback if needed (should already exist)
+
             if (!wrapperProps.exists()) {
                 wrapperProps.parentFile?.mkdirs()
-                val propsAsset = listOf(
-                    "gradle/wrapper/gradle-wrapper.properties",
-                    "gradle-wrapper/gradle-wrapper.properties",
-                ).firstOrNull { p ->
-                    runCatching { context.assets.open(p).close(); true }.getOrDefault(false)
-                } ?: "gradle-wrapper/gradle-wrapper.properties"
+                val propsAsset = findAsset(
+                    context,
+                    listOf("gradle/wrapper/gradle-wrapper.properties", "gradle-wrapper/gradle-wrapper.properties"),
+                    "gradle-wrapper/gradle-wrapper.properties"
+                )
                 context.assets.open(propsAsset).use { input ->
                     wrapperProps.outputStream().use { out -> input.copyTo(out) }
                 }
             }
             WrapperStatus.Repaired
-        }.getOrElse {
-            WrapperStatus.RepairFailed
-        }
+        }.getOrElse { WrapperStatus.RepairFailed }
+    }
+
+    private fun findAsset(context: Context, paths: List<String>, fallback: String): String {
+        return paths.firstOrNull { p ->
+            runCatching { context.assets.open(p).close(); true }.getOrDefault(false)
+        } ?: fallback
     }
 
     enum class WrapperStatus {

@@ -2,8 +2,8 @@ package com.neonide.studio.app.editor.xml.framework
 
 import android.content.Context
 import android.util.Log
-import com.neonide.studio.app.gradle.AndroidSdkUtils
-import com.neonide.studio.app.gradle.GradleProjectActions
+import com.neonide.studio.utils.AndroidSdkUtils
+import com.neonide.studio.utils.GradleProjectActions
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
 

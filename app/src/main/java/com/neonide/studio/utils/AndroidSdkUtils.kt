@@ -1,4 +1,4 @@
-package com.neonide.studio.app.gradle
+package com.neonide.studio.utils
 
 import android.content.Context
 import com.termux.shared.termux.TermuxConstants
@@ -77,23 +77,24 @@ object AndroidSdkUtils {
      * - Prefer newest build-tools version where aapt2 passes ELF check for current ABI and interpreter.
      * - If newest is not runnable (e.g., x86_64 glibc), fall back to older versions until a bionic/static one is found.
      */
-    fun resolveBestBionicAapt2(context: Context, sdkDir: File): File? {
+    fun resolveBestBionicAapt2(sdkDir: File): File? {
         val buildToolsDir = File(sdkDir, "build-tools")
-        if (!buildToolsDir.exists() || !buildToolsDir.isDirectory) return null
+        var result: File? = null
 
-        // Prefer device supported ABI order.
-        val supported = android.os.Build.SUPPORTED_ABIS?.toList() ?: emptyList()
+        if (buildToolsDir.exists() && buildToolsDir.isDirectory) {
+            val supported = android.os.Build.SUPPORTED_ABIS?.toList() ?: emptyList()
+            val versions = buildToolsDir.listFiles()?.filter { it.isDirectory }
+                ?.sortedByDescending { it.name } ?: emptyList()
 
-        val versions = buildToolsDir.listFiles()?.filter { it.isDirectory }?.sortedByDescending { it.name } ?: emptyList()
-        for (v in versions) {
-            val aapt2 = File(v, "aapt2")
-            if (!aapt2.exists() || !aapt2.isFile) continue
-
-            val ok = ElfInspector.isAndroidRunnable(aapt2, supported)
-            if (ok) return aapt2
+            for (v in versions) {
+                val aapt2 = File(v, "aapt2")
+                if (aapt2.exists() && aapt2.isFile && ElfInspector.isAndroidRunnable(aapt2, supported)) {
+                    result = aapt2
+                    break
+                }
+            }
         }
-
-        return null
+        return result
     }
 
     /** Ensure project local.properties has ndk.dir if ndk exists. */
@@ -184,7 +185,6 @@ object AndroidSdkUtils {
      * Convenience: detect SDK (+ optional NDK), update local.properties, patch ndk-build, and return env overrides.
      */
     fun configureForProject(
-        context: Context,
         projectDir: File,
         baseEnv: Map<String, String>,
     ): SdkConfig? {
@@ -199,7 +199,7 @@ object AndroidSdkUtils {
         }
 
         // Patch aapt2 override in gradle.properties if a compatible build-tools aapt2 is found.
-        val aapt2 = resolveBestBionicAapt2(context, sdkDir)
+        val aapt2 = resolveBestBionicAapt2(sdkDir)
         
         val env = buildEnvOverrides(baseEnv, sdkDir)
         return SdkConfig(sdkDir = sdkDir, env = env, aapt2Path = aapt2?.absolutePath)

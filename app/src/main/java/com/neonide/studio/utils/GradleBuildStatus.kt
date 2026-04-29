@@ -1,4 +1,4 @@
-package com.neonide.studio.app.gradle
+package com.neonide.studio.utils
 
 import java.util.concurrent.CopyOnWriteArrayList
 

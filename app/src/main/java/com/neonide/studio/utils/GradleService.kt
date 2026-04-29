@@ -1,6 +1,9 @@
-package com.neonide.studio.app.gradle
+package com.neonide.studio.utils
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -8,8 +11,15 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.neonide.studio.R
 import com.neonide.studio.app.buildoutput.BuildOutputBuffer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 
 /**
  * A foreground service that executes Gradle builds.
@@ -112,7 +122,6 @@ class GradleService : Service() {
                 
                 val baseEnv = GradleProjectActions.getGradleEnvironment(this@GradleService)
                 val sdk = AndroidSdkUtils.configureForProject(
-                    context = this@GradleService,
                     projectDir = projectDir,
                     baseEnv = baseEnv,
                 )
@@ -157,8 +166,8 @@ class GradleService : Service() {
                     }
                 }
                 
-            } catch (t: Throwable) {
-                BuildOutputBuffer.appendLine("ERROR: ${t.message}")
+            } catch (e: IOException) {
+                BuildOutputBuffer.appendLine("ERROR: ${e.message}")
             } finally {
                 GradleBuildStatus.isRunning = false
                 stopSelf()

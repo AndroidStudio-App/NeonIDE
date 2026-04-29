@@ -1,4 +1,4 @@
-package com.neonide.studio.app.gradle
+package com.neonide.studio.utils
 
 import android.content.Context
 import com.termux.shared.termux.TermuxConstants
@@ -114,6 +114,10 @@ object GradleRunner {
         private val onOutputLine: (String) -> Unit,
     ) {
         private val cancelled = AtomicBoolean(false)
+        
+        companion object {
+            private const val BUFFER_SIZE = 4096
+        }
 
         fun cancel() {
             cancelled.set(true)
@@ -122,53 +126,39 @@ object GradleRunner {
         }
 
         fun waitFor(): Result {
-            // Read output until EOF in current thread.
-            // Use chunk-based reading so we can show progress output that may not end with '\n'.
-            // (Gradle often prints carriage-return progress updates.)
-            val buf = ByteArray(4096)
+            val buf = ByteArray(BUFFER_SIZE)
             val partial = StringBuilder()
 
-            fun emitLine(line: String) {
-                if (line.isNotBlank()) onOutputLine(line)
-            }
-
-            fun flushPartial(force: Boolean = false) {
-                if (partial.isEmpty()) return
-                if (!force && !partial.contains("\n") && !partial.contains("\r")) return
-
-                val text = partial.toString()
-                partial.setLength(0)
-
-                // Split on both newline and carriage return to surface progress updates.
-                val parts = text.split('\n', '\r')
-                for (p in parts) emitLine(p)
-            }
-
             try {
-                val input = process.inputStream
-                while (true) {
-                    val n = input.read(buf)
-                    if (n <= 0) break
-                    val chunk = String(buf, 0, n)
-                    partial.append(chunk)
-                    flushPartial(force = false)
-                }
-                // Flush any remainder.
-                flushPartial(force = true)
-                // If still anything left (no newline), emit it.
-                if (partial.isNotEmpty()) {
-                    emitLine(partial.toString())
-                    partial.setLength(0)
-                }
-            } catch (t: Throwable) {
-                // Typical when cancelling: java.io.InterruptedIOException: read interrupted by close() on another thread
+                readOutput(buf, partial)
+            } catch (e: java.io.IOException) {
                 if (!cancelled.get()) {
-                    onOutputLine("[GradleRunner] Output stream error: ${t.message}")
+                    onOutputLine("[GradleRunner] Output stream error: ${e.message}")
                 }
             }
 
             val exitCode = runCatching { process.waitFor() }.getOrDefault(-1)
             return Result(exitCode = exitCode, wasCancelled = cancelled.get())
+        }
+
+        private fun readOutput(buf: ByteArray, partial: StringBuilder) {
+            val input = process.inputStream
+            while (true) {
+                val n = input.read(buf)
+                if (n <= 0) break
+                partial.append(String(buf, 0, n))
+                flushPartial(partial, force = false)
+            }
+            flushPartial(partial, force = true)
+        }
+
+        private fun flushPartial(partial: StringBuilder, force: Boolean) {
+            if (partial.isEmpty()) return
+            val text = partial.toString()
+            if (!force && !text.contains('\n') && !text.contains('\r')) return
+
+            partial.setLength(0)
+            text.split('\n', '\r').forEach { if (it.isNotBlank()) onOutputLine(it) }
         }
     }
 }

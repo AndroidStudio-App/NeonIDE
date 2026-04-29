@@ -1,4 +1,4 @@
-package com.neonide.studio.app.gradle
+package com.neonide.studio.utils
 
 /**
  * Extremely lightweight diagnostics extractor.
@@ -24,6 +24,10 @@ object GradleDiagnostics {
         "Build file",
     )
 
+    private const val MAX_DIAGNOSTICS = 80
+    private const val TAIL_LINES = 30
+    private const val INITIAL_CAPACITY = 64
+
     /**
      * Extract a concise list of error-ish lines.
      * Returns an empty list if nothing obvious was found.
@@ -36,38 +40,35 @@ object GradleDiagnostics {
             .replace('\r', '\n')
             .split('\n')
 
-        val out = ArrayList<String>(64)
-        val max = 80
-
-        for (line in lines) {
-            if (out.size >= max) break
-            val trimmed = line.trimEnd()
-            if (trimmed.isBlank()) continue
-
-            val isInteresting = interestingPrefixes.any { p ->
-                trimmed.startsWith(p, ignoreCase = true)
-            } || trimmed.contains("error", ignoreCase = true) && !trimmed.contains("warning", ignoreCase = true)
-
-            if (isInteresting) {
-                out.add(trimmed)
+        val out = lines.asSequence()
+            .map { it.trimEnd() }
+            .filter { it.isNotBlank() }
+            .filter { trimmed ->
+                interestingPrefixes.any { p -> trimmed.startsWith(p, ignoreCase = true) } ||
+                    (trimmed.contains("error", ignoreCase = true) && !trimmed.contains("warning", ignoreCase = true))
             }
-        }
+            .take(MAX_DIAGNOSTICS)
+            .toMutableList()
 
         // If nothing found, show last few lines (often includes the failure summary)
         if (out.isEmpty()) {
-            val tail = lines.takeLast(30).map { it.trimEnd() }.filter { it.isNotBlank() }
+            val tail = lines.takeLast(TAIL_LINES).map { it.trimEnd() }.filter { it.isNotBlank() }
             out.addAll(tail)
         }
 
         // Deduplicate consecutive duplicates
-        val dedup = ArrayList<String>(out.size)
-        var prev: String? = null
-        for (s in out) {
-            if (s == prev) continue
-            dedup.add(s)
-            prev = s
-        }
+        return deduplicate(out)
+    }
 
+    private fun deduplicate(items: List<String>): List<String> {
+        val dedup = ArrayList<String>(items.size)
+        var prev: String? = null
+        for (s in items) {
+            if (s != prev) {
+                dedup.add(s)
+                prev = s
+            }
+        }
         return dedup
     }
 }

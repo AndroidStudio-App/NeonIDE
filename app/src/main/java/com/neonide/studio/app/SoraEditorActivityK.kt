@@ -99,10 +99,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.eclipse.tm4e.core.registry.IGrammarSource
 import org.eclipse.tm4e.core.registry.IThemeSource
-import com.neonide.studio.app.gradle.GradleService
-import com.neonide.studio.app.gradle.GradleBuildStatus
-import com.neonide.studio.app.gradle.GradleProjectActions
-import com.neonide.studio.app.gradle.ApkInstallUtils
+import com.neonide.studio.utils.GradleService
+import com.neonide.studio.utils.GradleBuildStatus
+import com.neonide.studio.utils.GradleProjectActions
+import com.neonide.studio.utils.ApkInstallUtils
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
