@@ -1088,8 +1088,8 @@ class SoraEditorActivityK : AppCompatActivity() {
     }
 
     private fun setupTextmate() {
-        loadDefaultTextMateThemes()
         loadDefaultTextMateLanguages()
+        loadDefaultTextMateThemes()
     }
 
     private fun loadDefaultTextMateThemes() {
