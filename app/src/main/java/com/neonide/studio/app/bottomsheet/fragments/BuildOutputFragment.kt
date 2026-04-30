@@ -3,60 +3,22 @@ package com.neonide.studio.app.bottomsheet.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.neonide.studio.R
 import com.neonide.studio.app.buildoutput.BuildOutputBuffer
 import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
 
 class BuildOutputFragment : Fragment(R.layout.fragment_build_output) {
 
     private var editor: CodeEditor? = null
 
     private var lastSnapshotLen: Int = 0
-
-    private val listener: (String) -> Unit = listener@{ snapshot ->
-        val ed = editor ?: return@listener
-
-        // Handle clear/reset immediately
-        if (snapshot.isEmpty()) {
-            runCatching {
-                ed.setText("", true, null)
-            }
-            lastSnapshotLen = 0
-            return@listener
-        }
-
-        // Append only the delta to preserve zoom/scroll state.
-        val delta = if (snapshot.length >= lastSnapshotLen) {
-            snapshot.substring(lastSnapshotLen)
-        } else {
-            // Buffer was trimmed/reset; reload.
-            lastSnapshotLen = 0
-            snapshot
-        }
-
-        if (delta.isEmpty()) {
-            lastSnapshotLen = snapshot.length
-            return@listener
-        }
-
-        // Ensure editor uses LF separators consistently.
-        val toInsert = delta.replace("\r\n", "\n")
-
-        runCatching {
-            val content: Content = ed.text
-            val lastLine = content.lineCount - 1
-            val lastCol = content.getColumnCount(lastLine)
-            content.insert(lastLine, lastCol, toInsert)
-
-            // Auto-scroll to end if user is already near bottom.
-            // (Simple heuristic: always scroll for now.)
-            ed.setSelection(content.lineCount - 1, content.getColumnCount(content.lineCount - 1))
-        }
-
-        lastSnapshotLen = snapshot.length
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,14 +41,60 @@ class BuildOutputFragment : Fragment(R.layout.fragment_build_output) {
         lastSnapshotLen = 0
         editor = ed
 
-        // Subscribe (will immediately emit current snapshot)
-        BuildOutputBuffer.addListener(listener)
+        // Collect build output reactively
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                BuildOutputBuffer.output.collect { snapshot ->
+                    handleSnapshot(snapshot)
+                }
+            }
+        }
+    }
+
+    private fun handleSnapshot(snapshot: String) {
+        val ed = editor ?: return
+
+        // Handle clear/reset immediately
+        if (snapshot.isEmpty()) {
+            runCatching {
+                ed.setText("", true, null)
+            }
+            lastSnapshotLen = 0
+            return
+        }
+
+        // Append only the delta to preserve zoom/scroll state.
+        val delta = if (snapshot.length >= lastSnapshotLen) {
+            snapshot.substring(lastSnapshotLen)
+        } else {
+            // Buffer was trimmed/reset; reload.
+            lastSnapshotLen = 0
+            snapshot
+        }
+
+        if (delta.isEmpty()) {
+            lastSnapshotLen = snapshot.length
+            return
+        }
+
+        // Ensure editor uses LF separators consistently.
+        val toInsert = delta.replace("\r\n", "\n")
+
+        runCatching {
+            val content: Content = ed.text
+            val lastLine = content.lineCount - 1
+            val lastCol = content.getColumnCount(lastLine)
+            content.insert(lastLine, lastCol, toInsert)
+
+            // Auto-scroll to end
+            ed.setSelection(content.lineCount - 1, content.getColumnCount(content.lineCount - 1))
+        }
+
+        lastSnapshotLen = snapshot.length
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Can't removeListener easily because lambda differs; keep local instance.
-        BuildOutputBuffer.removeListener(listener)
         editor?.release()
         editor = null
     }

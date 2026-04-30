@@ -2,16 +2,19 @@ package com.neonide.studio.app.buildoutput
 
 import android.os.Handler
 import android.os.Looper
-import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
- * Buffered build output broadcaster.
+ * Buffered build output broadcaster using StateFlow.
  *
  * Why:
  * - Build output can be extremely chatty.
  * - Updating UI (TextView/Editor) per-line causes lag.
- * - AndroidCodeStudio batches output + trims old lines.
+ * - StateFlow provides a modern, reactive way to observe changes.
+ * - Still utilizes batching to prevent UI thread saturation.
  */
 object BuildOutputBuffer {
 
@@ -23,21 +26,16 @@ object BuildOutputBuffer {
     private val pending = StringBuilder(8_192)
     private val flushScheduled = AtomicBoolean(false)
 
-    private val listeners = CopyOnWriteArrayList<(String) -> Unit>()
+    private val _output = MutableStateFlow("")
+    val output: StateFlow<String> = _output.asStateFlow()
 
-    /** Current cached output (bounded). */
-    @Volatile
-    private var cache: String = ""
-
-    fun getSnapshot(): String = cache
+    fun getSnapshot(): String = _output.value
 
     fun clear() {
         synchronized(pending) {
             pending.clear()
         }
-        cache = ""
-        // notify listeners so UI clears immediately
-        listeners.forEach { it.invoke("") }
+        _output.value = ""
     }
 
     fun appendLine(line: String) {
@@ -55,19 +53,7 @@ object BuildOutputBuffer {
         scheduleFlush()
     }
 
-    fun addListener(listener: (String) -> Unit) {
-        listeners.add(listener)
-        // Immediately send current state
-        listener.invoke(cache)
-    }
-
-    fun removeListener(listener: (String) -> Unit) {
-        listeners.remove(listener)
-    }
-
     private fun scheduleFlush() {
-        // This can be called from background threads (Gradle output reader).
-        // Use atomic CAS so we always schedule at least one pending flush.
         if (!flushScheduled.compareAndSet(false, true)) return
 
         handler.postDelayed({
@@ -84,15 +70,12 @@ object BuildOutputBuffer {
             out
         }
 
-        // Update cache, then trim if needed
-        var newCache = cache + chunk
+        var newCache = _output.value + chunk
         if (newCache.length > MAX_CHARS) {
             val trimmedCount = newCache.length - TRIM_TO_CHARS
             newCache = "... [trimmed $trimmedCount chars for performance] ...\n\n" + newCache.takeLast(TRIM_TO_CHARS)
         }
-        cache = newCache
-
-        // Broadcast full snapshot (UI can setText efficiently)
-        listeners.forEach { it.invoke(newCache) }
+        
+        _output.value = newCache
     }
 }
