@@ -1,6 +1,9 @@
 # NeonIDE studio
-Experimental project
+Modern Integrated Development Environment(IDE) for Android That Lets you write code and build Android gradle projects 
 
+***! local properties*** will be overwrite/written for ndk path
+
+***Experimental project,*** Development are slow
 ## Credits And 3rd part apps
 - Code Editor [sora-editor](https://github.com/Rosemoe/sora-editor)
 - Terminal Emulator [Termux application](https://github.com/termux/termux-app?tab=readme-ov-file)
