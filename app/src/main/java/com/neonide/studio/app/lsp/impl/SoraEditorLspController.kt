@@ -150,18 +150,23 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
         currentFile = null
         if (prev != null) {
             Logger.logDebug(TAG, "Disposing previous LSP editor for ${prevFile?.name}")
-            runCatching { prev.dispose() }
+            scope.launch(Dispatchers.IO) {
+                runCatching { prev.dispose() }
+            }
         }
     }
 
     override fun dispose() {
         detach()
-        project?.let { p ->
-            project = null
-            runCatching { p.dispose() }
+        val p = project
+        project = null
+        scope.launch(Dispatchers.IO) {
+            if (p != null) {
+                runCatching { p.dispose() }
+            }
+            stopServers()
+            runCatching { scope.coroutineContext.cancelChildren() }
         }
-        runCatching { scope.coroutineContext.cancelChildren() }
-        stopServers()
     }
 
     override fun currentEditor(): LspEditor? = current
