@@ -76,9 +76,10 @@ import com.neonide.studio.layout.GitLayoutState
 import com.neonide.studio.ui.theme.AppTheme
 import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
-import com.neonide.studio.app.TermuxActivity
+import com.termux.app.TermuxActivity
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences
-import com.termux.shared.logger.IDEFileLogger
+import com.termux.shared.termux.crash.TermuxCrashUtils
+import com.neonide.studio.logger.IDEFileLogger
 
 
 //route for navhost
@@ -223,6 +224,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         updatePermissionStates()
+        TermuxCrashUtils.notifyAppCrashFromCrashLogFile(this, "MainActivity")
     }
 
     private fun updatePermissionStates() {

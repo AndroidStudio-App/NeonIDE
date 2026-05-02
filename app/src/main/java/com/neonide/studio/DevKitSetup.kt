@@ -12,9 +12,9 @@ import com.termux.shared.shell.command.ExecutionCommand.Runner
 import com.termux.shared.shell.command.ExecutionCommand.ShellCreateMode
 import com.termux.shared.termux.TermuxConstants
 import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_SERVICE
-import com.neonide.studio.app.TermuxInstaller
-import com.neonide.studio.app.TermuxService
-import com.neonide.studio.app.TermuxActivity
+import com.termux.app.TermuxInstaller
+import com.termux.app.TermuxService
+import com.termux.app.TermuxActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -33,6 +33,7 @@ object DevKitSetup {
     
     @JvmStatic
     fun startSetup(activity: Activity) {
+        android.util.Log.d("DevKitSetup", "startSetup called")
         val setupScriptFile = File(TermuxConstants.TERMUX_HOME_DIR_PATH, SETUP_SCRIPT_FILE_NAME)
         if (setupScriptFile.exists()) {
             // Setup already exists, just run it

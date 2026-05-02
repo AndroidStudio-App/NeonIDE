@@ -82,11 +82,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    externalNativeBuild {
+    /*externalNativeBuild {
         ndkBuild {
             path("src/main/cpp/Android.mk")
         }
-    }
+    }*/
 
     lint {
         disable += "ProtectedPermissions"
@@ -107,6 +107,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":termux-app"))
     implementation(project(":termux-shared"))
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
@@ -171,7 +172,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.junit)
     androidTestImplementation(libs.espresso.core)
 }
-
+/*
 fun sha256Of(f: File): String {
     val digest = MessageDigest.getInstance("SHA-256")
     f.inputStream().use { stream ->
@@ -262,4 +263,4 @@ tasks.named("preBuild") {
         tasks.named("generateBootstrapStamp"),
         tasks.named("cleanNativeIfBootstrapChanged")
     )
-}
+}*/

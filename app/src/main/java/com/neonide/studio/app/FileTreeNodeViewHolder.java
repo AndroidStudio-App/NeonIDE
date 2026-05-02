@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.neonide.studio.R;
-import com.termux.view.treeview.model.TreeNode;
+import com.neonide.studio.view.treeview.model.TreeNode;
 
 import java.util.Locale;
 
@@ -119,8 +119,8 @@ public class FileTreeNodeViewHolder extends TreeNode.BaseNodeViewHolder<FileTree
         if (cached != null && item != null && !item.isDirectory) {
             boolean selected = SELECTED_FILE_PATH != null && SELECTED_FILE_PATH.equals(item.path);
             // Background is set on the row view (first child inside wrapper).
-            if (cached instanceof com.termux.view.treeview.view.TreeNodeWrapperView) {
-                View row = ((com.termux.view.treeview.view.TreeNodeWrapperView) cached).getNodeContainer().getChildAt(0);
+            if (cached instanceof com.neonide.studio.view.treeview.view.TreeNodeWrapperView) {
+                View row = ((com.neonide.studio.view.treeview.view.TreeNodeWrapperView) cached).getNodeContainer().getChildAt(0);
                 if (row != null) row.setBackgroundResource(selected ? R.drawable.file_tree_item_bg_selected : R.drawable.file_tree_item_bg);
             }
         }
