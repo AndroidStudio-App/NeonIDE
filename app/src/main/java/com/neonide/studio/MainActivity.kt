@@ -168,7 +168,11 @@ class MainActivity : ComponentActivity() {
                 composable<GitLayoutRoute> {
                    val viewModel: GitViewModel = viewModel()
                    val state by viewModel.uiState.collectAsState()
-                   GitLayout(onBack = {navController.popBackStack()}, state = state, viewModel = viewModel)
+                   GitLayout(onBack = {navController.popBackStack() }, 
+                       state = state, 
+                       viewModel = viewModel,
+                       onFinished = { navController.popBackStack() }
+                   )
                }
             }
         }

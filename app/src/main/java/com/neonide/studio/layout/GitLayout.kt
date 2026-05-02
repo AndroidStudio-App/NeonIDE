@@ -56,7 +56,8 @@ import com.neonide.studio.app.SoraEditorActivityK
 fun GitLayout(
     onBack: () -> Unit,
     state: GitLayoutState,
-    viewModel: GitViewModel
+    viewModel: GitViewModel,
+    onFinished: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -286,6 +287,7 @@ fun GitLayout(
                             val intent = Intent(context, SoraEditorActivityK::class.java)
                             intent.putExtra(SoraEditorActivityK.EXTRA_PROJECT_DIR, projectDir.absolutePath)
                             context.startActivity(intent)
+                            onFinished()
                         }
                     },
                     enabled = !state.isCloning
