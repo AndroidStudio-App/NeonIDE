@@ -8,7 +8,4 @@
     <dimen name="content_padding">8dip</dimen>
     <dimen name="content_padding_double">16dip</dimen>
     <dimen name="content_padding_triple">32dip</dimen>
-
-    <!-- File tree drawer width (used by layout and for expanding row click area) -->
-    <dimen name="file_tree_drawer_width">300dp</dimen>
 </resources>
