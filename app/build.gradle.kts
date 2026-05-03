@@ -103,7 +103,6 @@ dependencies {
     
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
-    implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.rosemoe.editor.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
