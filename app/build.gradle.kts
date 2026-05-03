@@ -30,7 +30,12 @@ android {
             "TERMUX_WIDGET_APP_NAME" to "NeonIDE Studio:Widget"
         )
         
+        ndk {
+            abiFilters += "arm64-v8a"
+        }
+        
     }
+    
 
     buildFeatures {
         buildConfig = true
