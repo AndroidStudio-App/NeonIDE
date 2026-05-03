@@ -156,39 +156,4 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <!-- Left drawer: file tree -->
-    <LinearLayout
-        android:id="@+id/file_tree_drawer"
-        android:layout_width="@dimen/file_tree_drawer_width"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:orientation="vertical"
-        android:background="?attr/colorSurface"
-        android:clickable="true"
-        android:focusable="true">
-
-        <!-- Drawer header -->
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/file_tree_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="56dp"
-            android:background="@drawable/file_tree_drawer_header_bg"
-            app:title="@string/files"
-            app:titleTextColor="@android:color/white"
-            app:navigationIcon="@drawable/ic_close_24"
-            app:navigationIconTint="@android:color/white" />
-
-        <FrameLayout
-            android:id="@+id/file_tree_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:clickable="true"
-            android:focusable="true" />
-
-    </LinearLayout>
-
 </androidx.drawerlayout.widget.DrawerLayout>
