@@ -98,6 +98,9 @@ android {
 dependencies {
     implementation(project(":termux-app"))
     implementation(project(":termux-shared"))
+    implementation(project(":bonsai-core"))
+    implementation(project(":bonsai-file-system"))
+    
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(platform(libs.androidx.compose.bom))

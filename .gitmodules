@@ -1,3 +1,6 @@
 [submodule "termux-app"]
 	path = termux-app
 	url = https://github.com/AndroidStudio-App/termux-app.git
+[submodule "bonsai"]
+	path = bonsai
+	url = https://github.com/AndroidStudio-App/bonsai.git
