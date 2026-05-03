@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Environment
 import android.widget.Toast
+import androidx.documentfile.provider.DocumentFile
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 
@@ -26,6 +27,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +43,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,17 +60,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.documentfile.provider.DocumentFile
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import com.neonide.studio.R
-import com.neonide.studio.app.SoraEditorActivityK
-import com.neonide.studio.app.home.preferences.WizardPreferences
-import com.neonide.studio.app.utils.DisplayNameUtils
-import com.neonide.studio.app.utils.SafeDirLister
-import com.neonide.studio.app.utils.SafeFileDeleter
-import com.termux.shared.termux.TermuxConstants
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -75,6 +75,13 @@ import java.util.Locale
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+import com.neonide.studio.R
+import com.neonide.studio.app.SoraEditorActivityK
+import com.neonide.studio.app.home.preferences.WizardPreferences
+import com.neonide.studio.app.utils.DisplayNameUtils
+import com.neonide.studio.app.utils.SafeDirLister
+import com.neonide.studio.app.utils.SafeFileDeleter
+import com.termux.shared.termux.TermuxConstants
 import com.neonide.studio.utils.FileUtil
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -128,7 +135,7 @@ fun OpenProjectBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
     ) {
         Column(
             modifier = Modifier
