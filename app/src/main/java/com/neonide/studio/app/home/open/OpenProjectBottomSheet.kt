@@ -91,7 +91,7 @@ fun OpenProjectBottomSheet(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var projects by remember { mutableStateOf(emptyList<File>()) }
     var searchQuery by remember { mutableStateOf("") }

@@ -107,7 +107,7 @@ import java.io.FileInputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.Arrays
-
+import com.neonide.studio.FileTreeDrawer
 /**
  * Termux editor activity with sora-editor demo feature set.
  */
@@ -297,6 +297,17 @@ class SoraEditorActivityK : AppCompatActivity() {
         }
 
         drawerLayout = findViewById(R.id.drawer_layout)
+
+        findViewById<androidx.compose.ui.platform.ComposeView>(R.id.file_tree_drawer_view).setContent {
+            com.neonide.studio.FileTreeDrawer(
+                rootPath = projectRoot?.absolutePath ?: "",
+                onFileClick = { path ->
+                    val file = java.io.File(path)
+                    openFileInEditor(file, file.name)
+                }
+            )
+        }
+
 
         val tb: MaterialToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(tb)

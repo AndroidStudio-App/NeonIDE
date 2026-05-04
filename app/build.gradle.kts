@@ -41,7 +41,18 @@ android {
         buildConfig = true
         viewBinding = true
         compose = true
+
     }
+    
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+            freeCompilerArgs = listOf(
+                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+            )
+        }
+    }
+
 
     signingConfigs {
         getByName("debug") {
@@ -98,6 +109,8 @@ android {
             useLegacyPackaging = true
         }
     }
+    
+    
 }
 
 dependencies {
