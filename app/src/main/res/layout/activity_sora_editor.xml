@@ -156,4 +156,12 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+    <!-- Drawer content -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/file_tree_drawer_view"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="?android:attr/windowBackground" />
+
 </androidx.drawerlayout.widget.DrawerLayout>

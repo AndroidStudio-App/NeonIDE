@@ -51,7 +51,6 @@ import androidx.compose.ui.unit.dp
 
 import com.neonide.studio.app.SoraEditorActivityK
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GitLayout(
     onBack: () -> Unit,

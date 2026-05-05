@@ -80,7 +80,7 @@ import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.termux.shared.termux.TermuxConstants
 import com.neonide.studio.utils.FileUtil
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun CreateProjectBottomSheet(
     onDismiss: () -> Unit
@@ -383,7 +383,7 @@ private fun TemplateItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun DropdownField(
     label: String,

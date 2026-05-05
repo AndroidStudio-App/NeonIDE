@@ -177,7 +177,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-    @OptIn(ExperimentalMaterial3Api::class)
+    
     @Composable
     private fun ideConfigScreen(onBack: () -> Unit) {
         val context = LocalContext.current
