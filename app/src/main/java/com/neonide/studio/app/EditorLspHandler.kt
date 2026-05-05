@@ -61,10 +61,7 @@ class EditorLspHandler(
     }
 
     fun handleGoToDefinition(line: Int, column: Int) {
-        val f = activity.getProjectRootDir() // This is a bit problematic if currentFile isn't accessible. 
-        // Let's assume the Activity provides currentFile via a public getter if needed, 
-        // or we pass it in. For now, let's use a trick or adjust Activity.
-        val currentFile = activity.javaClass.getDeclaredField("currentFile").apply { isAccessible = true }.get(activity) as? File ?: return
+        val currentFile = activity.currentFile ?: return
         
         val lspEditor = lspController.currentEditor() ?: return
         val rm = lspEditor.requestManager ?: return
@@ -97,7 +94,7 @@ class EditorLspHandler(
     }
 
     fun handleShowHover(line: Int, column: Int) {
-        val currentFile = activity.javaClass.getDeclaredField("currentFile").apply { isAccessible = true }.get(activity) as? File ?: return
+        val currentFile = activity.currentFile ?: return
         val lspEditor = lspController.currentEditor() ?: return
         val rm = lspEditor.requestManager ?: return
 
@@ -114,7 +111,7 @@ class EditorLspHandler(
     }
 
     fun handleFindReferences(line: Int, column: Int) {
-        val currentFile = activity.javaClass.getDeclaredField("currentFile").apply { isAccessible = true }.get(activity) as? File ?: return
+        val currentFile = activity.currentFile ?: return
         val lspEditor = lspController.currentEditor() ?: return
         val rm = lspEditor.requestManager ?: return
         val params = ReferenceParams().apply {

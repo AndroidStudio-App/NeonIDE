@@ -45,8 +45,6 @@ import java.io.IOException
 class SoraEditorActivityK : AppCompatActivity() {
 
     private val uiScope = MainScope()
-
-    private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }
     
     internal var currentFile: File? = null
     private var projectRoot: File? = null
@@ -121,7 +119,7 @@ class SoraEditorActivityK : AppCompatActivity() {
     private val xmlDiagnosticsRunnable: Runnable = Runnable {
         val f = currentFile
         if (f == null || !f.extension.equals("xml", ignoreCase = true)) return@Runnable
-        val lspConnected = lspController.currentEditor()?.isConnected == true
+        val lspConnected = lspManager.controller.currentEditor()?.isConnected == true
         if (!lspConnected) {
             runCatching {
                 val diags = AndroidXmlLanguageEnhancer.computeXmlDiagnostics(editor.text)
