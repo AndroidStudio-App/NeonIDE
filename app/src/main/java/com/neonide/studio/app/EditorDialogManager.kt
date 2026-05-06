@@ -18,14 +18,6 @@ class EditorDialogManager(private val dialogHelper: EditorDialogHelper) {
                 dialogHelper.chooseTypeface()
                 true
             }
-            R.id.sora_ln_panel_fixed -> {
-                dialogHelper.chooseLineNumberPanelPosition()
-                true
-            }
-            R.id.sora_ln_panel_follow -> {
-                dialogHelper.chooseLineNumberPanelFollow()
-                true
-            }
             else -> false
         }
     }

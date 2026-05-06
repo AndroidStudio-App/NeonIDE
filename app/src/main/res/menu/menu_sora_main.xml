@@ -2,32 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:title="@string/sora_cursor_actions">
-        <menu>
-            <item
-                android:id="@+id/sora_goto_end"
-                android:title="@string/sora_go_to_end" />
-            <item
-                android:id="@+id/sora_move_up"
-                android:title="@string/sora_move_up" />
-            <item
-                android:id="@+id/sora_move_down"
-                android:title="@string/sora_move_down" />
-            <item
-                android:id="@+id/sora_move_left"
-                android:title="@string/sora_move_left" />
-            <item
-                android:id="@+id/sora_move_right"
-                android:title="@string/sora_move_right" />
-            <item
-                android:id="@+id/sora_home"
-                android:title="@string/sora_home" />
-            <item
-                android:id="@+id/sora_end"
-                android:title="@string/sora_end" />
-        </menu>
-    </item>
-
     <item android:title="@string/sora_search_text">
         <menu>
             <item
@@ -85,17 +59,6 @@
                 android:checkable="true"
                 android:checked="true"
                 android:title="@string/sora_hide_soft_kbd_if_hard_kbd_available" />
-        </menu>
-    </item>
-
-    <item android:title="@string/sora_line_info_panel_position">
-        <menu>
-            <item
-                android:id="@+id/sora_ln_panel_fixed"
-                android:title="@string/sora_fixed" />
-            <item
-                android:id="@+id/sora_ln_panel_follow"
-                android:title="@string/sora_follow_scrollbar" />
         </menu>
     </item>
 
