@@ -56,6 +56,7 @@ export ANDROID_HOME="$HOME/android-sdk"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
 export ANDROID_USER_HOME="$HOME/.android"
 export PATH="$PATH:$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/35.0.2"
+export SSL_CERT_FILE="$PREFIX/etc/tls/cert.pem"
 
 echo "--- [4/5] Preparing up Android SDK Tools ---"
 
