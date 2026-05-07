@@ -36,8 +36,8 @@ class EditorDialogHelper(
 ) {
 
     fun chooseTypeface() {
-        val fonts = arrayOf("JetBrains Mono", "Ubuntu", "Roboto")
-        val assetsPaths = arrayOf("JetBrainsMono-Regular.ttf", "Ubuntu-Regular.ttf", "Roboto-Regular.ttf")
+        val fonts = arrayOf("JetBrains Mono", "Ubuntu Mono", "Google/Roboto Mono")
+        val assetsPaths = arrayOf("JetBrainsMono-Regular.ttf", "UbuntuMono-Regular.ttf", "RobotoMono-Regular.ttf")
         AlertDialog.Builder(activity)
             .setTitle(android.R.string.dialog_alert_title)
             .setSingleChoiceItems(fonts, -1) { dialog, which ->
