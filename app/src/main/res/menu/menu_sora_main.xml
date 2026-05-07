@@ -62,35 +62,6 @@
         </menu>
     </item>
 
-    <item android:title="@string/sora_debug">
-        <menu>
-            <item
-                android:id="@+id/sora_code_format"
-                android:title="@string/sora_format" />
-            <item
-                android:id="@+id/sora_open_build_log"
-                android:title="@string/acs_open_build_log" />
-            <item
-                android:id="@+id/sora_open_logs"
-                android:title="@string/sora_show_crash_log" />
-            <item
-                android:id="@+id/sora_clear_logs"
-                android:title="@string/sora_clear_crash_log" />
-            <item
-                android:id="@+id/sora_open_ide_file_log"
-                android:title="Open IDE file log (Documents)" />
-            <item
-                android:id="@+id/sora_load_test_file"
-                android:title="@string/sora_open_debug_document" />
-            <item
-                android:id="@+id/sora_open_test_activity"
-                android:title="@string/sora_open_new_activity" />
-            <item
-                android:id="@+id/sora_start_java_lsp"
-                android:title="Start Java LSP Server" />
-        </menu>
-    </item>
-
     <item
         android:id="@+id/sora_switch_language"
         android:title="@string/sora_switch_language" />

@@ -32,9 +32,7 @@ class EditorMenuHandler(
 
     private val fileAndLogIds = setOf(
         R.id.sora_text_undo, R.id.sora_text_redo, R.id.sora_open_terminal,
-        R.id.sora_save_file, R.id.sora_open_build_log, R.id.sora_open_logs, 
-        R.id.sora_clear_logs, R.id.sora_open_ide_file_log, R.id.sora_load_test_file, 
-        R.id.sora_start_java_lsp
+        R.id.sora_save_file
     )
 
     fun handleMenuItemSelection(item: MenuItem, projectRoot: File?): Boolean {
@@ -43,7 +41,6 @@ class EditorMenuHandler(
             in fileAndLogIds -> handleFileAndLogActions(item)
             R.id.sora_quick_run -> { gradleManager.onQuickRunOrCancel(projectRoot); true }
             R.id.sora_sync_project -> { gradleManager.onSyncProject(projectRoot); true }
-            R.id.sora_code_format -> { editor.formatCodeAsync(); true }
             else -> false
         }
     }
@@ -108,12 +105,6 @@ class EditorMenuHandler(
                 activity.startActivity(Intent(activity, TermuxActivity::class.java)) 
             }
             R.id.sora_save_file -> coordinator.saveCurrentFile()
-            R.id.sora_open_build_log -> logManager.openBuildLog("gradle-build.log")
-            R.id.sora_open_logs -> logManager.openLogs("crash-journal.log")
-            R.id.sora_clear_logs -> logManager.clearLogs("crash-journal.log")
-            R.id.sora_open_ide_file_log -> logManager.openIdeFileLog()
-            R.id.sora_load_test_file -> coordinator.openAssetsFile("samples/big_sample.txt")
-            R.id.sora_start_java_lsp -> lspManager.startJavaLsp()
             else -> return false
         }
         return true
