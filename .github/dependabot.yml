@@ -9,8 +9,14 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    allow:
+      - dependency-type: "all"
+        update-type: "version-update:semver-patch"  
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"    
+    allow:
+      - dependency-type: "all"
+        update-type: "version-update:semver-patch"
