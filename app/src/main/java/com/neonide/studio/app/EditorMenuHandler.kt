@@ -21,55 +21,28 @@ class EditorMenuHandler(
     private val lspManager: EditorLspManager
 ) {
 
-    private val editorMovementIds = setOf(
-        R.id.sora_goto_end, R.id.sora_move_up, R.id.sora_move_down, 
-        R.id.sora_move_left, R.id.sora_move_right, R.id.sora_home, R.id.sora_end
-    )
-
     private val editorConfigIds = setOf(
         R.id.sora_magnifier, R.id.sora_symbol_bar_visibility, R.id.sora_text_wordwrap,
         R.id.sora_editor_line_number, R.id.sora_pin_line_number, R.id.sora_use_icu,
         R.id.sora_completion_anim, R.id.sora_soft_kbd_enabled, 
-        R.id.sora_disable_soft_kbd_on_hard_kbd, R.id.sora_ln_panel_fixed, 
-        R.id.sora_ln_panel_follow, R.id.sora_switch_language, 
+        R.id.sora_disable_soft_kbd_on_hard_kbd, R.id.sora_switch_language, 
         R.id.sora_search_panel_st, R.id.sora_search_am, R.id.sora_switch_colors, 
         R.id.sora_switch_typeface
     )
 
     private val fileAndLogIds = setOf(
         R.id.sora_text_undo, R.id.sora_text_redo, R.id.sora_open_terminal,
-        R.id.sora_save_file, R.id.sora_open_build_log, R.id.sora_open_logs, 
-        R.id.sora_clear_logs, R.id.sora_open_ide_file_log, R.id.sora_load_test_file, 
-        R.id.sora_start_java_lsp
+        R.id.sora_save_file
     )
 
     fun handleMenuItemSelection(item: MenuItem, projectRoot: File?): Boolean {
         return when (item.itemId) {
-            in editorMovementIds -> handleEditorMovement(item)
             in editorConfigIds -> handleEditorConfig(item)
             in fileAndLogIds -> handleFileAndLogActions(item)
             R.id.sora_quick_run -> { gradleManager.onQuickRunOrCancel(projectRoot); true }
             R.id.sora_sync_project -> { gradleManager.onSyncProject(projectRoot); true }
-            R.id.sora_code_format -> { editor.formatCodeAsync(); true }
             else -> false
         }
-    }
-
-    private fun handleEditorMovement(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.sora_goto_end -> editor.setSelection(
-                editor.text.lineCount - 1, 
-                editor.text.getColumnCount(editor.text.lineCount - 1)
-            )
-            R.id.sora_move_up -> editor.moveSelection(SelectionMovement.UP)
-            R.id.sora_move_down -> editor.moveSelection(SelectionMovement.DOWN)
-            R.id.sora_move_left -> editor.moveSelection(SelectionMovement.LEFT)
-            R.id.sora_move_right -> editor.moveSelection(SelectionMovement.RIGHT)
-            R.id.sora_home -> editor.moveSelection(SelectionMovement.LINE_START)
-            R.id.sora_end -> editor.moveSelection(SelectionMovement.LINE_END)
-            else -> return false
-        }
-        return true
     }
 
     private fun handleEditorConfig(item: MenuItem): Boolean {
@@ -132,12 +105,6 @@ class EditorMenuHandler(
                 activity.startActivity(Intent(activity, TermuxActivity::class.java)) 
             }
             R.id.sora_save_file -> coordinator.saveCurrentFile()
-            R.id.sora_open_build_log -> logManager.openBuildLog("gradle-build.log")
-            R.id.sora_open_logs -> logManager.openLogs("crash-journal.log")
-            R.id.sora_clear_logs -> logManager.clearLogs("crash-journal.log")
-            R.id.sora_open_ide_file_log -> logManager.openIdeFileLog()
-            R.id.sora_load_test_file -> coordinator.openAssetsFile("samples/big_sample.txt")
-            R.id.sora_start_java_lsp -> lspManager.startJavaLsp()
             else -> return false
         }
         return true

@@ -148,6 +148,13 @@ class EditorSetupManager(
                 savedInstanceState!!.getInt("cursor_line", 0), 
                 savedInstanceState.getInt("cursor_column", 0)
             )
-        } else { coordinator.openAssetsFile("samples/sample.java") }
+        } else {
+            val readme = projectRoot?.let { File(it, "README.md") }
+            if (readme?.exists() == true) {
+                coordinator.openFileInEditor(readme, readme.name, projectRoot)
+            } else {
+                editor.setText("")
+            }
+        }
     }
 }

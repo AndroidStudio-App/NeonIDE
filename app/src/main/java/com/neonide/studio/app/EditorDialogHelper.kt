@@ -36,8 +36,8 @@ class EditorDialogHelper(
 ) {
 
     fun chooseTypeface() {
-        val fonts = arrayOf("JetBrains Mono", "Ubuntu", "Roboto")
-        val assetsPaths = arrayOf("JetBrainsMono-Regular.ttf", "Ubuntu-Regular.ttf", "Roboto-Regular.ttf")
+        val fonts = arrayOf("JetBrains Mono", "Ubuntu Mono", "Google/Roboto Mono")
+        val assetsPaths = arrayOf("JetBrainsMono-Regular.ttf", "UbuntuMono-Regular.ttf", "RobotoMono-Regular.ttf")
         AlertDialog.Builder(activity)
             .setTitle(android.R.string.dialog_alert_title)
             .setSingleChoiceItems(fonts, -1) { dialog, which ->
@@ -45,62 +45,6 @@ class EditorDialogHelper(
                     runCatching {
                         editor.typefaceText = Typeface.createFromAsset(activity.assets, assetsPaths[which])
                     }
-                }
-                dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-
-    fun chooseLineNumberPanelPosition() {
-        val items = arrayOf(
-            activity.getString(R.string.sora_top),
-            activity.getString(R.string.sora_bottom),
-            activity.getString(R.string.sora_left),
-            activity.getString(R.string.sora_right),
-            activity.getString(R.string.sora_center),
-            activity.getString(R.string.sora_top_left),
-            activity.getString(R.string.sora_top_right),
-            activity.getString(R.string.sora_bottom_left),
-            activity.getString(R.string.sora_bottom_right)
-        )
-        AlertDialog.Builder(activity)
-            .setTitle(R.string.sora_fixed)
-            .setSingleChoiceItems(items, -1) { dialog, which ->
-                editor.lnPanelPositionMode = LineInfoPanelPositionMode.FIXED
-                editor.lnPanelPosition = when (which) {
-                    0 -> LineInfoPanelPosition.TOP
-                    1 -> LineInfoPanelPosition.BOTTOM
-                    2 -> LineInfoPanelPosition.LEFT
-                    3 -> LineInfoPanelPosition.RIGHT
-                    4 -> LineInfoPanelPosition.CENTER
-                    5 -> LineInfoPanelPosition.TOP or LineInfoPanelPosition.LEFT
-                    6 -> LineInfoPanelPosition.TOP or LineInfoPanelPosition.RIGHT
-                    7 -> LineInfoPanelPosition.BOTTOM or LineInfoPanelPosition.LEFT
-                    8 -> LineInfoPanelPosition.BOTTOM or LineInfoPanelPosition.RIGHT
-                    else -> LineInfoPanelPosition.CENTER
-                }
-                dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-
-    fun chooseLineNumberPanelFollow() {
-        val items = arrayOf(
-            activity.getString(R.string.sora_top), 
-            activity.getString(R.string.sora_center), 
-            activity.getString(R.string.sora_bottom)
-        )
-        AlertDialog.Builder(activity)
-            .setTitle(R.string.sora_follow_scrollbar)
-            .setSingleChoiceItems(items, -1) { dialog, which ->
-                editor.lnPanelPositionMode = LineInfoPanelPositionMode.FOLLOW
-                editor.lnPanelPosition = when (which) {
-                    0 -> LineInfoPanelPosition.TOP
-                    1 -> LineInfoPanelPosition.CENTER
-                    2 -> LineInfoPanelPosition.BOTTOM
-                    else -> LineInfoPanelPosition.CENTER
                 }
                 dialog.dismiss()
             }

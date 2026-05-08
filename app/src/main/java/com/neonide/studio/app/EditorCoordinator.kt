@@ -5,12 +5,10 @@ import com.neonide.studio.R
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.editor.xml.AndroidXmlLanguageEnhancer
 import com.neonide.studio.app.editor.xml.framework.AndroidFrameworkAttrIndex
-import io.github.rosemoe.sora.text.ContentIO
 import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.URI
 
@@ -54,20 +52,6 @@ class EditorCoordinator(
         
         viewHelper.updatePositionText(activity.findViewById(R.id.position_display))
         uiManager.updateBtnState(activity.undoItem, activity.redoItem)
-    }
-
-    fun openAssetsFile(path: String) {
-        activity.currentFile = null
-        runCatching { lspManager.controller.detach() }
-        editor.setEditorLanguage(languageProvider.getLanguage(File(path)))
-        uiScope.launch(Dispatchers.Main) {
-            val text = withContext(Dispatchers.IO) { 
-                ContentIO.createFrom(activity.assets.open(path)) 
-            }
-            editor.setText(text, null)
-            viewHelper.updatePositionText(activity.findViewById(R.id.position_display))
-            uiManager.updateBtnState(activity.undoItem, activity.redoItem)
-        }
     }
 
     fun navigateTo(uri: String, line: Int, column: Int, projectRoot: File?) {

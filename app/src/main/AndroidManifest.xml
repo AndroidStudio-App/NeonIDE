@@ -103,9 +103,9 @@
             android:name="com.termux.app.TermuxOpenReceiver"
             android:exported="false" />
             
-        <!--saf provider to control inteal ide files-->    
+        <!--saf provider to control internal ide files-->
         <provider
-            android:name=".DocumentsProvider"
+            android:name="com.termux.filepicker.TermuxDocumentsProvider"
             android:authorities="${TERMUX_PACKAGE_NAME}.documents"
             android:exported="true"
             android:grantUriPermissions="true"
@@ -114,7 +114,6 @@
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
         </provider>
-
         <service
             android:name=".utils.GradleService"
             android:exported="false"
