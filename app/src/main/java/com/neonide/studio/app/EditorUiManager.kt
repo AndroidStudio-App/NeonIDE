@@ -3,59 +3,65 @@ package com.neonide.studio.app
 import android.content.Context
 import android.view.MenuItem
 import android.view.View
-import androidx.viewpager2.widget.ViewPager2
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.SheetValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.neonide.studio.R
-import com.neonide.studio.app.bottomsheet.EditorBottomSheetTabAdapter
 import com.neonide.studio.app.buildoutput.BuildOutputBuffer
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.Magnifier
+import kotlin.jvm.java
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 class EditorUiManager(
     private val activity: SoraEditorActivityK,
     private val editor: CodeEditor,
-    private val gradleManager: EditorGradleManager
+    private val gradleManager: EditorGradleManager,
+    private val uiScope: CoroutineScope
 ) {
 
+    var scaffoldState: BottomSheetScaffoldState? = null
+    var symbolBarVisible by mutableStateOf(true)
+    var toolbar: MaterialToolbar? = null
+
     fun setupAcsBottomSheet() {
-        val sheet = activity.findViewById<View>(R.id.acs_bottom_sheet)
-        val behavior = BottomSheetBehavior.from(sheet)
-        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        behavior.isHideable = false
-        sheet.findViewById<View>(R.id.acs_bottom_sheet_status).visibility = View.GONE
-
-        val tabs = sheet.findViewById<TabLayout>(R.id.acs_bottom_sheet_tabs)
-        val pager = sheet.findViewById<ViewPager2>(R.id.acs_bottom_sheet_pager)
-        val adapter = EditorBottomSheetTabAdapter(activity)
-        pager.adapter = adapter
-        pager.isUserInputEnabled = false
-        TabLayoutMediator(tabs, pager) { tab, position -> 
-            tab.text = activity.getString(adapter.getTitleRes(position)) 
-        }.attach()
-
+        // Now handled by Compose
         BuildOutputBuffer.clear()
+        
+        val prefs = activity.getPreferences(Context.MODE_PRIVATE)
+        symbolBarVisible = prefs.getBoolean("symbol_bar_visible", true)
     }
 
     fun collapseBottomSheet(): Boolean {
-        val behavior = BottomSheetBehavior.from(
-            activity.findViewById<View>(R.id.acs_bottom_sheet)
-        )
-        if (behavior.state == BottomSheetBehavior.STATE_EXPANDED || 
-            behavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
-            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        val state = scaffoldState ?: return false
+        if (state.bottomSheetState.currentValue == SheetValue.Expanded || 
+            state.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+            uiScope.launch {
+                state.bottomSheetState.partialExpand()
+            }
             return true
         }
         return false
     }
 
+    fun expandBottomSheet() {
+        val state = scaffoldState ?: return
+        uiScope.launch {
+            state.bottomSheetState.expand()
+        }
+    }
+
     fun updateBtnState(undoItem: MenuItem?, redoItem: MenuItem?) {
         undoItem?.isEnabled = editor.canUndo()
         redoItem?.isEnabled = editor.canRedo()
-        val toolbar = activity.findViewById<MaterialToolbar>(R.id.toolbar)
-        gradleManager.updateQuickRunBtn(toolbar)
+        val tb = toolbar
+        if (tb != null) {
+            gradleManager.updateQuickRunBtn(tb)
+        }
     }
 
     fun toggleMagnifier(item: MenuItem) {
@@ -65,11 +71,7 @@ class EditorUiManager(
 
     fun toggleSymbolBar(item: MenuItem) {
         item.isChecked = !item.isChecked
-        activity.findViewById<View>(R.id.main_bottom_bar).visibility = if (item.isChecked) {
-            View.VISIBLE 
-        } else {
-            View.GONE
-        }
+        symbolBarVisible = item.isChecked
         activity.getPreferences(Context.MODE_PRIVATE).edit()
             .putBoolean("symbol_bar_visible", item.isChecked).apply()
     }

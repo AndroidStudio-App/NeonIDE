@@ -67,7 +67,7 @@
         
         <!--editor activity -->
         <activity
-            android:name=".app.SoraEditorActivityK"
+            android:name=".EditorActivity"
             android:exported="true"
             android:theme="@style/AppTheme" />
 

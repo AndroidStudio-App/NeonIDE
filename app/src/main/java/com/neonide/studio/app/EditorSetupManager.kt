@@ -37,19 +37,8 @@ class EditorSetupManager(
     private val viewHelper: EditorViewHelper
 ) {
 
-    fun setupUi(projectRoot: File?, openFile: (File, String) -> Unit) {
-        val prefs = activity.getPreferences(Context.MODE_PRIVATE)
-        val bar = activity.findViewById<View>(R.id.main_bottom_bar)
-        bar.visibility = if (prefs.getBoolean("symbol_bar_visible", true)) View.VISIBLE else View.GONE
-
+    fun setupUi(projectRoot: File?) {
         WindowCompat.setDecorFitsSystemWindows(activity.window, false)
-        val drawer = activity.findViewById<DrawerLayout>(R.id.drawer_layout)
-        ViewCompat.setOnApplyWindowInsetsListener(drawer) { v, insets ->
-            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(0, sys.top, 0, ime.bottom)
-            insets
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
             activity.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
@@ -61,26 +50,14 @@ class EditorSetupManager(
             )
         }
 
-        activity.findViewById<androidx.compose.ui.platform.ComposeView>(R.id.file_tree_drawer_view)
-            .setContent {
-                FileTreeDrawer(
-                    rootPath = projectRoot?.absolutePath ?: "", 
-                    onFileClick = { path -> openFile(File(path), File(path).name) }
-                )
-            }
-
-        val tb: MaterialToolbar = activity.findViewById(R.id.toolbar)
-        activity.setSupportActionBar(tb)
-        activity.supportActionBar?.title = "Editor"
-
         uiManager.setupAcsBottomSheet()
     }
 
-    fun setupEditor(symbols: Array<String>, symbolsInsert: Array<String>) {
+    fun setupEditor(symbolInput: SymbolInputView, symbols: Array<String>, symbolsInsert: Array<String>) {
         editor.runCatching {
             typefaceText = Typeface.createFromAsset(activity.assets, "JetBrainsMono-Regular.ttf")
         }
-        activity.findViewById<SymbolInputView>(R.id.symbol_input).apply {
+        symbolInput.apply {
             bindEditor(editor)
             addSymbols(symbols, symbolsInsert)
         }
@@ -100,10 +77,9 @@ class EditorSetupManager(
         redoItem: () -> MenuItem?
     ) {
         editor.subscribeAlways(SelectionChangeEvent::class.java) { 
-            viewHelper.updatePositionText(activity.findViewById(R.id.position_display)) 
+            // Position display update is now handled by viewHelper or directly in Compose
         }
         editor.subscribeAlways(PublishSearchResultEvent::class.java) { 
-            viewHelper.updatePositionText(activity.findViewById(R.id.position_display)) 
         }
         editor.subscribeAlways(ContentChangeEvent::class.java) { ev ->
             editor.postDelayed({ uiManager.updateBtnState(undoItem(), redoItem()) }, 50L)

@@ -50,7 +50,7 @@ class EditorCoordinator(
             AndroidXmlLanguageEnhancer.setAndroidFrameworkAttrsProvider(null)
         }
         
-        viewHelper.updatePositionText(activity.findViewById(R.id.position_display))
+        viewHelper.updatePositionText()
         uiManager.updateBtnState(activity.undoItem, activity.redoItem)
     }
 

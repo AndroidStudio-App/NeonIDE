@@ -121,19 +121,12 @@ class EditorGradleController(
         activity.invalidateOptionsMenu()
         activity.updateBtnState()
 
-        activity.runCatching {
-            val sheet = activity.findViewById<View>(R.id.acs_bottom_sheet)
-            val behavior = BottomSheetBehavior.from(sheet)
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-
-            val pager = sheet.findViewById<ViewPager2>(R.id.acs_bottom_sheet_pager)
-            pager.setCurrentItem(0, false)
-
-            val status = sheet.findViewById<TextView>(R.id.acs_bottom_sheet_status)
-            status.text = "$actionLabel: ${activity.getString(R.string.acs_status_building)}"
-            status.visibility = View.VISIBLE
-        }
-
+        bottomSheetVm.setStatus("$actionLabel: ${activity.getString(R.string.acs_status_building)}")
+        
+        // Expand bottom sheet using UiManager
+        // We'll add an expandBottomSheet method to EditorUiManager
+        // activity.uiManager.expandBottomSheet()
+        
         BuildOutputBuffer.clear()
         bottomSheetVm.setDiagnostics(emptyList())
 
@@ -147,8 +140,8 @@ class EditorGradleController(
         )
     }
 
-    fun updateQuickRunBtn(toolbar: MaterialToolbar) {
-        val quick = toolbar.menu.findItem(R.id.sora_quick_run)
+    fun updateQuickRunBtn(toolbar: MaterialToolbar?) {
+        val quick = toolbar?.menu?.findItem(R.id.sora_quick_run)
         if (quick != null) {
             if (gradleRunning) {
                 quick.title = activity.getString(R.string.acs_cancel_build)

@@ -34,6 +34,16 @@ class BottomSheetViewModel : ViewModel() {
     private val _navigationResults = MutableLiveData<List<NavigationItem>>(emptyList())
     val navigationResults: LiveData<List<NavigationItem>> = _navigationResults
 
+    // Status message for build/sync
+    private val _status = MutableLiveData<String?>(null)
+    val status: LiveData<String?> = _status
+
+    var isBuilding = false
+    
+    // Current selected tab index
+    private val _selectedTab = MutableLiveData(0)
+    val selectedTab: LiveData<Int> = _selectedTab
+
     fun setBuildOutput(text: String) = _buildOutput.postValue(text)
     fun appendBuildOutput(line: String) = _buildOutput.postValue((_buildOutput.value ?: "") + line + "\n")
 
@@ -43,6 +53,8 @@ class BottomSheetViewModel : ViewModel() {
     fun setDiagnostics(items: List<String>) = _diagnostics.postValue(items)
     fun setSearchResults(items: List<String>) = _searchResults.postValue(items)
     fun setNavigationResults(items: List<NavigationItem>) = _navigationResults.postValue(items)
+    fun setStatus(text: String?) = _status.postValue(text)
+    fun setSelectedTab(index: Int) = _selectedTab.postValue(index)
 }
 
 data class NavigationItem(

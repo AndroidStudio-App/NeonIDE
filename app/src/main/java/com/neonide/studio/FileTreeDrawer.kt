@@ -1,7 +1,7 @@
 package com.neonide.studio
 
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.calculateZoom
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +34,8 @@ import cafe.adriel.bonsai.core.node.BranchNode
 import cafe.adriel.bonsai.core.node.Node
 import cafe.adriel.bonsai.filesystem.FileSystemBonsaiStyle
 import cafe.adriel.bonsai.filesystem.FileSystemTree
+import androidx.compose.ui.platform.LocalContext
+import com.neonide.studio.utils.ApkInstallUtils
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -51,6 +53,7 @@ fun FileTreeDrawer(
         return
     }
 
+    val context = LocalContext.current
     val rootPathState = remember(rootPath) { rootPath.toPath() }
     var refreshTrigger by remember { mutableStateOf(0) }
     
@@ -132,13 +135,14 @@ fun FileTreeDrawer(
     
     // Dialogs
     if (actionDialog == "actions" && nodeToAct != null) {
+        val file = File(nodeToAct!!.content.toString())
         AlertDialog(
             onDismissRequest = { actionDialog = null },
             title = { Text("Actions") },
             text = {
                 Column {
                     TextButton(onClick = { 
-                        newName = File(nodeToAct!!.content.toString()).name
+                        newName = file.name
                         actionDialog = "rename"
                     }) { Text("Rename") }
                     TextButton(onClick = { 
@@ -207,16 +211,14 @@ fun FileTreeDrawer(
                 .fillMaxSize()
                 // Use Initial pass to catch pinch before LazyColumn consumes it for scrolling
                 .pointerInput(Unit) {
-                    forEachGesture {
-                        awaitPointerEventScope {
-                            do {
-                                val event = awaitPointerEvent(PointerEventPass.Initial)
-                                val zoomChange = event.calculateZoom()
-                                if (zoomChange != 1f) {
-                                    uiScale = (uiScale * zoomChange).coerceIn(0.7f, 2.5f)
-                                }
-                            } while (event.changes.any { it.pressed })
-                        }
+                    awaitEachGesture {
+                        do {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            val zoomChange = event.calculateZoom()
+                            if (zoomChange != 1f) {
+                                uiScale = (uiScale * zoomChange).coerceIn(0.7f, 2.5f)
+                            }
+                        } while (event.changes.any { it.pressed })
                     }
                 }
         ) {
@@ -227,6 +229,9 @@ fun FileTreeDrawer(
                 onClick = { node ->
                     val file = File(node.content.toString())
                     if (file.isFile) {
+                        if (file.extension.equals("apk", ignoreCase = true)) {
+                            ApkInstallUtils.installApk(context, file)
+                        }
                         onFileClick(file.absolutePath)
                     } else {
                         tree.toggleExpansion(node)

@@ -142,11 +142,7 @@ class EditorLspHandler(
     }
 
     private fun showNavigationTab() {
-        val sheet = activity.findViewById<View>(R.id.acs_bottom_sheet)
-        val behavior = BottomSheetBehavior.from(sheet)
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        
-        val viewPager = activity.findViewById<ViewPager2>(R.id.acs_bottom_sheet_pager)
-        viewPager.currentItem = TAB_INDEX_REFERENCES
+        activity.uiManager.expandBottomSheet()
+        bottomSheetVm.setSelectedTab(TAB_INDEX_REFERENCES)
     }
 }
