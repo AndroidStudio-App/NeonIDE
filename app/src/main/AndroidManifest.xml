@@ -69,6 +69,7 @@
         <activity
             android:name=".EditorActivity"
             android:exported="true"
+            android:windowSoftInputMode="adjustNothing"
             android:theme="@style/AppTheme" />
 
         <!--terminal activity-->
