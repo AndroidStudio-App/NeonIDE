@@ -6,10 +6,19 @@ import androidx.lifecycle.ViewModel
 import com.neonide.studio.app.lsp.LspManager
 import com.neonide.studio.app.lsp.LspStatus
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 /**
  * ViewModel for managing the state and lifecycle of components within SoraEditorActivityK.
  */
 class EditorViewModel : ViewModel() {
+
+    var positionText by mutableStateOf("")
+    var searchQuery by mutableStateOf("")
+    var replacementText by mutableStateOf("")
+    var searchPanelVisible by mutableStateOf(false)
 
     /**
      * Manager for Language Server Protocol integration.

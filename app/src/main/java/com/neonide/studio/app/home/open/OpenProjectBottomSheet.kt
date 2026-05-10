@@ -83,6 +83,7 @@ import com.neonide.studio.app.utils.SafeDirLister
 import com.neonide.studio.app.utils.SafeFileDeleter
 import com.termux.shared.termux.TermuxConstants
 import com.neonide.studio.utils.FileUtil
+import com.neonide.studio.EditorActivity
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -372,7 +373,8 @@ private fun isValidAndroidProjectInternal(dir: File): Boolean {
 
 private fun openProject(context: Context, root: File) {
     WizardPreferences.addRecentProject(context, root.absolutePath)
-    val intent = Intent(context, SoraEditorActivityK::class.java)
+    //val intent = Intent(context, SoraEditorActivityK::class.java)
+    val intent = Intent(context, EditorActivity::class.java)
     intent.putExtra(SoraEditorActivityK.EXTRA_PROJECT_DIR, root.absolutePath)
     context.startActivity(intent)
 }

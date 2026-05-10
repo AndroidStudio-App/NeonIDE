@@ -4,8 +4,12 @@ import android.widget.TextView
 import com.neonide.studio.R
 import io.github.rosemoe.sora.widget.CodeEditor
 
-class EditorViewHelper(private val activity: SoraEditorActivityK, private val editor: CodeEditor) {
-    fun updatePositionText(positionDisplay: TextView) {
+class EditorViewHelper(
+    private val activity: SoraEditorActivityK, 
+    private val editor: CodeEditor,
+    private val viewModel: EditorViewModel
+) {
+    fun updatePositionText() {
         val cursor = editor.cursor
         var text = "${cursor.leftLine + 1}:${cursor.leftColumn};${cursor.left} "
         text += if (cursor.isSelected) "(${cursor.right - cursor.left} chars)" 
@@ -17,6 +21,6 @@ class EditorViewHelper(private val activity: SoraEditorActivityK, private val ed
             val count = searcher.matchedPositionCount
             text += if (idx == -1) "(no match)" else "(${idx + 1} of $count matches)"
         }
-        positionDisplay.text = text
+        viewModel.positionText = text
     }
 }

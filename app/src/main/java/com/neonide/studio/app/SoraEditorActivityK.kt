@@ -39,6 +39,23 @@ import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
 import java.io.IOException
 
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
+import com.neonide.studio.FileTreeDrawer
+import com.neonide.studio.ui.theme.AppTheme
+import io.github.rosemoe.sora.widget.SymbolInputView
+import kotlinx.coroutines.launch
+
+import android.view.ViewGroup
+import android.util.TypedValue
+
 /**
  * Termux editor activity with sora-editor demo feature set.
  */
@@ -59,8 +76,8 @@ class SoraEditorActivityK : AppCompatActivity() {
     private val gradleManager: EditorGradleManager by lazy {
         EditorGradleManager(this, bottomSheetVm)
     }
-    private val uiManager: EditorUiManager by lazy {
-        EditorUiManager(this, editor, gradleManager)
+    internal val uiManager: EditorUiManager by lazy {
+        EditorUiManager(this, editor, gradleManager, uiScope)
     }
     private val logManager: EditorLogManager by lazy {
         EditorLogManager(this, editor, bottomSheetVm, uiScope)
@@ -72,7 +89,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         EditorDialogManager(dialogHelper)
     }
     private val viewHelper: EditorViewHelper by lazy {
-        EditorViewHelper(this, editor)
+        EditorViewHelper(this, editor, editorVm)
     }
     private val setupManager: EditorSetupManager by lazy {
         EditorSetupManager(this, editor, uiManager, lspManager, viewHelper)
@@ -173,29 +190,105 @@ class SoraEditorActivityK : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sora_editor)
-        editor = findViewById(R.id.editor)
+        
+        editor = CodeEditor(this)
+        val symbolInput = SymbolInputView(this)
+        
         languageProvider = SoraLanguageProvider(this)
         
-        val searchController = EditorSearchController(
-            this, editor, findViewById(R.id.search_panel), 
-            findViewById(R.id.search_editor), findViewById(R.id.replace_editor), 
-            findViewById(R.id.search_options)
-        )
-        searchManager = EditorSearchManager(searchController, editor)
+        val searchController = EditorSearchController(this, editor, editorVm)
+        searchManager = EditorSearchManager(searchController, editor) 
         
         dialogHelper = EditorDialogHelper(this, editor, languageProvider, loadTMTLauncher, loadTMLLauncher)
         
         projectRoot = savedInstanceState?.getString("project_root_path")?.let { File(it) } ?: 
             intent.getStringExtra(EXTRA_PROJECT_DIR)?.let { File(it) }
+
+        val toolbar = MaterialToolbar(this).apply {
+            val tv = TypedValue()
+            val height = if (theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+            } else {
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            }
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                height
+            )
+        }
+        setSupportActionBar(toolbar)
+        uiManager.toolbar = toolbar
+        uiManager.setupAcsBottomSheet() // Initialize state
+
+        setContent {
+            AppTheme {
+                val scaffoldState = rememberBottomSheetScaffoldState()
+                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                val scope = rememberCoroutineScope()
+                
+                LaunchedEffect(Unit) {
+                    uiManager.scaffoldState = scaffoldState
+                }
+
+                ModalNavigationDrawer(
+                    drawerState = drawerState,
+                    drawerContent = {
+                        ModalDrawerSheet {
+                            FileTreeDrawer(
+                                rootPath = projectRoot?.absolutePath ?: "",
+                                onFileClick = { path ->
+                                    if (!path.endsWith(".apk", ignoreCase = true)) {
+                                        coordinator.openFileInEditor(File(path), File(path).name, projectRoot)
+                                    }
+                                    scope.launch { drawerState.close() }
+                                }
+                            )
+                        }
+                    }
+                ) {
+                    SoraEditorScreen(
+                        editor = editor,
+                        symbolInput = symbolInput,
+                        editorVm = editorVm,
+                        bottomSheetVm = bottomSheetVm,
+                        searchController = searchController,
+                        scaffoldState = scaffoldState,
+                        topBar = {
+                            AndroidView(
+                                factory = { toolbar },
+                                update = { view ->
+                                    view.setNavigationIcon(R.drawable.ic_menu)
+                                    view.setNavigationOnClickListener {
+                                        scope.launch { drawerState.open() }
+                                    }
+                                }
+                            )
+                        },
+                        bottomBar = {
+                            Column {
+                                if (uiManager.symbolBarVisible) {
+                                    AndroidView(factory = { symbolInput })
+                                }
+                                Text(
+                                    text = editorVm.positionText,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+        }
             
-        setupManager.setupUi(projectRoot) { f, t -> coordinator.openFileInEditor(f, t, projectRoot) }
-        setupManager.setupEditor(SYMBOLS, SYMBOL_INSERT_TEXT)
+        setupManager.setupUi(projectRoot)
+        setupManager.setupEditor(symbolInput, SYMBOLS, SYMBOL_INSERT_TEXT)
         setupManager.setupEventListeners(xmlDiagnosticsRunnable, { currentFile }, { undoItem }, { redoItem })
         
         setupManager.initializeProject(savedInstanceState, themeManager, coordinator, projectRoot)
         logManager.refreshAppLogs(LOG_BUFFER_SIZE)
-        viewHelper.updatePositionText(findViewById(R.id.position_display))
+        viewHelper.updatePositionText()
         uiManager.updateBtnState(undoItem, redoItem)
         
         val isNight = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == 
@@ -239,8 +332,7 @@ class SoraEditorActivityK : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_sora_main, menu)
         undoItem = menu.findItem(R.id.sora_text_undo)
         redoItem = menu.findItem(R.id.sora_text_redo)
-        val barVisible = findViewById<View>(R.id.main_bottom_bar).visibility == View.VISIBLE
-        menu.findItem(R.id.sora_symbol_bar_visibility).isChecked = barVisible
+        menu.findItem(R.id.sora_symbol_bar_visibility).isChecked = uiManager.symbolBarVisible
         uiManager.updateBtnState(undoItem, redoItem)
         return true
     }
