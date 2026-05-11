@@ -2,9 +2,7 @@ package com.neonide.studio.app.editor
 
 import android.content.Context
 import android.content.Intent
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.animateDpAsState
@@ -143,13 +141,8 @@ fun EditorScreen(
                         factory = { ctx ->
                             HorizontalScrollView(ctx).apply {
                                 isHorizontalScrollBarEnabled = false
-                                addView(
-                                    symbolInputView,
-                                    LayoutParams(
-                                        WRAP_CONTENT,
-                                        MATCH_PARENT
-                                    )
-                                )
+                                (symbolInputView.parent as? ViewGroup)?.removeView(symbolInputView)
+                                addView(symbolInputView)
                             }
                         },
                         modifier = Modifier.fillMaxWidth().height(48.dp)
