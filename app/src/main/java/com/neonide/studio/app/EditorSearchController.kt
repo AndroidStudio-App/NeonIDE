@@ -10,7 +10,7 @@ import io.github.rosemoe.sora.widget.EditorSearcher
  * Controller for handling search and replace logic in the editor.
  */
 class EditorSearchController(
-    private val activity: SoraEditorActivityK,
+    private val activity: androidx.activity.ComponentActivity,
     private val editor: CodeEditor,
     private val viewModel: EditorViewModel
 ) {
