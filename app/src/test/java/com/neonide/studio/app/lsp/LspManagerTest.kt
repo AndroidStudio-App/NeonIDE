@@ -4,7 +4,9 @@ import java.util.concurrent.CompletableFuture
 import org.eclipse.lsp4j.CompletionParams
 import org.eclipse.lsp4j.Position
 import org.eclipse.lsp4j.TextDocumentIdentifier
-import org.junit.Assert.*
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LspManagerTest {

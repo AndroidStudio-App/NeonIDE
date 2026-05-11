@@ -2,7 +2,8 @@ package com.neonide.studio.app
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.neonide.studio.app.lsp.LspStatus
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Rule
 import org.junit.Test
 

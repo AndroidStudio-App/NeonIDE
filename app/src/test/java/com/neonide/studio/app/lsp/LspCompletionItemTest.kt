@@ -2,7 +2,8 @@ package com.neonide.studio.app.lsp
 
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import org.eclipse.lsp4j.CompletionItem
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Test
 
 class LspCompletionItemTest {

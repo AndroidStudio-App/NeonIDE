@@ -1,0 +1,192 @@
+package com.neonide.studio.app.editor
+
+import android.content.Context
+import android.content.Intent
+import android.view.ViewGroup
+import android.widget.HorizontalScrollView
+import androidx.activity.ComponentActivity
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.neonide.studio.app.EditorGradleManager
+import com.neonide.studio.app.EditorSearchController
+import com.neonide.studio.app.EditorSearchPanel
+import com.neonide.studio.app.EditorViewModel
+import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
+import com.neonide.studio.app.bottomsheet.model.BottomSheetViewModel
+import com.termux.app.TermuxActivity
+import io.github.rosemoe.sora.event.SelectionChangeEvent
+import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.SymbolInputView
+import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+@Composable
+fun EditorScreen(
+    editorVm: EditorViewModel,
+    bottomSheetVm: BottomSheetViewModel,
+    settings: EditorSettingsState,
+    projectPath: File,
+    filePathState: MutableState<String?>,
+    editorState: MutableState<CodeEditor?>,
+    symbolInputView: SymbolInputView,
+    gradleManager: EditorGradleManager,
+    onOpenDrawer: () -> Unit
+) {
+    val context = LocalContext.current as ComponentActivity
+    val scope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
+    val isImeVisible = WindowInsets.isImeVisible
+    val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
+    val peekHeight by animateDpAsState(
+        targetValue = if (isImeVisible) 0.dp else (30.dp + navBarHeight),
+        label = "BottomSheetPeekHeight"
+    )
+
+    LaunchedEffect(isImeVisible) {
+        if (isImeVisible) {
+            scaffoldState.bottomSheetState.partialExpand()
+        }
+    }
+
+    val searchController = remember(editorState.value) {
+        editorState.value?.let { EditorSearchController(context, it, editorVm) }
+    }
+
+    BottomSheetScaffold(
+        modifier = Modifier,
+        scaffoldState = scaffoldState,
+        sheetContent = { EditorBottomSheetContent(viewModel = bottomSheetVm) },
+        sheetPeekHeight = peekHeight,
+        topBar = {
+            EditorTopBar(
+                settings = settings,
+                editor = editorState.value,
+                searchPanelVisible = editorVm.searchPanelVisible,
+                onSearchPanelToggle = {
+                    editorVm.searchPanelVisible = !editorVm.searchPanelVisible
+                },
+                onSearchActionMode = { searchController?.tryCommitSearch() },
+                onNavigationClick = onOpenDrawer,
+                onUndoClick = { editorState.value?.undo() },
+                onRedoClick = { editorState.value?.redo() },
+                onSaveClick = { saveCurrentFile(scope, editorState.value, filePathState.value) },
+                onBuildClick = {
+                    gradleManager.onQuickRunOrCancel(projectPath)
+                    scope.launch { scaffoldState.bottomSheetState.expand() }
+                },
+                onSyncClick = { gradleManager.onSyncProject(projectPath) },
+                onTerminalClick = {
+                    runCatching {
+                        context.startActivity(Intent(context, TermuxActivity::class.java))
+                    }
+                },
+                onSwitchLanguage = { EditorDialogs.showLanguageChoice(context, editorState.value) },
+                onSwitchColors = { EditorDialogs.showThemeChoice(context, editorState.value) },
+                onSwitchTypeface = { EditorDialogs.showTypefaceChoice(context, editorState.value) }
+            )
+        }
+    ) { padding ->
+        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+            if (editorVm.searchPanelVisible && searchController != null) {
+                EditorSearchPanel(editorVm, searchController)
+            }
+
+            SoraEditor(
+                modifier = Modifier.weight(1f),
+                filePath = filePathState.value,
+                onEditorCreated = { editor ->
+                    editorState.value = editor
+                    symbolInputView.bindEditor(editor)
+                    editor.subscribeAlways(SelectionChangeEvent::class.java) {
+                        updatePositionText(editor, editorVm)
+                    }
+                    updatePositionText(editor, editorVm)
+                }
+            )
+
+            Column(modifier = Modifier.imePadding()) {
+                if (settings.isSymbolBarVisible) {
+                    AndroidView(
+                        factory = { ctx ->
+                            HorizontalScrollView(ctx).apply {
+                                isHorizontalScrollBarEnabled = false
+                                (symbolInputView.parent as? ViewGroup)?.removeView(symbolInputView)
+                                addView(symbolInputView)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth().height(48.dp)
+                    )
+                }
+                Text(
+                    text = editorVm.positionText,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+private fun saveCurrentFile(
+    scope: kotlinx.coroutines.CoroutineScope,
+    editor: CodeEditor?,
+    path: String?
+) {
+    if (editor != null && path != null) {
+        scope.launch(Dispatchers.IO) {
+            runCatching { File(path).writeText(editor.text.toString()) }
+        }
+    }
+}
+
+fun updatePositionText(editor: CodeEditor?, editorVm: EditorViewModel) {
+    if (editor == null) return
+    val cursor = editor.cursor
+    var text = "${cursor.leftLine + 1}:${cursor.leftColumn};${cursor.left} "
+
+    text += if (cursor.isSelected) {
+        "(${cursor.right - cursor.left} chars)"
+    } else {
+        "(${editor.text.getLine(cursor.leftLine).toString().getOrNull(cursor.leftColumn) ?: ' '})"
+    }
+
+    val searcher = editor.searcher
+    if (searcher.hasQuery()) {
+        val idx = searcher.currentMatchedPositionIndex
+        val count = searcher.matchedPositionCount
+        text += if (idx == -1) "(no match)" else "(${idx + 1} of $count matches)"
+    }
+    editorVm.positionText = text
+}
