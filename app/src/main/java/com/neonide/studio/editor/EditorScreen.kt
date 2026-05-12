@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.app.EditorGradleManager
 import com.neonide.studio.app.EditorSearchController
@@ -73,7 +75,7 @@ fun EditorScreen(
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     val peekHeight by animateDpAsState(
-        targetValue = if (isImeVisible) 0.dp else (30.dp + navBarHeight),
+        targetValue = 30.dp + navBarHeight,
         label = "BottomSheetPeekHeight"
     )
 
@@ -141,7 +143,17 @@ fun EditorScreen(
             )
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize()) {
+
+        val imeBottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding()
+        val minEditorBottom = 30.dp + navBarHeight
+        val actualBottom = max(padding.calculateBottomPadding(), max(imeBottom, minEditorBottom))
+
+        Column(
+            modifier = Modifier.fillMaxSize().padding(
+                top = padding.calculateTopPadding(),
+                bottom = actualBottom
+            )
+        ) {
             if (editorVm.searchPanelVisible && searchController != null) {
                 EditorSearchPanel(editorVm, searchController)
             }
@@ -177,7 +189,7 @@ fun EditorScreen(
                 }
             )
 
-            Column(modifier = Modifier.imePadding()) {
+            Column {
                 if (settings.isSymbolBarVisible) {
                     AndroidView(
                         factory = { ctx ->
