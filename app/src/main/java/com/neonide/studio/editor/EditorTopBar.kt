@@ -54,7 +54,7 @@ fun EditorTopBar(
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
-        modifier = Modifier.statusBarsPadding().height(50.dp),
+        modifier = Modifier.statusBarsPadding().height(40.dp),
         title = {},
         navigationIcon = {
             IconButton(onClick = onNavigationClick) { Icon(Icons.Default.Menu, "Menu") }

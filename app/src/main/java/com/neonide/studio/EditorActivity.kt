@@ -3,12 +3,15 @@ package com.neonide.studio
 import android.os.Bundle
 import android.view.Gravity
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.neonide.studio.app.EditorGradleManager
@@ -20,6 +23,7 @@ import com.neonide.studio.app.editor.EditorSettingsState
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.filetree.FileTreeDrawer
 import com.neonide.studio.ui.theme.AppTheme
+import com.neonide.studio.utils.OpenFile
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
 import java.io.File
@@ -34,7 +38,8 @@ class EditorActivity : ComponentActivity() {
             arrayOf("\t", "{}", "}", "()", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/", "<>", ">", "[]", "]", ":")
     }
 
-    private val filePathState = mutableStateOf<String?>(null)
+    private val openFilesState = mutableStateOf<List<OpenFile>>(emptyList())
+    private val activeFileState = mutableStateOf<OpenFile?>(null)
     private val editorState = mutableStateOf<CodeEditor?>(null)
     private val editorVm: EditorViewModel by viewModels()
     private val bottomSheetVm: BottomSheetViewModel by viewModels()
@@ -66,6 +71,12 @@ class EditorActivity : ComponentActivity() {
         val mainContent = findViewById<ComposeView>(R.id.main_content)
         val drawerView = findViewById<ComposeView>(R.id.file_tree_drawer_view)
 
+        ViewCompat.setOnApplyWindowInsetsListener(drawerLayout) { _, insets ->
+            ViewCompat.dispatchApplyWindowInsets(mainContent, insets)
+            ViewCompat.dispatchApplyWindowInsets(drawerView, insets)
+            insets
+        }
+
         mainContent.setContent {
             AppTheme {
                 EditorScreen(
@@ -73,7 +84,8 @@ class EditorActivity : ComponentActivity() {
                     bottomSheetVm = bottomSheetVm,
                     settings = settingsState,
                     projectPath = projectPath,
-                    filePathState = filePathState,
+                    openFilesState = openFilesState,
+                    activeFileState = activeFileState,
                     editorState = editorState,
                     symbolInputView = symbolInputView,
                     gradleManager = gradleManager,
@@ -84,15 +96,41 @@ class EditorActivity : ComponentActivity() {
 
         drawerView.setContent {
             AppTheme {
-                FileTreeDrawer(
-                    rootPath = projectPath.path,
-                    onFileClick = { path ->
-                        if (!path.endsWith(".apk", ignoreCase = true)) {
-                            filePathState.value = path
+                Box(modifier = Modifier.systemBarsPadding()) {
+                    FileTreeDrawer(
+                        rootPath = projectPath.path,
+                        onFileClick = { path ->
+                            if (!path.endsWith(".apk", ignoreCase = true)) {
+                                val file = File(path)
+                                val existingFile = openFilesState.value.find { it.path == path }
+
+                                // Save current text before switching
+                                activeFileState.value?.let { active ->
+                                    editorState.value?.text?.toString()?.let { currentText ->
+                                        val updated = active.copy(content = currentText)
+                                        openFilesState.value = openFilesState.value.map {
+                                            if (it.path == updated.path) updated else it
+                                        }
+                                    }
+                                }
+
+                                if (existingFile != null) {
+                                    activeFileState.value = existingFile
+                                } else {
+                                    if (file.exists() && file.isFile) {
+                                        val content = runCatching {
+                                            file.readText()
+                                        }.getOrDefault("")
+                                        val newOpenFile = OpenFile(path, file.name, content)
+                                        openFilesState.value = openFilesState.value + newOpenFile
+                                        activeFileState.value = newOpenFile
+                                    }
+                                }
+                            }
+                            drawerLayout.closeDrawer(Gravity.START)
                         }
-                        drawerLayout.closeDrawer(Gravity.START)
-                    }
-                )
+                    )
+                }
             }
         }
     }

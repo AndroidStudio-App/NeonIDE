@@ -41,13 +41,16 @@ import com.neonide.studio.app.EditorSearchPanel
 import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.app.bottomsheet.model.BottomSheetViewModel
+import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
+import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun EditorScreen(
@@ -55,7 +58,8 @@ fun EditorScreen(
     bottomSheetVm: BottomSheetViewModel,
     settings: EditorSettingsState,
     projectPath: File,
-    filePathState: MutableState<String?>,
+    openFilesState: MutableState<List<OpenFile>>,
+    activeFileState: MutableState<OpenFile?>,
     editorState: MutableState<CodeEditor?>,
     symbolInputView: SymbolInputView,
     gradleManager: EditorGradleManager,
@@ -76,6 +80,18 @@ fun EditorScreen(
     LaunchedEffect(isImeVisible) {
         if (isImeVisible) {
             scaffoldState.bottomSheetState.partialExpand()
+        }
+    }
+
+    LaunchedEffect(activeFileState.value?.path) {
+        val activeFile = activeFileState.value
+        val editor = editorState.value
+        if (activeFile != null && editor != null) {
+            if (editor.text.toString() != activeFile.content) {
+                editor.setText(activeFile.content)
+            }
+        } else if (activeFile == null && editor != null) {
+            editor.setText("")
         }
     }
 
@@ -100,7 +116,15 @@ fun EditorScreen(
                 onNavigationClick = onOpenDrawer,
                 onUndoClick = { editorState.value?.undo() },
                 onRedoClick = { editorState.value?.redo() },
-                onSaveClick = { saveCurrentFile(scope, editorState.value, filePathState.value) },
+                onSaveClick = {
+                    saveAllModifiedFiles(
+                        scope,
+                        openFilesState,
+                        activeFileState,
+                        editorState.value,
+                        activeFileState.value
+                    )
+                },
                 onBuildClick = {
                     gradleManager.onQuickRunOrCancel(projectPath)
                     scope.launch { scaffoldState.bottomSheetState.expand() }
@@ -122,14 +146,32 @@ fun EditorScreen(
                 EditorSearchPanel(editorVm, searchController)
             }
 
+            EditorTabRow(
+                openFilesState = openFilesState,
+                activeFileState = activeFileState,
+                editorState = editorState
+            )
+
             SoraEditor(
                 modifier = Modifier.weight(1f),
-                filePath = filePathState.value,
+                filePath = activeFileState.value?.path,
                 onEditorCreated = { editor ->
                     editorState.value = editor
                     symbolInputView.bindEditor(editor)
                     editor.subscribeAlways(SelectionChangeEvent::class.java) {
                         updatePositionText(editor, editorVm)
+                    }
+                    editor.subscribeAlways(ContentChangeEvent::class.java) {
+                        val active = activeFileState.value
+                        if (active != null && !active.isModified) {
+                            if (editor.text.toString() != active.content) {
+                                val updated = active.copy(isModified = true)
+                                activeFileState.value = updated
+                                openFilesState.value = openFilesState.value.map {
+                                    if (it.path == updated.path) updated else it
+                                }
+                            }
+                        }
                     }
                     updatePositionText(editor, editorVm)
                 }
@@ -159,18 +201,46 @@ fun EditorScreen(
     }
 }
 
-private fun saveCurrentFile(
+private fun saveAllModifiedFiles(
     scope: kotlinx.coroutines.CoroutineScope,
+    openFilesState: MutableState<List<OpenFile>>,
+    activeFileState: MutableState<OpenFile?>,
     editor: CodeEditor?,
-    path: String?
+    activeFile: OpenFile?
 ) {
-    if (editor != null && path != null) {
-        scope.launch(Dispatchers.IO) {
-            runCatching { File(path).writeText(editor.text.toString()) }
+    scope.launch(Dispatchers.IO) {
+        val currentText = withContext(Dispatchers.Main) {
+            editor?.text?.toString()
+        }
+
+        val currentOpenFiles = openFilesState.value
+        val updatedFiles = currentOpenFiles.map { file ->
+            if (file.isModified) {
+                runCatching {
+                    val contentToSave = if (file.path == activeFile?.path && currentText != null) {
+                        currentText
+                    } else {
+                        file.content
+                    }
+                    File(file.path).writeText(contentToSave)
+                    file.copy(content = contentToSave, isModified = false)
+                }.getOrDefault(file)
+            } else {
+                file
+            }
+        }
+
+        withContext(Dispatchers.Main) {
+            openFilesState.value = updatedFiles
+            // Update active file reference to the new instance if it was saved
+            activeFile?.let { active ->
+                updatedFiles.find { it.path == active.path }?.let {
+                    activeFileState.value = it
+                }
+            }
         }
     }
 }
-
 fun updatePositionText(editor: CodeEditor?, editorVm: EditorViewModel) {
     if (editor == null) return
     val cursor = editor.cursor
