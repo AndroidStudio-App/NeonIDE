@@ -3,6 +3,7 @@ package com.neonide.studio
 import android.os.Bundle
 import android.view.Gravity
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -70,6 +71,20 @@ class EditorActivity : ComponentActivity() {
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val mainContent = findViewById<ComposeView>(R.id.main_content)
         val drawerView = findViewById<ComposeView>(R.id.file_tree_drawer_view)
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (drawerLayout.isDrawerOpen(Gravity.START)) {
+                        drawerLayout.closeDrawer(Gravity.START)
+                    } else {
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                }
+            }
+        )
 
         ViewCompat.setOnApplyWindowInsetsListener(drawerLayout) { _, insets ->
             ViewCompat.dispatchApplyWindowInsets(mainContent, insets)

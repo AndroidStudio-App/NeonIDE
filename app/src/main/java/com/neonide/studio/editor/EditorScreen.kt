@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -78,6 +80,12 @@ fun EditorScreen(
         targetValue = 30.dp + navBarHeight,
         label = "BottomSheetPeekHeight"
     )
+
+    BackHandler(enabled = scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+        scope.launch {
+            scaffoldState.bottomSheetState.partialExpand()
+        }
+    }
 
     LaunchedEffect(isImeVisible) {
         if (isImeVisible) {
