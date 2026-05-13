@@ -57,6 +57,8 @@ class EditorActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val projectPath = File(intent.getStringExtra("extra_project_dir") ?: return)
+        editorVm.projectPath = projectPath
+        editorVm.initializeLsp(this)
 
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

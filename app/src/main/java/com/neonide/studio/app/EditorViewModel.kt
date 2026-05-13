@@ -6,8 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.neonide.studio.app.lsp.EditorLspController
+import com.neonide.studio.app.lsp.EditorLspControllerFactory
 import com.neonide.studio.app.lsp.LspManager
 import com.neonide.studio.app.lsp.LspStatus
+import java.io.File
 
 /**
  * ViewModel for managing the state and lifecycle of components within SoraEditorActivityK.
@@ -18,6 +21,7 @@ class EditorViewModel : ViewModel() {
     var searchQuery by mutableStateOf("")
     var replacementText by mutableStateOf("")
     var searchPanelVisible by mutableStateOf(false)
+    var projectPath by mutableStateOf<File?>(null)
 
     /**
      * Manager for Language Server Protocol integration.
@@ -25,6 +29,17 @@ class EditorViewModel : ViewModel() {
     val lspManager = LspManager().apply {
         setStatusListener { status ->
             setLspStatus(status)
+        }
+    }
+
+    /**
+     * The actual controller that manages LSP attachment to the editor.
+     */
+    lateinit var lspController: EditorLspController
+
+    fun initializeLsp(context: android.content.Context) {
+        if (!::lspController.isInitialized) {
+            lspController = EditorLspControllerFactory.createOrNoop(context)
         }
     }
 

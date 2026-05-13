@@ -55,6 +55,7 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.graphics.RectangleShape
 
 @Composable
 fun EditorScreen(
@@ -114,6 +115,7 @@ fun EditorScreen(
         scaffoldState = scaffoldState,
         sheetContent = { EditorBottomSheetContent(viewModel = bottomSheetVm) },
         sheetPeekHeight = peekHeight,
+        sheetShape = RectangleShape,
         topBar = {
             EditorTopBar(
                 settings = settings,
@@ -174,6 +176,7 @@ fun EditorScreen(
 
             SoraEditor(
                 modifier = Modifier.weight(1f),
+                editorVm = editorVm,
                 filePath = activeFileState.value?.path,
                 onEditorCreated = { editor ->
                     editorState.value = editor
