@@ -46,11 +46,14 @@ import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.app.editor.SoraLanguageProvider
+import com.neonide.studio.app.editor.completion.UnifiedCompletionProvider
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
 import com.termux.shared.logger.Logger
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
 import java.io.File
@@ -103,9 +106,9 @@ fun EditorScreen(
         val tm = com.neonide.studio.app.EditorThemeAndLanguageManager(editor)
         tm.setupTextmate()
         tm.setupMonarch()
-        if (editor.colorScheme !is io.github.rosemoe.sora.langs.textmate.TextMateColorScheme) {
-            editor.colorScheme = io.github.rosemoe.sora.langs.textmate.TextMateColorScheme.create(
-                io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry.getInstance()
+        if (editor.colorScheme !is TextMateColorScheme) {
+            editor.colorScheme = TextMateColorScheme.create(
+                ThemeRegistry.getInstance()
             )
         }
         Logger.logInfo(
@@ -120,12 +123,10 @@ fun EditorScreen(
         if (activeFile != null && editor != null) {
             val file = java.io.File(activeFile.path)
             val language = languageProvider.getLanguage(file)
-            val inner = (language as? com.neonide.studio.app.editor.completion.UnifiedCompletionProvider)?.baseLanguage
+            val innerName = (language as? UnifiedCompletionProvider)?.baseLanguageClassName
             Logger.logInfo(
                 TAG,
-                "file=${file.name}, language=${language::class.simpleName}, inner=${inner?.let {
-                    it::class.simpleName
-                } ?: "null"}, colorScheme=${editor.colorScheme::class.simpleName}"
+                "file=${file.name}, language=${language::class.simpleName}, inner=${innerName ?: "none"}, colorScheme=${editor.colorScheme::class.simpleName}"
             )
             editor.setEditorLanguage(language)
             if (editor.text.toString() != activeFile.content) {
