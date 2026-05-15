@@ -23,7 +23,6 @@ fun SoraEditor(
                 onEditorCreated(this)
                 layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
                 typefaceText = Typeface.MONOSPACE
-                setEditorLanguage(JavaLanguage())
                 props.stickyScroll = true
                 props.overScrollEnabled = true
                 isCursorAnimationEnabled = true

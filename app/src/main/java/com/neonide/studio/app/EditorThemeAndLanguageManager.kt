@@ -16,8 +16,6 @@ import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import io.github.rosemoe.sora.widget.schemes.SchemeDarcula
 import org.eclipse.tm4e.core.registry.IThemeSource
 
 class EditorThemeAndLanguageManager(private val editor: CodeEditor) {
@@ -78,10 +76,7 @@ class EditorThemeAndLanguageManager(private val editor: CodeEditor) {
         val themeName = if (night) "darcula" else "quietlight"
         ThemeRegistry.getInstance().setTheme(themeName)
         MonarchThemeRegistry.setTheme(themeName)
-
-        if (editor.colorScheme !is TextMateColorScheme) {
-            editor.colorScheme = if (night) SchemeDarcula() else EditorColorScheme()
-        }
+        editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
         editor.invalidate()
     }
 }

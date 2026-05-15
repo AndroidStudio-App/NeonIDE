@@ -18,7 +18,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-
 object DevKitSetup {
 
     private const val SETUP_SCRIPT_ASSET_PATH = "setup.sh"

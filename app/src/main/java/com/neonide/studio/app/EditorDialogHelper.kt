@@ -7,12 +7,6 @@ import com.neonide.studio.R
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import io.github.rosemoe.sora.widget.schemes.SchemeDarcula
-import io.github.rosemoe.sora.widget.schemes.SchemeEclipse
-import io.github.rosemoe.sora.widget.schemes.SchemeGitHub
-import io.github.rosemoe.sora.widget.schemes.SchemeNotepadXX
-import io.github.rosemoe.sora.widget.schemes.SchemeVS2019
 import java.io.File
 
 /**
@@ -43,71 +37,42 @@ class EditorDialogHelper(
             .show()
     }
 
-    private fun ensureTextmateTheme() {
-        val cs = editor.colorScheme
-        if (cs !is TextMateColorScheme) {
-            editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-        }
-    }
-
     fun chooseTheme() {
         val themes = arrayOf(
-            "Default",
-            "GitHub",
-            "Eclipse",
+            "QuietLight",
             "Darcula",
-            "VS2019",
-            "NotepadXX",
-            "QuietLight for TM(VSCode)",
-            "Darcula for TM",
-            "Ayu Dark for VSCode",
-            "Solarized(Dark) for TM(VSCode)",
-            "TM theme from file"
+            "Ayu Dark",
+            "Solarized Dark",
+            "Load from file"
         )
         AlertDialog.Builder(activity)
             .setTitle(R.string.sora_color_scheme)
             .setSingleChoiceItems(themes, -1) { dialog, which ->
                 when (which) {
-                    0 -> editor.colorScheme = EditorColorScheme()
-
-                    1 -> editor.colorScheme = SchemeGitHub()
-
-                    2 -> editor.colorScheme = SchemeEclipse()
-
-                    3 -> editor.colorScheme = SchemeDarcula()
-
-                    4 -> editor.colorScheme = SchemeVS2019()
-
-                    5 -> editor.colorScheme = SchemeNotepadXX()
-
-                    6 -> {
-                        ensureTextmateTheme()
+                    0 -> {
                         ThemeRegistry.getInstance().setTheme("quietlight")
+                        editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
                     }
 
-                    7 -> {
-                        ensureTextmateTheme()
+                    1 -> {
                         ThemeRegistry.getInstance().setTheme("darcula")
+                        editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
                     }
 
-                    8 -> {
-                        ensureTextmateTheme()
+                    2 -> {
                         ThemeRegistry.getInstance().setTheme("ayu-dark")
+                        editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
                     }
 
-                    9 -> {
-                        ensureTextmateTheme()
+                    3 -> {
                         ThemeRegistry.getInstance().setTheme("solarized_dark")
+                        editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
                     }
 
-                    10 -> {
+                    4 -> {
                         loadTMTLauncher.launch("*/*")
                     }
                 }
-
-                val cs = editor.colorScheme
-                editor.colorScheme = cs
-
                 dialog.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)

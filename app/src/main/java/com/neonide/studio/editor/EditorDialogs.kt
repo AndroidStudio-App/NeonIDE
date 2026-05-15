@@ -3,13 +3,9 @@ package com.neonide.studio.app.editor
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Typeface
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import io.github.rosemoe.sora.widget.schemes.SchemeDarcula
-import io.github.rosemoe.sora.widget.schemes.SchemeEclipse
-import io.github.rosemoe.sora.widget.schemes.SchemeGitHub
-import io.github.rosemoe.sora.widget.schemes.SchemeNotepadXX
-import io.github.rosemoe.sora.widget.schemes.SchemeVS2019
 
 object EditorDialogs {
 
@@ -34,20 +30,21 @@ object EditorDialogs {
     }
 
     fun showThemeChoice(context: Context, editor: CodeEditor?) {
-        val themes = arrayOf("Default", "GitHub", "Eclipse", "Darcula", "VS2019", "NotepadXX")
+        val themes = arrayOf("QuietLight", "Darcula", "Ayu Dark", "Solarized Dark")
 
         AlertDialog.Builder(context)
             .setTitle("Select Color Scheme")
             .setItems(themes) { dialog, which ->
                 if (editor == null) return@setItems
-                when (which) {
-                    0 -> editor.colorScheme = EditorColorScheme()
-                    1 -> editor.colorScheme = SchemeGitHub()
-                    2 -> editor.colorScheme = SchemeEclipse()
-                    3 -> editor.colorScheme = SchemeDarcula()
-                    4 -> editor.colorScheme = SchemeVS2019()
-                    5 -> editor.colorScheme = SchemeNotepadXX()
+                val themeName = when (which) {
+                    0 -> "quietlight"
+                    1 -> "darcula"
+                    2 -> "ayu-dark"
+                    3 -> "solarized_dark"
+                    else -> "darcula"
                 }
+                ThemeRegistry.getInstance().setTheme(themeName)
+                editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
                 dialog.dismiss()
             }
             .setNegativeButton(android.R.string.cancel, null)

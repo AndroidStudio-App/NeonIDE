@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.neonide.studio.app.EditorGradleManager
+import com.neonide.studio.app.EditorThemeAndLanguageManager
 import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
@@ -104,6 +105,7 @@ class EditorActivity : ComponentActivity() {
                     editorState = editorState,
                     symbolInputView = symbolInputView,
                     gradleManager = gradleManager,
+                    languageProvider = languageProvider,
                     onOpenDrawer = { drawerLayout.openDrawer(Gravity.START) }
                 )
             }

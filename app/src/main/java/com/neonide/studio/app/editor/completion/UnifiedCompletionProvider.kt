@@ -13,6 +13,8 @@ class UnifiedCompletionProvider(
     private val currentFile: File?
 ) : Language by baseLanguage {
 
+    val baseLanguageClassName: String get() = baseLanguage::class.simpleName ?: "Unknown"
+
     override fun requireAutoComplete(
         content: ContentReference,
         position: CharPosition,

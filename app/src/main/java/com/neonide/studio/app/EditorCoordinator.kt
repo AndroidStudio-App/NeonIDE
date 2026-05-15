@@ -31,6 +31,8 @@ class EditorCoordinator(
         editor.setEditorLanguage(languageForEditor)
         val ext = file.extension.lowercase()
 
+        /*
+        // LSP attachment
         if (ext in listOf("java", "kt", "kts", "xml")) {
             runCatching {
                 lspManager.controller.attach(editor, file, languageForEditor, projectRoot)
@@ -38,6 +40,7 @@ class EditorCoordinator(
         } else {
             runCatching { lspManager.controller.detach() }
         }
+         */
 
         if (ext == "xml") {
             uiScope.launch(Dispatchers.IO) {

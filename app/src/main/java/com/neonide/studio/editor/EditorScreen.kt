@@ -45,16 +45,23 @@ import com.neonide.studio.app.EditorSearchPanel
 import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
+import com.neonide.studio.app.editor.SoraLanguageProvider
+import com.neonide.studio.app.editor.completion.UnifiedCompletionProvider
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
+import com.termux.shared.logger.Logger
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+private const val TAG = "EditorScreen"
 
 @Composable
 fun EditorScreen(
@@ -67,6 +74,7 @@ fun EditorScreen(
     editorState: MutableState<CodeEditor?>,
     symbolInputView: SymbolInputView,
     gradleManager: EditorGradleManager,
+    languageProvider: SoraLanguageProvider,
     onOpenDrawer: () -> Unit
 ) {
     val context = LocalContext.current as ComponentActivity
@@ -93,10 +101,34 @@ fun EditorScreen(
         }
     }
 
+    LaunchedEffect(editorState.value) {
+        val editor = editorState.value ?: return@LaunchedEffect
+        val tm = com.neonide.studio.app.EditorThemeAndLanguageManager(editor)
+        tm.setupTextmate()
+        tm.setupMonarch()
+        if (editor.colorScheme !is TextMateColorScheme) {
+            editor.colorScheme = TextMateColorScheme.create(
+                ThemeRegistry.getInstance()
+            )
+        }
+        Logger.logInfo(
+            TAG,
+            "theme initialized, colorScheme=${editor.colorScheme::class.simpleName}"
+        )
+    }
+
     LaunchedEffect(activeFileState.value?.path) {
         val activeFile = activeFileState.value
         val editor = editorState.value
         if (activeFile != null && editor != null) {
+            val file = java.io.File(activeFile.path)
+            val language = languageProvider.getLanguage(file)
+            val innerName = (language as? UnifiedCompletionProvider)?.baseLanguageClassName
+            Logger.logInfo(
+                TAG,
+                "file=${file.name}, language=${language::class.simpleName}, inner=${innerName ?: "none"}, colorScheme=${editor.colorScheme::class.simpleName}"
+            )
+            editor.setEditorLanguage(language)
             if (editor.text.toString() != activeFile.content) {
                 editor.setText(activeFile.content)
             }
