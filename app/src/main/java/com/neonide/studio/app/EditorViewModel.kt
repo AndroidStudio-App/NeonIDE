@@ -10,7 +10,7 @@ import com.neonide.studio.app.lsp.LspManager
 import com.neonide.studio.app.lsp.LspStatus
 
 /**
- * ViewModel for managing the state and lifecycle of components within SoraEditorActivityK.
+ * ViewModel for managing the state and lifecycle of editor components.
  */
 class EditorViewModel : ViewModel() {
 

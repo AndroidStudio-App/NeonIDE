@@ -163,14 +163,14 @@ object GradleProjectActions {
     fun wrapperStatusMessage(context: Context, status: WrapperStatus): String? = when (status) {
         WrapperStatus.Ok -> null
 
-        WrapperStatus.Repaired -> context.getString(R.string.acs_gradle_wrapper_repaired)
+        WrapperStatus.Repaired -> context.getString(R.string.gradle_wrapper_repaired)
 
         WrapperStatus.MissingScriptOrProps -> context.getString(
-            R.string.acs_gradle_wrapper_missing
+            R.string.gradle_wrapper_missing
         )
 
         WrapperStatus.RepairFailed -> context.getString(
-            R.string.acs_gradle_wrapper_repair_failed
+            R.string.gradle_wrapper_repair_failed
         )
     }
 }

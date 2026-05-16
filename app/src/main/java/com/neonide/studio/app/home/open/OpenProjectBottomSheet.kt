@@ -62,7 +62,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
-import com.neonide.studio.app.SoraEditorActivityK
 import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.neonide.studio.app.utils.DisplayNameUtils
 import com.neonide.studio.app.utils.SafeDirLister
@@ -108,7 +107,7 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
                 if (!dir.exists() || !dir.isDirectory) {
                     Toast.makeText(
                         context,
-                        R.string.acs_err_invalid_picked_dir,
+                        R.string.err_invalid_picked_dir,
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -121,7 +120,7 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
             } else {
                 Toast.makeText(
                     context,
-                    R.string.acs_err_invalid_picked_dir,
+                    R.string.err_invalid_picked_dir,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -387,9 +386,8 @@ private fun isValidAndroidProjectInternal(dir: File): Boolean {
 
 private fun openProject(context: Context, root: File) {
     WizardPreferences.addRecentProject(context, root.absolutePath)
-    // val intent = Intent(context, SoraEditorActivityK::class.java)
     val intent = Intent(context, EditorActivity::class.java)
-    intent.putExtra(SoraEditorActivityK.EXTRA_PROJECT_DIR, root.absolutePath)
+    intent.putExtra(EditorActivity.EXTRA_PROJECT_DIR, root.absolutePath)
     context.startActivity(intent)
 }
 

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.rosemoe.sora.langs.java.JavaLanguage
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 
 @Composable
 fun SoraEditor(
@@ -31,6 +32,7 @@ fun SoraEditor(
                     CodeEditor.FLAG_DRAW_LINE_SEPARATOR or
                     CodeEditor.FLAG_DRAW_WHITESPACE_IN_SELECTION or
                     CodeEditor.FLAG_DRAW_SOFT_WRAP
+                getComponent(EditorDiagnosticTooltipWindow::class.java).isEnabled = false
             }
         },
         onRelease = { it.release() }
