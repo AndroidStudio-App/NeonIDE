@@ -6,21 +6,15 @@ import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +24,6 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -83,22 +76,11 @@ fun EditorScreen(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
 
-    val isImeVisible = WindowInsets.isImeVisible
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-
-    val peekHeight by animateDpAsState(
-        targetValue = 30.dp + navBarHeight,
-        label = "BottomSheetPeekHeight"
-    )
+    val peekHeight = 30.dp + navBarHeight
 
     BackHandler(enabled = scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
         scope.launch {
-            scaffoldState.bottomSheetState.partialExpand()
-        }
-    }
-
-    LaunchedEffect(isImeVisible) {
-        if (isImeVisible) {
             scaffoldState.bottomSheetState.partialExpand()
         }
     }
@@ -185,16 +167,14 @@ fun EditorScreen(
             )
         }
     ) { padding ->
-
         val imeBottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding()
-        val minEditorBottom = 30.dp + navBarHeight
-        val actualBottom = max(padding.calculateBottomPadding(), max(imeBottom, minEditorBottom))
+        val scaffoldBottom = padding.calculateBottomPadding()
+        val bottomPadding = max(imeBottom, scaffoldBottom)
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(
-                top = padding.calculateTopPadding(),
-                bottom = actualBottom
-            )
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = padding.calculateTopPadding(), bottom = bottomPadding)
         ) {
             if (editorVm.searchPanelVisible && searchController != null) {
                 EditorSearchPanel(editorVm, searchController)
