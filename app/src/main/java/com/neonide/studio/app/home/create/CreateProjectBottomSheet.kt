@@ -68,8 +68,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.documentfile.provider.DocumentFile
+import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
-import com.neonide.studio.app.SoraEditorActivityK
 import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.neonide.studio.utils.FileUtil
 import com.termux.shared.termux.TermuxConstants
@@ -112,7 +112,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
             } else {
                 Toast.makeText(
                     context,
-                    R.string.acs_err_invalid_picked_dir,
+                    R.string.err_invalid_picked_dir,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -505,8 +505,8 @@ private fun createProject(
             Toast.LENGTH_LONG
         ).show()
 
-        val intent = Intent(context, SoraEditorActivityK::class.java).apply {
-            putExtra(SoraEditorActivityK.EXTRA_PROJECT_DIR, projectDir.absolutePath)
+        val intent = Intent(context, EditorActivity::class.java).apply {
+            putExtra(EditorActivity.EXTRA_PROJECT_DIR, projectDir.absolutePath)
         }
         context.startActivity(intent)
         onSuccess()

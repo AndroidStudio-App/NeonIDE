@@ -2,7 +2,6 @@ package com.neonide.studio.app
 
 import android.app.Activity
 import android.widget.Toast
-import com.google.android.material.appbar.MaterialToolbar
 import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
@@ -18,16 +17,11 @@ class EditorGradleController(
     private val activity: Activity,
     private val bottomSheetVm: BottomSheetViewModel
 ) {
-    private val soraActivity = activity as? SoraEditorActivityK
-
     @Volatile var gradleRunning: Boolean = false
         private set
 
     private val gradleStatusListener: (Boolean) -> Unit = { isRunning ->
         gradleRunning = isRunning
-        activity.runOnUiThread {
-            soraActivity?.updateBtnState()
-        }
     }
 
     init {
@@ -43,7 +37,7 @@ class EditorGradleController(
         if (projectRoot == null || !projectRoot.exists()) {
             Toast.makeText(
                 activity,
-                activity.getString(R.string.acs_project_dir_missing),
+                activity.getString(R.string.project_dir_missing),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -66,14 +60,14 @@ class EditorGradleController(
 
         Toast.makeText(
             activity,
-            activity.getString(R.string.acs_sync_started),
+            activity.getString(R.string.sync_started),
             Toast.LENGTH_SHORT
         ).show()
         val plan = GradleProjectActions.createSyncPlan()
         runGradle(
             projectDir = projectRoot,
             args = plan.args,
-            actionLabel = activity.getString(R.string.acs_sync_project),
+            actionLabel = activity.getString(R.string.sync_project),
             kind = GradleActionKind.SYNC,
             installApkOnSuccess = false
         )
@@ -83,7 +77,7 @@ class EditorGradleController(
         if (projectRoot == null || !projectRoot.exists()) {
             Toast.makeText(
                 activity,
-                activity.getString(R.string.acs_project_dir_missing),
+                activity.getString(R.string.project_dir_missing),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -92,7 +86,6 @@ class EditorGradleController(
         if (gradleRunning) {
             GradleService.stopBuild(activity)
             gradleRunning = false
-            soraActivity?.updateBtnState()
             return
         }
 
@@ -108,7 +101,7 @@ class EditorGradleController(
 
         Toast.makeText(
             activity,
-            activity.getString(R.string.acs_build_started),
+            activity.getString(R.string.build_started),
             Toast.LENGTH_SHORT
         ).show()
 
@@ -116,7 +109,7 @@ class EditorGradleController(
         runGradle(
             projectDir = projectRoot,
             args = plan.args,
-            actionLabel = activity.getString(R.string.acs_quick_run),
+            actionLabel = activity.getString(R.string.quick_run),
             kind = GradleActionKind.BUILD,
             installApkOnSuccess = true
         )
@@ -132,10 +125,8 @@ class EditorGradleController(
         installApkOnSuccess: Boolean
     ) {
         gradleRunning = true
-        soraActivity?.invalidateOptionsMenu()
-        soraActivity?.updateBtnState()
 
-        bottomSheetVm.setStatus("$actionLabel: ${activity.getString(R.string.acs_status_building)}")
+        bottomSheetVm.setStatus("$actionLabel: ${activity.getString(R.string.status_building)}")
 
         BuildOutputBuffer.clear()
         bottomSheetVm.setDiagnostics(emptyList())
@@ -148,18 +139,5 @@ class EditorGradleController(
             installOnSuccess = installApkOnSuccess,
             logFilePath = File(activity.filesDir, "gradle-build.log").absolutePath
         )
-    }
-
-    fun updateQuickRunBtn(toolbar: MaterialToolbar?) {
-        val quick = toolbar?.menu?.findItem(R.id.sora_quick_run)
-        if (quick != null) {
-            if (gradleRunning) {
-                quick.title = activity.getString(R.string.acs_cancel_build)
-                quick.setIcon(R.drawable.ic_stop_daemons)
-            } else {
-                quick.title = activity.getString(R.string.acs_quick_run)
-                quick.setIcon(R.drawable.ic_run_outline)
-            }
-        }
     }
 }

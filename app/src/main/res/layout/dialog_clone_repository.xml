@@ -17,13 +17,13 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/acs_bottomsheet_handle" />
+        android:background="@drawable/bottomsheet_handle" />
 
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/acs_clone_git_repository"
+        android:text="@string/clone_git_repository"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
         android:textStyle="bold" />
 
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="@string/acs_clone_git_repository_summary"
+        android:text="@string/clone_git_repository_summary"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
         android:textColor="?android:attr/textColorSecondary" />
 
@@ -95,7 +95,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/acs_clone_repo_url"
+                android:hint="@string/clone_repo_url"
                 app:startIconDrawable="@drawable/ic_git"
                 app:endIconMode="clear_text">
 
@@ -116,7 +116,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="@string/acs_clone_repo_name"
+                android:hint="@string/clone_repo_name"
                 app:startIconDrawable="@drawable/ic_folder">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -136,7 +136,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="@string/acs_clone_destination"
+                android:hint="@string/clone_destination"
                 app:startIconDrawable="@drawable/ic_folder"
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/ic_folder"
@@ -157,7 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/acs_clone_use_credentials" />
+                android:text="@string/clone_use_credentials" />
 
             <LinearLayout
                 android:id="@+id/credentialsContainer"
@@ -172,7 +172,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="@string/acs_clone_username"
+                    android:hint="@string/clone_username"
                     app:startIconDrawable="@drawable/ic_settings"
                     app:endIconMode="clear_text">
 
@@ -192,7 +192,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:hint="@string/acs_clone_password"
+                    android:hint="@string/clone_password"
                     app:startIconDrawable="@drawable/ic_settings"
                     app:endIconMode="password_toggle">
 
@@ -211,7 +211,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="@string/acs_clone_credentials_hint"
+                    android:text="@string/clone_credentials_hint"
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
                     android:textColor="?android:attr/textColorSecondary" />
 
@@ -223,7 +223,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="@string/acs_clone_advanced"
+                android:text="@string/clone_advanced"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
                 android:textStyle="bold" />
 
@@ -233,7 +233,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="@string/acs_clone_branch"
+                android:hint="@string/clone_branch"
                 app:startIconDrawable="@drawable/ic_sync"
                 app:endIconMode="clear_text">
 
@@ -253,7 +253,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/acs_clone_single_branch"
+                android:text="@string/clone_single_branch"
                 android:checked="true" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
@@ -261,7 +261,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/acs_clone_shallow" />
+                android:text="@string/clone_shallow" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/depthLayout"
@@ -269,7 +269,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="@string/acs_clone_depth"
+                android:hint="@string/clone_depth"
                 app:startIconDrawable="@drawable/ic_sync"
                 app:endIconMode="clear_text">
 
@@ -289,14 +289,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/acs_clone_recurse_submodules" />
+                android:text="@string/clone_recurse_submodules" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/shallowSubmodulesSwitch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/acs_clone_shallow_submodules"
+                android:text="@string/clone_shallow_submodules"
                 android:enabled="false" />
 
             <com.google.android.material.checkbox.MaterialCheckBox
@@ -304,7 +304,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/acs_clone_open_after"
+                android:text="@string/clone_open_after"
                 android:checked="true" />
 
             <!-- extra space so dialog buttons don't overlap last row -->

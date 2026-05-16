@@ -27,5 +27,5 @@
     <color name="defaultSymbolInputTextColor">@android:color/white</color>
 
     <!-- ACS Home -->
-    <color name="acs_home_card_stroke">#33FFFFFF</color>
+    <color name="home_card_stroke">#33FFFFFF</color>
 </resources>

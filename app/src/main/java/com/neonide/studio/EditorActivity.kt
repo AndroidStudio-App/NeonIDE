@@ -16,7 +16,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.neonide.studio.app.EditorGradleManager
-import com.neonide.studio.app.EditorThemeAndLanguageManager
 import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
@@ -35,6 +34,7 @@ import kotlinx.coroutines.launch
 
 class EditorActivity : ComponentActivity() {
     companion object {
+        const val EXTRA_PROJECT_DIR = "extra_project_dir"
         private val SYMBOLS =
             arrayOf("->", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/", "<", ">", "[", "]", ":")
         private val SYMBOL_INSERT_TEXT =
@@ -59,7 +59,7 @@ class EditorActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val projectPath = File(intent.getStringExtra("extra_project_dir") ?: return)
+        val projectPath = File(intent.getStringExtra(EXTRA_PROJECT_DIR) ?: return)
 
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

@@ -15,7 +15,7 @@
         android:layout_width="32dp"
         android:layout_height="4dp"
         android:layout_marginBottom="12dp"
-        android:background="@drawable/acs_bottomsheet_handle"
+        android:background="@drawable/bottomsheet_handle"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

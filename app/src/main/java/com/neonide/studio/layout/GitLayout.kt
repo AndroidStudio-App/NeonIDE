@@ -46,7 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.neonide.studio.app.SoraEditorActivityK
+import com.neonide.studio.EditorActivity
 
 @Composable
 fun GitLayout(
@@ -285,9 +285,9 @@ fun GitLayout(
                 Button(
                     onClick = {
                         viewModel.startClone(context) { projectDir ->
-                            val intent = Intent(context, SoraEditorActivityK::class.java)
+                            val intent = Intent(context, EditorActivity::class.java)
                             intent.putExtra(
-                                SoraEditorActivityK.EXTRA_PROJECT_DIR,
+                                EditorActivity.EXTRA_PROJECT_DIR,
                                 projectDir.absolutePath
                             )
                             context.startActivity(intent)

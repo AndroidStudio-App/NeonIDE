@@ -23,5 +23,5 @@
     <color name="blue_link_dark">#58A6FF</color>
 
     <!-- ACS Home -->
-    <color name="acs_home_card_stroke">#1F000000</color>
+    <color name="home_card_stroke">#1F000000</color>
 </resources>

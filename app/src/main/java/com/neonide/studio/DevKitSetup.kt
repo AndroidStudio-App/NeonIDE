@@ -90,11 +90,11 @@ object DevKitSetup {
             putExtra(TERMUX_SERVICE.EXTRA_SHELL_NAME, "setup-development-kit")
             putExtra(
                 TERMUX_SERVICE.EXTRA_COMMAND_LABEL,
-                activity.getString(R.string.acs_setup_development_kit)
+                activity.getString(R.string.setup_development_kit)
             )
             putExtra(
                 TERMUX_SERVICE.EXTRA_COMMAND_DESCRIPTION,
-                activity.getString(R.string.acs_setup_development_kit_summary)
+                activity.getString(R.string.setup_development_kit_summary)
             )
         }
 

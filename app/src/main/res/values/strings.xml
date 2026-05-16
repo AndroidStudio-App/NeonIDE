@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="files">Files</string>
     <string name="app_name">NeonIDEA Studio</string>
+
+    <string name="editor_text_to_search">Text to search</string>
+    <string name="editor_replacement">Replacement</string>
+
+    <string name="quick_run">Quick run</string>
+    <string name="sync_project">Sync project</string>
+    <string name="project_dir_missing">No project directory selected. Open a project first.</string>
+    <string name="gradle_wrapper_missing">Gradle wrapper not found in this project (missing gradlew or gradle/wrapper files).</string>
+    <string name="gradle_wrapper_repaired">Gradle wrapper jar was missing and has been restored.</string>
+    <string name="gradle_wrapper_repair_failed">Gradle wrapper jar is missing and could not be restored.</string>
+    <string name="build_started">Build started…</string>
+    <string name="sync_started">Sync started…</string>
+    <string name="status_building">Building…</string>
 </resources>

@@ -240,56 +240,30 @@
 
     <string name="msg_feature_coming_soon">Feature coming soon</string>
 
-    <!-- ACS Home screen -->
-    <string name="acs_title">ACS &lt;/&gt;</string>
-    <string name="acs_subtitle">Your Ideas, Anywhere</string>
-    <string name="acs_get_started">Get started</string>
-    <string name="acs_start_subtitle">Start your new awesome project!</string>
+    <string name="get_started">Get started</string>
+    <string name="start_subtitle">Start your new awesome project!</string>
 
-    <string name="acs_create_project">Create project</string>
-    <string name="acs_create_project_summary">Start a new Android/Java/Kotlin project from a template</string>
-    <string name="acs_open_existing_project">Open existing project</string>
-    <string name="acs_open_existing_project_summary">Browse storage and open a project folder</string>
-    <string name="acs_clone_git_repository">Clone git repository</string>
-    <string name="acs_clone_git_repository_summary">Download a project from GitHub/GitLab via git</string>
+    <string name="clone_git_repository">Clone git repository</string>
+    <string name="clone_git_repository_summary">Download a project from GitHub/GitLab via git</string>
 
-    <!-- Clone Repo (ACS) -->
-    <string name="acs_clone_repo_url">Repository URL</string>
-    <string name="acs_clone_repo_name">Folder name</string>
-    <string name="acs_clone_destination">Destination folder</string>
-    <string name="acs_clone_open_after">Open project after clone</string>
-    <string name="acs_clone_use_credentials">Private repo (use username/token)</string>
-    <string name="acs_clone_username">Username</string>
-    <string name="acs_clone_password">Password / Token</string>
-    <string name="acs_clone_credentials_hint">Tip: for GitHub/GitLab use a Personal Access Token as the password.</string>
-    <string name="acs_clone_shallow">Shallow clone</string>
-    <string name="acs_clone_depth">Shallow depth (e.g. 1)</string>
-    <string name="acs_clone_advanced">Advanced</string>
-    <string name="acs_clone_branch">Branch (optional)</string>
-    <string name="acs_clone_single_branch">Single branch (faster)</string>
-    <string name="acs_clone_recurse_submodules">Clone submodules</string>
-    <string name="acs_clone_shallow_submodules">Shallow submodules</string>
-    <string name="acs_clone_action">Clone</string>
-    <string name="acs_clone_stop">Stop</string>
-    <string name="acs_clone_in_progress">Cloning…</string>
-    <string name="acs_clone_error_empty_url">Please enter a repository URL.</string>
-    <string name="acs_clone_error_invalid_url">Invalid repository URL.</string>
-    <string name="acs_clone_error_git_not_found">Git not found. Install git in Termux environment first.</string>
-    <string name="acs_clone_error_destination_exists">Destination folder already exists.</string>
-    <string name="acs_clone_error_invalid_depth">Invalid depth. Enter a number ≥ 1.</string>
-    <string name="acs_clone_error_destination_not_writable">Destination folder is not writable.</string>
-    <string name="acs_clone_error_failed">Clone failed.</string>
-    <string name="acs_clone_success">Clone completed.</string>
-    <string name="acs_clone_not_android_project">Repo cloned, but it doesn’t look like an Android project. Open anyway?</string>
-    <string name="acs_clone_delete_partial">Delete partial folder?</string>
-    <string name="acs_clone_delete_partial_message">The clone was stopped and may have created a partial folder. Do you want to delete it?</string>
+    <string name="clone_repo_url">Repository URL</string>
+    <string name="clone_repo_name">Folder name</string>
+    <string name="clone_destination">Destination folder</string>
+    <string name="clone_open_after">Open project after clone</string>
+    <string name="clone_use_credentials">Private repo (use username/token)</string>
+    <string name="clone_username">Username</string>
+    <string name="clone_password">Password / Token</string>
+    <string name="clone_credentials_hint">Tip: for GitHub/GitLab use a Personal Access Token as the password.</string>
+    <string name="clone_shallow">Shallow clone</string>
+    <string name="clone_depth">Shallow depth (e.g. 1)</string>
+    <string name="clone_advanced">Advanced</string>
+    <string name="clone_branch">Branch (optional)</string>
+    <string name="clone_single_branch">Single branch (faster)</string>
+    <string name="clone_recurse_submodules">Clone submodules</string>
+    <string name="clone_shallow_submodules">Shallow submodules</string>
 
-    <string name="acs_terminal">Terminal</string>
-    <string name="acs_terminal_summary">Open the integrated Termux terminal</string>
-    <string name="acs_setup_development_kit">Setup Development Kit</string>
-    <string name="acs_setup_development_kit_summary">Installs bootstrap (if needed) and runs setup.sh</string>
-    <string name="acs_ide_configurations">IDE Configurations</string>
-    <string name="acs_ide_configurations_summary">Configure build tools, paths, and integrations</string>
+    <string name="setup_development_kit">Setup Development Kit</string>
+    <string name="setup_development_kit_summary">Installs bootstrap (if needed) and runs setup.sh</string>
 
     <!-- Open Project (ACS) -->
     <string name="open_project">Open Project</string>
@@ -326,10 +300,7 @@
     <string name="project_renamed_success">Project renamed successfully</string>
     <string name="project_rename_failed">Failed to rename project</string>
 
-    <string name="acs_err_invalid_picked_dir">Invalid directory selected</string>
-    <string name="acs_err_select_primary_storage">Please select a folder from primary storage.</string>
-    <string name="acs_err_authority_not_allowed">Authority not allowed: %1$s</string>
-    <string name="acs_dir_picker_failed">Directory picker failed: %1$s</string>
+    <string name="err_invalid_picked_dir">Invalid directory selected</string>
 
     <!-- Create project wizard (ACS) -->
     <string name="choose_template">Choose template</string>
