@@ -70,6 +70,7 @@ fun EditorScreen(
     symbolInputView: SymbolInputView,
     gradleManager: EditorGradleManager,
     languageProvider: SoraLanguageProvider,
+    lspController: com.neonide.studio.app.lsp.EditorLspController,
     onOpenDrawer: () -> Unit
 ) {
     val context = LocalContext.current as ComponentActivity
@@ -115,6 +116,16 @@ fun EditorScreen(
             editor.setEditorLanguage(language)
             if (editor.text.toString() != activeFile.content) {
                 editor.setText(activeFile.content)
+            }
+            val ext = file.extension.lowercase()
+            if (ext in listOf("java", "kt", "kts", "xml")) {
+                runCatching {
+                    lspController.attach(editor, file, language, projectPath)
+                }.onFailure {
+                    Logger.logWarn(TAG, "LSP attach failed: ${it.message}")
+                }
+            } else {
+                runCatching { lspController.detach() }
             }
         } else if (activeFile == null && editor != null) {
             editor.setText("")

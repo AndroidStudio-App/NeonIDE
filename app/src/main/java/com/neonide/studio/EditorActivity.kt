@@ -23,6 +23,7 @@ import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
 import com.neonide.studio.app.editor.EditorScreen
 import com.neonide.studio.app.editor.EditorSettingsState
 import com.neonide.studio.app.editor.SoraLanguageProvider
+import com.neonide.studio.app.lsp.EditorLspControllerFactory
 import com.neonide.studio.filetree.FileTreeDrawer
 import com.neonide.studio.ui.theme.AppTheme
 import com.neonide.studio.utils.OpenFile
@@ -48,6 +49,7 @@ class EditorActivity : ComponentActivity() {
     private val settingsState = EditorSettingsState()
 
     private val languageProvider: SoraLanguageProvider by lazy { SoraLanguageProvider(this) }
+    private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }
     private val gradleManager: EditorGradleManager by lazy {
         EditorGradleManager(this, bottomSheetVm)
     }
@@ -106,6 +108,7 @@ class EditorActivity : ComponentActivity() {
                     symbolInputView = symbolInputView,
                     gradleManager = gradleManager,
                     languageProvider = languageProvider,
+                    lspController = lspController,
                     onOpenDrawer = { drawerLayout.openDrawer(Gravity.START) }
                 )
             }
@@ -154,6 +157,7 @@ class EditorActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        runCatching { lspController.dispose() }
         gradleManager.onDestroy()
     }
 }

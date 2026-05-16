@@ -1,7 +1,6 @@
 package com.neonide.studio.app.editor.completion
 
 import android.os.Bundle
-import com.neonide.studio.app.lsp.LspManager
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.lang.analysis.AnalyzeManager
 import io.github.rosemoe.sora.lang.completion.CompletionPublisher
@@ -41,8 +40,9 @@ class NeonLspLanguageWrapper(
         publisher: CompletionPublisher,
         extraArguments: Bundle
     ) {
-        val fileExt = extraArguments.getString("fileExt") ?: ""
+        val fileExt = lspEditor.uri.path.substringAfterLast('.', "")
         val isXml = fileExt.equals("xml", ignoreCase = true)
+        val isJava = fileExt.equals("java", ignoreCase = true)
 
         if (!lspEditor.isConnected) {
             // Fallback to wrapper language completions when LSP is not connected.
@@ -53,33 +53,8 @@ class NeonLspLanguageWrapper(
         // Call original LspLanguage (Maven library) to get LSP completions
         delegate.requireAutoComplete(content, position, publisher, extraArguments)
 
-        // For XML, always call wrapper language (AndroidXmlLanguageEnhancer)
-        // to provide Android-specific resource completions even when LSP is connected.
-        if (isXml) {
+        if (isXml || isJava) {
             wrapperLanguage?.requireAutoComplete(content, position, publisher, extraArguments)
-        }
-
-        // --- Custom LspManager integration for Java ---
-        if (fileExt == "java") {
-            LspManager.current?.let { manager ->
-                try {
-                    val uri = extraArguments.getString("uri") ?: return@let
-                    val prefixLength = extraArguments.getInt("prefixLength", 0)
-
-                    val customItems = manager.fetchCompletionItems(
-                        uri,
-                        position.line,
-                        position.column,
-                        prefixLength
-                    ).get()
-
-                    if (customItems.isNotEmpty()) {
-                        publisher.addItems(customItems)
-                    }
-                } catch (e: Exception) {
-                    // Ignore errors from custom LspManager
-                }
-            }
         }
     }
 }

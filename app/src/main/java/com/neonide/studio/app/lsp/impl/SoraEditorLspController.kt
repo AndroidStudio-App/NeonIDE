@@ -59,6 +59,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
     private var project: LspProject? = null
     private var current: LspEditor? = null
     private var currentFile: File? = null
+    private val connectedEditors = mutableSetOf<String>()
 
     override fun attach(
         editor: CodeEditor,
@@ -107,9 +108,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
             return true
         }
 
-        // Switch file or first-time attach: cleanup previous state
         Logger.logDebug(TAG, "Switching LSP editor from ${currentFile?.name} to ${file.name}")
-        detach()
 
         val lspEditor = try {
             p.getOrCreateEditor(file.absolutePath)
@@ -137,6 +136,14 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
             )
         }
 
+        val filePath = file.absolutePath
+        if (filePath in connectedEditors) {
+            Logger.logDebug(TAG, "Reusing existing LSP connection for ${file.name}")
+            current = lspEditor
+            currentFile = file
+            return true
+        }
+
         // Launch connection in background to avoid blocking main thread
         scope.launch {
             try {
@@ -150,6 +157,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                         TAG,
                         "LSP connected for ${file.absolutePath} (serverId=$serverId)"
                     )
+                    connectedEditors.add(filePath)
 
                     // Configure server (best-effort) before using advanced features like Javadoc hover
                     runCatching { configureServer(serverId, lspEditor) }
@@ -165,6 +173,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                     currentFile = file
                 } else {
                     Logger.logWarn(TAG, "LSP connect returned false for ${file.absolutePath}")
+                    connectedEditors.remove(filePath)
                     runCatching { lspEditor.dispose() }
                 }
             } catch (t: Throwable) {
@@ -173,6 +182,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                     "LSP connect failed for ${file.absolutePath}",
                     t
                 )
+                connectedEditors.remove(filePath)
                 runCatching { lspEditor.dispose() }
             }
         }
@@ -186,6 +196,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
         current = null
         currentFile = null
         if (prev != null) {
+            connectedEditors.remove(prevFile?.absolutePath)
             Logger.logDebug(TAG, "Disposing previous LSP editor for ${prevFile?.name}")
             scope.launch(Dispatchers.IO) {
                 runCatching { prev.dispose() }
@@ -195,6 +206,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
 
     override fun dispose() {
         detach()
+        connectedEditors.clear()
         val p = project
         project = null
         scope.launch(Dispatchers.IO) {
@@ -234,14 +246,33 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                 val docPaths = detectJdkSourceZips()
                 Logger.logDebug(TAG, "Detected JDK src.zip candidates: ${docPaths.joinToString()}")
 
-                // NOTE: java-language-server only respects docPath() when classPath() is non-empty.
-                // To enable Javadoc hover for JDK without project deps, provide a harmless existing directory.
+                val classPathArr = JsonArray()
                 val runtimePrefix = File(context.filesDir, "usr")
-                val classPathEntry = File(runtimePrefix, "lib").absolutePath
-                val classPathArr = JsonArray().apply { add(classPathEntry) }
-                java.add("classPath", classPathArr)
-                Logger.logDebug(TAG, "Sending java.classPath=[$classPathEntry]")
+                val termuxLib = File(runtimePrefix, "lib")
+                if (termuxLib.isDirectory) {
+                    classPathArr.add(termuxLib.absolutePath)
+                }
 
+                val projectPath = lspEditor.project?.projectUri?.path
+                if (projectPath != null) {
+                    val projectDir = File(projectPath)
+                    val buildDir = File(projectDir, "build")
+                    val intermediates = File(buildDir, "intermediates")
+                    val javacDebug = File(intermediates, "javac/debug/classes")
+                    val javacRelease = File(intermediates, "javac/release/classes")
+                    if (javacDebug.isDirectory) classPathArr.add(javacDebug.absolutePath)
+                    if (javacRelease.isDirectory) classPathArr.add(javacRelease.absolutePath)
+
+                    val appBuildDir = File(projectDir, "app/build")
+                    val appIntermediates = File(appBuildDir, "intermediates")
+                    val appJavacDebug = File(appIntermediates, "javac/debug/classes")
+                    val appJavacRelease = File(appIntermediates, "javac/release/classes")
+                    if (appJavacDebug.isDirectory) classPathArr.add(appJavacDebug.absolutePath)
+                    if (appJavacRelease.isDirectory) classPathArr.add(appJavacRelease.absolutePath)
+                }
+
+                java.add("classPath", classPathArr)
+                Logger.logDebug(TAG, "Sending java.classPath with ${classPathArr.size()} entries")
                 if (docPaths.isNotEmpty()) {
                     val arr = JsonArray()
                     docPaths.forEach { arr.add(it) }
