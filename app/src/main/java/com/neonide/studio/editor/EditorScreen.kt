@@ -1,13 +1,11 @@
-package com.neonide.studio.app.editor
+package com.neonide.studio.editor
 
-import android.content.Context
 import android.content.Intent
 import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,17 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -35,18 +25,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
-import com.neonide.studio.R
 import com.neonide.studio.app.EditorGradleManager
-import com.neonide.studio.app.EditorSearchController
 import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
@@ -140,8 +126,12 @@ fun EditorScreen(
         }
     }
 
-    val searchController = remember(editorState.value) {
-        editorState.value?.let { EditorSearchController(context, it, editorVm) }
+    val searchState = remember(editorState.value) {
+        editorState.value?.let { EditorSearchState(it) }
+    }
+
+    BackHandler(enabled = searchState?.isVisible == true) {
+        searchState?.toggle()
     }
 
     BottomSheetScaffold(
@@ -154,11 +144,9 @@ fun EditorScreen(
             EditorTopBar(
                 settings = settings,
                 editor = editorState.value,
-                searchPanelVisible = editorVm.searchPanelVisible,
-                onSearchPanelToggle = {
-                    editorVm.searchPanelVisible = !editorVm.searchPanelVisible
-                },
-                onSearchActionMode = { searchController?.tryCommitSearch() },
+                searchPanelVisible = searchState?.isVisible == true,
+                onSearchPanelToggle = { searchState?.toggle() },
+                onSearchActionMode = { searchState?.tryCommitSearch() },
                 onNavigationClick = onOpenDrawer,
                 onUndoClick = { editorState.value?.undo() },
                 onRedoClick = { editorState.value?.redo() },
@@ -195,8 +183,8 @@ fun EditorScreen(
                 .fillMaxSize()
                 .padding(top = padding.calculateTopPadding(), bottom = bottomPadding)
         ) {
-            if (editorVm.searchPanelVisible && searchController != null) {
-                EditorSearchPanel(editorVm, searchController)
+            if (searchState?.isVisible == true) {
+                EditorSearchPanel(searchState)
             }
 
             EditorTabRow(
@@ -292,55 +280,6 @@ private fun saveAllModifiedFiles(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun EditorSearchPanel(viewModel: EditorViewModel, controller: EditorSearchController) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { controller.gotoPrev() }, modifier = Modifier.weight(1f)) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Prev")
-            }
-            IconButton(onClick = { controller.gotoNext() }, modifier = Modifier.weight(1f)) {
-                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
-            }
-            IconButton(onClick = { controller.replaceCurrent() }, modifier = Modifier.weight(1f)) {
-                Icon(Icons.Default.Refresh, contentDescription = "Replace")
-            }
-            IconButton(onClick = { controller.replaceAll() }, modifier = Modifier.weight(1f)) {
-                Text("ALL")
-            }
-            IconButton(onClick = { }, modifier = Modifier.weight(0.5f)) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Options")
-            }
-        }
-
-        OutlinedTextField(
-            value = viewModel.searchQuery,
-            onValueChange = {
-                viewModel.searchQuery = it
-                controller.tryCommitSearch()
-            },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.editor_text_to_search)) },
-            singleLine = true
-        )
-
-        OutlinedTextField(
-            value = viewModel.replacementText,
-            onValueChange = { viewModel.replacementText = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.editor_replacement)) },
-            singleLine = true
-        )
     }
 }
 

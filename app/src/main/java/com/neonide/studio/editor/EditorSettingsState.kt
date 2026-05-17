@@ -1,4 +1,4 @@
-package com.neonide.studio.app.editor
+package com.neonide.studio.editor
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

@@ -1,4 +1,4 @@
-package com.neonide.studio.app.editor
+package com.neonide.studio.editor
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding

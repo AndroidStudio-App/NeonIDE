@@ -1,4 +1,4 @@
-package com.neonide.studio.app.editor
+package com.neonide.studio.editor
 
 import android.graphics.Typeface
 import android.view.ViewGroup.LayoutParams

@@ -15,9 +15,6 @@ import com.neonide.studio.app.lsp.LspStatus
 class EditorViewModel : ViewModel() {
 
     var positionText by mutableStateOf("")
-    var searchQuery by mutableStateOf("")
-    var replacementText by mutableStateOf("")
-    var searchPanelVisible by mutableStateOf(false)
 
     /**
      * Manager for Language Server Protocol integration.
