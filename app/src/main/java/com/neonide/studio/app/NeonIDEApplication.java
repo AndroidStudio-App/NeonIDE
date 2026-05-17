@@ -15,7 +15,6 @@ public class NeonIDEApplication extends TermuxApplication {
         
         // Init sora-editor file providers
         io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry.getInstance().addFileProvider(new io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver(context.getAssets()));
-        io.github.rosemoe.sora.langs.monarch.registry.FileProviderRegistry.INSTANCE.addProvider(new io.github.rosemoe.sora.langs.monarch.registry.provider.AssetsFileResolver(context.getAssets()));
 
         // Register IDEFileLogger to capture all logs sent via Logger class
         Logger.setExternalLogger((priority, tag, message) -> {

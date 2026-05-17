@@ -47,7 +47,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.R
 import com.neonide.studio.app.EditorGradleManager
 import com.neonide.studio.app.EditorSearchController
-import com.neonide.studio.app.EditorThemeAndLanguageManager
 import com.neonide.studio.app.EditorViewModel
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
@@ -99,9 +98,7 @@ fun EditorScreen(
 
     LaunchedEffect(editorState.value) {
         val editor = editorState.value ?: return@LaunchedEffect
-        val tm = EditorThemeAndLanguageManager(editor)
-        tm.setupTextmate()
-        tm.setupMonarch()
+        EditorDialogs.setupTextmate()
         if (editor.colorScheme !is TextMateColorScheme) {
             editor.colorScheme = TextMateColorScheme.create(
                 ThemeRegistry.getInstance()
