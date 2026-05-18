@@ -1,4 +1,4 @@
-#!/data/data/com.neonide.studio/files/usr/bin/bash
+#!/data/data/com.neonide.studio/files/usr/bin/env bash
 
 set -e
 
@@ -50,7 +50,7 @@ if [ ! -d "$HOME/android-sdk/build-tools/36.0.0" ]; then
     echo "Android build-tools installed successfully!"
 fi
 
-if [ ! -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
+if [ ! -d "$HOME/android-sdk/cmdline-tools/latest/bin" ]; then
     
     echo "Downloading official Android Command Line Tools..."
     
@@ -58,21 +58,31 @@ if [ ! -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
     unzip -oq commandlinetools-linux-13114758_latest.zip && rm commandlinetools-linux-13114758_latest.zip
     
     mkdir -p "$HOME/android-sdk/cmdline-tools"
-    mv cmdline-tools "$ANDROID_HOME/cmdline-tools/latest"
+    mv cmdline-tools "$HOME/android-sdk/cmdline-tools/latest"
     
     echo "Command Line Tools installed successfully!"
 fi
 
+if [ ! -d "$HOME/android-sdk/ndk/29.0.14206865" ]; then
+    
+    echo "Downloading Android NDK (Termux compatible)..."
+    
+    curl -O -L https://github.com/AndroidCSOfficial/acs-build-system/releases/download/v29.0.14033849/android-ndk-r29-aarch64-linux-android.tar.xz
+    tar -xJf android-ndk-r29-aarch64-linux-android.tar.xz && rm -f android-ndk-r29-aarch64-linux-android.tar.xz
+    mkdir -p $HOME/android-sdk/ndk
+    mv android-ndk-r29 $HOME/android-sdk/ndk/29.0.14206865
+    
+fi
 
 create_ndk_metadata() {
-    cat > "$ANDROID_HOME/ndk/29.0.14206865/source.properties" << 'EOF'
+    cat > "$HOME/android-sdk/ndk/29.0.14206865/source.properties" << 'EOF'
 Pkg.Desc = Android NDK
 Pkg.Revision = 29.0.14206865
 Pkg.Path = ndk;29.0.14206865
 Pkg.UserSrc = false
 EOF
 
-    cat > "$ANDROID_HOME/ndk/29.0.14206865/package.xml" << 'EOF'
+    cat > "$HOME/android-sdk/ndk/29.0.14206865/package.xml" << 'EOF'
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:repository
     xmlns:ns2="http://schemas.android.com/repository/android/common/02"
@@ -100,18 +110,9 @@ EOF
 EOF
 }
 
-
-if [ ! -d "$ANDROID_HOME/ndk/29.0.14206865" ]; then
-    
-    echo "Downloading Android NDK (Termux compatible)..."
-    
-    curl -O -L https://github.com/AndroidCSOfficial/acs-build-system/releases/download/v29.0.14033849/android-ndk-r29-aarch64-linux-android.tar.xz
-    tar -xJf android-ndk-r29-aarch64-linux-android.tar.xz && rm -f android-ndk-r29-aarch64-linux-android.tar.xz
-    mv android-ndk-r29 $ANDROID_HOME/ndk/29.0.14206865
-    
-fi
-
 echo "--- [5/5] Finalizing ---"
 source $HOME/.bashrc
 
-yes | sdkmanager --licenses
+yes | $PREFIX/bin/bash $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
+clear
