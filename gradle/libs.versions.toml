@@ -27,7 +27,7 @@ recyclerview = "1.4.0"
 window = "1.0.0-alpha09"
 
 guava = "33.6.0-jre"
-commons-io = "2.5"
+commons-io = "2.22.0"
 gson = "2.14.0"
 moshi = "1.15.2"
 javapoet = "1.13.0"
