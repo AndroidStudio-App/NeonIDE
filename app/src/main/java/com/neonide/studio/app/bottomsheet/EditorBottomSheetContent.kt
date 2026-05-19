@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -158,15 +159,43 @@ object BuildOutputBuffer {
 }
 
 @Composable
+fun BottomSheetTabRow(
+    pagerState: PagerState,
+    tabs: List<BottomSheetTab>,
+    modifier: Modifier = Modifier
+) {
+    val scope = rememberCoroutineScope()
+
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        containerColor = Color.Transparent,
+        divider = {},
+        modifier = modifier
+    ) {
+        tabs.forEachIndexed { index, tab ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                text = {
+                    Text(
+                        text = tab.title,
+                        fontSize = 12.sp,
+                        maxLines = 1
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
 fun EditorBottomSheetContent(
     viewModel: BottomSheetViewModel,
+    pagerState: PagerState,
     onNavigate: (NavigationItem) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val tabs = BottomSheetTab.entries
-    val pagerState = rememberPagerState { tabs.size }
-    val scope = rememberCoroutineScope()
-    val status by viewModel.status.observeAsState()
     val selectedTab by viewModel.selectedTab.observeAsState(0)
 
     LaunchedEffect(selectedTab) {
@@ -182,6 +211,7 @@ fun EditorBottomSheetContent(
     }
 
     Column(modifier = modifier.fillMaxSize().navigationBarsPadding()) {
+        val status by viewModel.status.observeAsState()
         status?.let { msg ->
             Box(
                 modifier = Modifier
@@ -193,29 +223,10 @@ fun EditorBottomSheetContent(
             }
         }
 
-        TabRow(
-            selectedTabIndex = pagerState.currentPage,
-            containerColor = Color.Transparent,
-            divider = {}
-        ) {
-            tabs.forEachIndexed { index, tab ->
-                Tab(
-                    selected = pagerState.currentPage == index,
-                    onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                    text = {
-                        Text(
-                            text = tab.title,
-                            fontSize = 12.sp,
-                            maxLines = 1
-                        )
-                    }
-                )
-            }
-        }
-
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            userScrollEnabled = false
         ) { page ->
             when (tabs[page]) {
                 BottomSheetTab.BUILD_OUTPUT -> LogViewerPage(
@@ -258,7 +269,7 @@ private fun LogViewerPage(contentStream: String) {
                 setText("", true, null)
                 props.stickyScroll = true
                 props.overScrollEnabled = true
-                setInterceptParentHorizontalScrollIfNeeded(true)
+                setInterceptParentHorizontalScrollIfNeeded(false)
             }
         },
         update = { ed ->
