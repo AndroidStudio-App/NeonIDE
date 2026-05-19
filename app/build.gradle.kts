@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.neonide.studio"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 28
         versionCode = 1
         versionName = "0.1"
