@@ -5,7 +5,12 @@ import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Alignment
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -34,8 +41,11 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.app.EditorGradleManager
 import com.neonide.studio.app.EditorViewModel
+import com.neonide.studio.app.bottomsheet.BottomSheetTab
+import com.neonide.studio.app.bottomsheet.BottomSheetTabRow
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
+import androidx.compose.foundation.pager.rememberPagerState
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.editor.completion.UnifiedCompletionProvider
 import com.neonide.studio.utils.OpenFile
@@ -72,9 +82,11 @@ fun EditorScreen(
     val context = LocalContext.current as ComponentActivity
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
+    val tabs = BottomSheetTab.entries
+    val pagerState = rememberPagerState { tabs.size }
 
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    val peekHeight = 30.dp + navBarHeight
+    val peekHeight = 15.dp + navBarHeight
 
     BackHandler(enabled = scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
         scope.launch {
@@ -138,7 +150,28 @@ fun EditorScreen(
         modifier = Modifier,
         scaffoldState = scaffoldState,
         sheetShape = RectangleShape,
-        sheetContent = { EditorBottomSheetContent(viewModel = bottomSheetVm) },
+        sheetSwipeEnabled = false,
+        sheetDragHandle = {
+            Column(
+                modifier = Modifier.draggable(
+                    state = rememberDraggableState { delta ->
+                        if (delta > 0 && scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
+                            scope.launch { scaffoldState.bottomSheetState.partialExpand() }
+                        } else if (delta < 0 && scaffoldState.bottomSheetState.currentValue == SheetValue.PartiallyExpanded) {
+                            scope.launch { scaffoldState.bottomSheetState.expand() }
+                        }
+                    },
+                    orientation = Orientation.Vertical
+                ),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(modifier = Modifier.padding(bottom = 0.dp).offset(y = (-15).dp)) {
+                    BottomSheetDefaults.DragHandle()
+                }
+                BottomSheetTabRow(pagerState = pagerState, tabs = tabs)
+            }
+        },
+        sheetContent = { EditorBottomSheetContent(viewModel = bottomSheetVm, pagerState = pagerState) },
         sheetPeekHeight = peekHeight,
         topBar = {
             EditorTopBar(

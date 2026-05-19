@@ -29,6 +29,7 @@ app/src/main/assets/bootstrap/*.zip
 # Temporary
 .tmp/
 tmp/
+docs/
 
 # Submodule conversion backups (local only)
 .tmp/agents_backup_*/
