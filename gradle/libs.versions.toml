@@ -47,7 +47,7 @@ snakeyaml = "2.10"
 jdt-annotation = "2.4.100"
 lsp4j = "1.0.0"
 jgit = "7.6.0.202603022253-r"
-desugar = "2.0.4"
+desugar = "2.1.5"
 rosemoe-editor = "0.24.5"
 
 junit = "4.13.2"
