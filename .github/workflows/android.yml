@@ -79,6 +79,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.buildType == 'release'
         uses: softprops/action-gh-release@v3
         with:
+          name: NeonIDE ${{ inputs.releasetag }}
           tag_name: ${{ inputs.releasetag }}
           files: app/build/outputs/apk/release/*.apk
         env:
