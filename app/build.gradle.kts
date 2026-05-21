@@ -17,7 +17,7 @@ android {
         minSdk = 23
         targetSdk = 28
         versionCode = 1
-        versionName = "v0.0.1"
+        versionName = "0.0.1"
 
         manifestPlaceholders += mapOf(
             "TERMUX_PACKAGE_NAME" to "com.neonide.studio",
