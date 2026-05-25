@@ -47,6 +47,7 @@ import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.editor.completion.UnifiedCompletionProvider
+import com.neonide.studio.utils.HexColorScanner
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
 import com.termux.shared.logger.Logger
@@ -121,6 +122,12 @@ fun EditorScreen(
             editor.setEditorLanguage(language)
             if (editor.text.toString() != activeFile.content) {
                 editor.setText(activeFile.content)
+            } else {
+                editor.post {
+                    editor.setHighlightTexts(
+                        HexColorScanner.computeHighlights(editor.text)
+                    )
+                }
             }
             val ext = file.extension.lowercase()
             if (ext in listOf("java", "kt", "kts", "xml")) {
@@ -134,6 +141,7 @@ fun EditorScreen(
             }
         } else if (activeFile == null && editor != null) {
             editor.setText("")
+            editor.setHighlightTexts(null)
         }
     }
 
@@ -251,6 +259,11 @@ fun EditorScreen(
                                     if (it.path == updated.path) updated else it
                                 }
                             }
+                        }
+                        editor.post {
+                            editor.setHighlightTexts(
+                                HexColorScanner.computeHighlights(editor.text)
+                            )
                         }
                     }
                     updatePositionText(editor, editorVm)
