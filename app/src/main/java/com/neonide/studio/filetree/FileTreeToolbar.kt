@@ -84,6 +84,7 @@ internal fun FileTreeToolbar(
                 ),
                 modifier = Modifier
                     .weight(1f)
+                    .height(32.dp)
                     .background(
                         MaterialTheme.colorScheme.surfaceVariant,
                         RoundedCornerShape(3.dp)
