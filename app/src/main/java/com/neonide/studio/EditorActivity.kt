@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.Gravity
 import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -62,6 +63,7 @@ class EditorActivity : ComponentActivity() {
         val projectPath = File(intent.getStringExtra(EXTRA_PROJECT_DIR) ?: return)
 
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_editor)
 
