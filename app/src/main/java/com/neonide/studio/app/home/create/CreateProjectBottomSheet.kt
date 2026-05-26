@@ -45,6 +45,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -71,6 +72,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
 import com.neonide.studio.app.home.preferences.WizardPreferences
+import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.utils.FileUtil
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
@@ -223,7 +225,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         modifier = Modifier.padding(top = 16.dp)
                     )
 
-                    OutlinedTextField(
+                    FormTextField(
                         value = projectName,
                         onValueChange = {
                             projectName = it
@@ -231,7 +233,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                                 updatePackageName(it, selectedTemplate!!)
                             }
                         },
-                        label = { Text(stringResource(id = R.string.project_name)) },
+                        label = stringResource(id = R.string.project_name),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_add),
@@ -240,17 +242,16 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
-                        singleLine = true
+                            .padding(top = 12.dp)
                     )
 
-                    OutlinedTextField(
+                    FormTextField(
                         value = packageName,
                         onValueChange = {
                             packageName = it
                             isPackageNameManuallyEdited = true
                         },
-                        label = { Text(stringResource(id = R.string.package_name)) },
+                        label = stringResource(id = R.string.package_name),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_language_android),
@@ -259,14 +260,13 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
-                        singleLine = true
+                            .padding(top = 12.dp)
                     )
 
-                    OutlinedTextField(
+                    FormTextField(
                         value = saveLocation,
                         onValueChange = { saveLocation = it },
-                        label = { Text(stringResource(id = R.string.project_location)) },
+                        label = stringResource(id = R.string.project_location),
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_folder),
@@ -287,8 +287,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
-                        singleLine = true
+                            .padding(top = 12.dp)
                     )
 
                     DropdownField(
@@ -430,7 +429,7 @@ private fun DropdownField(
             },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
                 .fillMaxWidth(),
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
         )

@@ -12,10 +12,8 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Terminal
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.neonide.studio.ui.components.ToggleMenuItem
 import com.neonide.studio.utils.divider.horizontalDivider
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
@@ -79,106 +78,88 @@ fun EditorTopBar(
                         expanded = false
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Search Panel") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Search Panel",
+                    checked = searchPanelVisible,
+                    onToggle = {
                         onSearchPanelToggle()
                         expanded = false
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = searchPanelVisible, onCheckedChange = null)
                     }
                 )
 
                 horizontalDivider(color = Color.Gray)
 
                 MenuCategoryTitle("Feature Switches")
-                DropdownMenuItem(
-                    text = { Text("Symbol Bar") },
-                    onClick = { settings.isSymbolBarVisible = !settings.isSymbolBarVisible },
-                    trailingIcon = {
-                        Checkbox(checked = settings.isSymbolBarVisible, onCheckedChange = null)
-                    }
+                ToggleMenuItem(
+                    text = "Symbol Bar",
+                    checked = settings.isSymbolBarVisible,
+                    onToggle = { settings.isSymbolBarVisible = !settings.isSymbolBarVisible }
                 )
-                DropdownMenuItem(
-                    text = { Text("Wordwrap") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Wordwrap",
+                    checked = settings.isWordwrap,
+                    onToggle = {
                         settings.isWordwrap = !settings.isWordwrap
                         editor?.isWordwrap = settings.isWordwrap
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.isWordwrap, onCheckedChange = null)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Line Number") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Line Number",
+                    checked = settings.isLineNumberVisible,
+                    onToggle = {
                         settings.isLineNumberVisible = !settings.isLineNumberVisible
                         editor?.isLineNumberEnabled = settings.isLineNumberVisible
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.isLineNumberVisible, onCheckedChange = null)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Pin Line Number") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Pin Line Number",
+                    checked = settings.isLineNumberPinned,
+                    onToggle = {
                         settings.isLineNumberPinned = !settings.isLineNumberPinned
                         editor?.setPinLineNumber(settings.isLineNumberPinned)
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.isLineNumberPinned, onCheckedChange = null)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Magnifier") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Magnifier",
+                    checked = settings.isMagnifierEnabled,
+                    onToggle = {
                         settings.isMagnifierEnabled = !settings.isMagnifierEnabled
                         editor?.getComponent(Magnifier::class.java)?.isEnabled =
                             settings.isMagnifierEnabled
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.isMagnifierEnabled, onCheckedChange = null)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Use ICU") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Use ICU",
+                    checked = settings.useIcu,
+                    onToggle = {
                         settings.useIcu = !settings.useIcu
                         editor?.props?.useICULibToSelectWords = settings.useIcu
-                    },
-                    trailingIcon = { Checkbox(checked = settings.useIcu, onCheckedChange = null) }
+                    }
                 )
-                DropdownMenuItem(
-                    text = { Text("Completion Animation") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Completion Animation",
+                    checked = settings.completionAnim,
+                    onToggle = {
                         settings.completionAnim = !settings.completionAnim
                         editor?.getComponent(
                             EditorAutoCompletion::class.java
                         )?.setEnabledAnimation(settings.completionAnim)
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.completionAnim, onCheckedChange = null)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Soft Keyboard") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Soft Keyboard",
+                    checked = settings.softKbdEnabled,
+                    onToggle = {
                         settings.softKbdEnabled = !settings.softKbdEnabled
                         editor?.isSoftKeyboardEnabled = settings.softKbdEnabled
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.softKbdEnabled, onCheckedChange = null)
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Disable Soft Kbd on Hard Kbd") },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Disable Soft Kbd on Hard Kbd",
+                    checked = settings.hardKbdDisabled,
+                    onToggle = {
                         settings.hardKbdDisabled = !settings.hardKbdDisabled
                         editor?.isDisableSoftKbdIfHardKbdAvailable = settings.hardKbdDisabled
-                    },
-                    trailingIcon = {
-                        Checkbox(checked = settings.hardKbdDisabled, onCheckedChange = null)
                     }
                 )
 

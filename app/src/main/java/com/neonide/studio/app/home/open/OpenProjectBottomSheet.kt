@@ -36,7 +36,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -66,6 +65,7 @@ import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.neonide.studio.app.utils.DisplayNameUtils
 import com.neonide.studio.app.utils.SafeDirLister
 import com.neonide.studio.app.utils.SafeFileDeleter
+import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.utils.FileUtil
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
@@ -170,13 +170,13 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
             }
 
             // Search
-            OutlinedTextField(
+            FormTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
-                placeholder = { Text(stringResource(id = R.string.search_projects_hint)) },
+                placeholder = stringResource(id = R.string.search_projects_hint),
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_search),
@@ -192,8 +192,7 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
                             )
                         }
                     }
-                },
-                singleLine = true
+                }
             )
 
             Spacer(modifier = Modifier.height(12.dp))

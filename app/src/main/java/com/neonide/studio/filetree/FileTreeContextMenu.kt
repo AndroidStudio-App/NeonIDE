@@ -1,5 +1,6 @@
 package com.neonide.studio.filetree
 
+import android.content.ClipData
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,13 +17,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,6 +32,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.neonide.studio.R
 import com.neonide.studio.utils.divider.horizontalDivider
+import kotlinx.coroutines.launch
 import okio.Path
 
 data class ContextMenuTarget(val path: Path, val name: String, val isDirectory: Boolean)
@@ -52,7 +55,8 @@ fun FileTreeContextMenu(
     if (target == null) return
 
     val canPaste = clipboard != null
-    val clipboardManager = LocalClipboardManager.current
+    val clipboardManager = LocalClipboard.current
+    val scope = rememberCoroutineScope()
 
     Popup(
         alignment = Alignment.TopStart,
@@ -147,7 +151,10 @@ fun FileTreeContextMenu(
                     val t = target
                     onDismiss()
                     onCopyPath(t)
-                    clipboardManager.setText(AnnotatedString(t.path.toString()))
+                    scope.launch {
+                        val clipData = ClipData.newPlainText("path", t.path.toString())
+                        clipboardManager.setClipEntry(ClipEntry(clipData))
+                    }
                 }
             )
         }

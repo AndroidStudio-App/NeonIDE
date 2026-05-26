@@ -31,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -47,6 +46,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.EditorActivity
+import com.neonide.studio.R
+import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.utils.divider.horizontalDivider
 @Composable
 fun GitLayout(
@@ -86,36 +87,32 @@ fun GitLayout(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // ---- URL ----
-            OutlinedTextField(
+            FormTextField(
                 value = state.url,
                 onValueChange = viewModel::updateUrl,
-                label = { Text("Repository URL") },
+                label = "Repository URL",
                 leadingIcon = { Icon(Icons.Filled.Link, null) },
                 isError = state.urlError != null,
-                supportingText = { state.urlError?.let { Text(it) } },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isCloning,
-                shape = MaterialTheme.shapes.small
+                supportingText = state.urlError,
+                enabled = !state.isCloning
             )
 
             // ---- Repo name ----
-            OutlinedTextField(
+            FormTextField(
                 value = state.repoName,
                 onValueChange = viewModel::updateRepoName,
-                label = { Text("Repository Name") },
+                label = "Repository Name",
                 leadingIcon = { Icon(Icons.Filled.Description, null) },
                 isError = state.repoNameError != null,
-                supportingText = { state.repoNameError?.let { Text(it) } },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isCloning,
-                shape = MaterialTheme.shapes.small
+                supportingText = state.repoNameError,
+                enabled = !state.isCloning
             )
 
             // ---- Destination ----
-            OutlinedTextField(
+            FormTextField(
                 value = state.destination,
                 onValueChange = viewModel::updateDestination,
-                label = { Text("Destination Path") },
+                label = "Destination Path",
                 leadingIcon = { Icon(Icons.Filled.Folder, null) },
                 trailingIcon = {
                     IconButton(onClick = { dirPickerLauncher.launch(null) }) {
@@ -123,21 +120,17 @@ fun GitLayout(
                     }
                 },
                 isError = state.destinationError != null,
-                supportingText = { state.destinationError?.let { Text(it) } },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isCloning,
-                shape = MaterialTheme.shapes.small
+                supportingText = state.destinationError,
+                enabled = !state.isCloning
             )
 
             // ---- Branch ----
-            OutlinedTextField(
+            FormTextField(
                 value = state.branch,
                 onValueChange = viewModel::updateBranch,
-                label = { Text("Branch (optional)") },
+                label = "Branch (optional)",
                 leadingIcon = { Icon(Icons.Filled.AccountTree, null) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isCloning,
-                shape = MaterialTheme.shapes.small
+                enabled = !state.isCloning
             )
 
             // ---- Open after clone ----
@@ -161,27 +154,25 @@ fun GitLayout(
             }
             if (state.useCredentials) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
+                    FormTextField(
                         value = state.username,
                         onValueChange = viewModel::updateUsername,
-                        label = { Text("Username") },
+                        label = "Username",
                         leadingIcon = { Icon(Icons.Filled.AccountCircle, null) },
                         isError = state.usernameError != null,
-                        supportingText = { state.usernameError?.let { Text(it) } },
+                        supportingText = state.usernameError,
                         modifier = Modifier.weight(1f),
-                        enabled = !state.isCloning,
-                        shape = MaterialTheme.shapes.small
+                        enabled = !state.isCloning
                     )
-                    OutlinedTextField(
+                    FormTextField(
                         value = state.password,
                         onValueChange = viewModel::updatePassword,
-                        label = { Text("Password") },
+                        label = "Password",
                         leadingIcon = { Icon(Icons.Filled.Password, null) },
                         isError = state.passwordError != null,
-                        supportingText = { state.passwordError?.let { Text(it) } },
+                        supportingText = state.passwordError,
                         modifier = Modifier.weight(1f),
                         enabled = !state.isCloning,
-                        shape = MaterialTheme.shapes.small,
                         visualTransformation = PasswordVisualTransformation()
                     )
                 }
@@ -199,16 +190,14 @@ fun GitLayout(
                 )
             }
             if (state.shallowClone) {
-                OutlinedTextField(
+                FormTextField(
                     value = state.depth,
                     onValueChange = viewModel::updateDepth,
-                    label = { Text("Depth") },
+                    label = "Depth",
                     leadingIcon = { Icon(Icons.Filled.ArrowDownward, null) },
                     isError = state.depthError != null,
-                    supportingText = { state.depthError?.let { Text(it) } },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !state.isCloning,
-                    shape = MaterialTheme.shapes.small
+                    supportingText = state.depthError,
+                    enabled = !state.isCloning
                 )
             }
 

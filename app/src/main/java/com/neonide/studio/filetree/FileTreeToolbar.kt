@@ -8,12 +8,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.ToggleMenuItem
 
 @Composable
 internal fun FileTreeToolbar(
@@ -129,32 +127,26 @@ internal fun FileTreeToolbar(
                 expanded = menuExpanded,
                 onDismissRequest = onDismissMenu
             ) {
-                DropdownMenuItem(
-                    text = { Text("Compact Tree") },
-                    trailingIcon = {
-                        Checkbox(checked = isCompactMode, onCheckedChange = null)
-                    },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Compact Tree",
+                    checked = isCompactMode,
+                    onToggle = {
                         onToggleCompact()
                         onDismissMenu()
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Regex") },
-                    trailingIcon = {
-                        Checkbox(checked = searchRegex, onCheckedChange = null)
-                    },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Regex",
+                    checked = searchRegex,
+                    onToggle = {
                         onToggleRegex()
                         onDismissMenu()
                     }
                 )
-                DropdownMenuItem(
-                    text = { Text("Case Sensitive") },
-                    trailingIcon = {
-                        Checkbox(checked = searchCaseSensitive, onCheckedChange = null)
-                    },
-                    onClick = {
+                ToggleMenuItem(
+                    text = "Case Sensitive",
+                    checked = searchCaseSensitive,
+                    onToggle = {
                         onToggleCaseSensitive()
                         onDismissMenu()
                     }

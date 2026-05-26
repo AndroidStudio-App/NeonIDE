@@ -14,12 +14,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.FindReplace
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,6 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.FormTextField
+import com.neonide.studio.ui.components.ToggleMenuItem
 import io.github.rosemoe.sora.util.regex.RegexBackrefGrammar
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorSearcher
@@ -145,24 +144,20 @@ fun EditorSearchPanel(state: EditorSearchState) {
                     expanded = optionsExpanded,
                     onDismissRequest = { optionsExpanded = false }
                 ) {
-                    DropdownMenuItem(
-                        text = { Text("Case Insensitive") },
-                        onClick = {
+                    ToggleMenuItem(
+                        text = "Case Insensitive",
+                        checked = state.isCaseInsensitive,
+                        onToggle = {
                             state.isCaseInsensitive = !state.isCaseInsensitive
                             state.updateSearchOptions()
-                        },
-                        trailingIcon = {
-                            Checkbox(checked = state.isCaseInsensitive, onCheckedChange = null)
                         }
                     )
-                    DropdownMenuItem(
-                        text = { Text("Regex") },
-                        onClick = {
+                    ToggleMenuItem(
+                        text = "Regex",
+                        checked = state.isRegex,
+                        onToggle = {
                             state.isRegex = !state.isRegex
                             state.updateSearchOptions()
-                        },
-                        trailingIcon = {
-                            Checkbox(checked = state.isRegex, onCheckedChange = null)
                         }
                     )
                 }
@@ -174,15 +169,14 @@ fun EditorSearchPanel(state: EditorSearchState) {
                 .fillMaxWidth()
                 .clipToBounds()
         ) {
-            OutlinedTextField(
+            FormTextField(
                 value = state.searchQuery,
                 onValueChange = {
                     state.searchQuery = it
                     state.tryCommitSearch()
                 },
                 modifier = Modifier.weight(1f),
-                label = { Text(stringResource(R.string.editor_text_to_search)) },
-                singleLine = true,
+                label = stringResource(R.string.editor_text_to_search),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {
                     state.gotoNext()
@@ -191,14 +185,13 @@ fun EditorSearchPanel(state: EditorSearchState) {
             )
 
             if (state.showReplace) {
-                OutlinedTextField(
+                FormTextField(
                     value = state.replacementText,
                     onValueChange = { state.replacementText = it },
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 4.dp),
-                    label = { Text(stringResource(R.string.editor_replacement)) },
-                    singleLine = true
+                    label = stringResource(R.string.editor_replacement)
                 )
             }
         }

@@ -231,10 +231,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
      * For Java (org.javacs), this enables richer hover/Javadoc if JDK sources are present.
      */
     private fun configureServer(serverId: String, lspEditor: LspEditor) {
-        val rm = lspEditor.requestManager ?: run {
-            Logger.logWarn(TAG, "configureServer: requestManager is null")
-            return
-        }
+        val rm = lspEditor.requestManager
 
         when (serverId) {
             JavaLanguageServer.SERVER_ID -> {
@@ -253,23 +250,21 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                     classPathArr.add(termuxLib.absolutePath)
                 }
 
-                val projectPath = lspEditor.project?.projectUri?.path
-                if (projectPath != null) {
-                    val projectDir = File(projectPath)
-                    val buildDir = File(projectDir, "build")
-                    val intermediates = File(buildDir, "intermediates")
-                    val javacDebug = File(intermediates, "javac/debug/classes")
-                    val javacRelease = File(intermediates, "javac/release/classes")
-                    if (javacDebug.isDirectory) classPathArr.add(javacDebug.absolutePath)
-                    if (javacRelease.isDirectory) classPathArr.add(javacRelease.absolutePath)
+                val projectPath = lspEditor.project.projectUri.path
+                val projectDir = File(projectPath)
+                val buildDir = File(projectDir, "build")
+                val intermediates = File(buildDir, "intermediates")
+                val javacDebug = File(intermediates, "javac/debug/classes")
+                val javacRelease = File(intermediates, "javac/release/classes")
+                if (javacDebug.isDirectory) classPathArr.add(javacDebug.absolutePath)
+                if (javacRelease.isDirectory) classPathArr.add(javacRelease.absolutePath)
 
-                    val appBuildDir = File(projectDir, "app/build")
-                    val appIntermediates = File(appBuildDir, "intermediates")
-                    val appJavacDebug = File(appIntermediates, "javac/debug/classes")
-                    val appJavacRelease = File(appIntermediates, "javac/release/classes")
-                    if (appJavacDebug.isDirectory) classPathArr.add(appJavacDebug.absolutePath)
-                    if (appJavacRelease.isDirectory) classPathArr.add(appJavacRelease.absolutePath)
-                }
+                val appBuildDir = File(projectDir, "app/build")
+                val appIntermediates = File(appBuildDir, "intermediates")
+                val appJavacDebug = File(appIntermediates, "javac/debug/classes")
+                val appJavacRelease = File(appIntermediates, "javac/release/classes")
+                if (appJavacDebug.isDirectory) classPathArr.add(appJavacDebug.absolutePath)
+                if (appJavacRelease.isDirectory) classPathArr.add(appJavacRelease.absolutePath)
 
                 java.add("classPath", classPathArr)
                 Logger.logDebug(TAG, "Sending java.classPath with ${classPathArr.size()} entries")

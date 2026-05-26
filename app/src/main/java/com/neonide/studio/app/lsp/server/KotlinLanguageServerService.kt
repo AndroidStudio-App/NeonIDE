@@ -160,7 +160,7 @@ class KotlinLanguageServerService : Service() {
                     var entry: ZipEntry?
                     while (true) {
                         entry = zip.nextEntry ?: break
-                        var name = entry!!.name
+                        var name = entry.name
                         if (name.contains("..")) {
                             // basic zip-slip protection
                             zip.closeEntry()
@@ -176,7 +176,7 @@ class KotlinLanguageServerService : Service() {
                             continue
                         }
                         val outFile = File(targetDir, name)
-                        if (entry!!.isDirectory) {
+                        if (entry.isDirectory) {
                             outFile.mkdirs()
                         } else {
                             outFile.parentFile?.mkdirs()
