@@ -48,16 +48,6 @@ class EditorGradleController(
             return
         }
 
-        val wrapperStatus = GradleProjectActions.ensureWrapperPresent(activity, projectRoot)
-        GradleProjectActions.wrapperStatusMessage(activity, wrapperStatus)?.let { msg ->
-            Toast.makeText(activity, msg, Toast.LENGTH_LONG).show()
-        }
-        if (wrapperStatus == GradleProjectActions.WrapperStatus.MissingScriptOrProps ||
-            wrapperStatus == GradleProjectActions.WrapperStatus.RepairFailed
-        ) {
-            return
-        }
-
         Toast.makeText(
             activity,
             activity.getString(R.string.sync_started),
@@ -86,16 +76,6 @@ class EditorGradleController(
         if (gradleRunning) {
             GradleService.stopBuild(activity)
             gradleRunning = false
-            return
-        }
-
-        val wrapperStatus = GradleProjectActions.ensureWrapperPresent(activity, projectRoot)
-        GradleProjectActions.wrapperStatusMessage(activity, wrapperStatus)?.let { msg ->
-            Toast.makeText(activity, msg, Toast.LENGTH_LONG).show()
-        }
-        if (wrapperStatus == GradleProjectActions.WrapperStatus.MissingScriptOrProps ||
-            wrapperStatus == GradleProjectActions.WrapperStatus.RepairFailed
-        ) {
             return
         }
 

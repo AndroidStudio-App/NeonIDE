@@ -1,211 +1,69 @@
 package com.neonide.studio.utils
 
-import android.content.Context
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 object AndroidSdkUtils {
 
-    data class SdkConfig(
-        val sdkDir: File,
-        val env: Map<String, String>,
-        val aapt2Path: String? = null
-    )
+    data class SdkConfig(val sdkDir: File, val env: Map<String, String>)
+
+    private const val NDK_VERSION = "29.0.14206865"
+    private const val BUILD_TOOLS_VERSION = "36.0.0"
+
+    private val homeDir: File
+        get() = File(TermuxConstants.TERMUX_HOME_DIR_PATH)
+
+    val sdkDir: File get() = File(homeDir, "android-sdk")
+    val ndkDir: File get() = File(sdkDir, "ndk/$NDK_VERSION")
+    val aapt2Path: File get() = File(sdkDir, "build-tools/$BUILD_TOOLS_VERSION/aapt2")
 
     /**
-     * Try to resolve Android SDK location.
-     *
-     * Priority:
-     * 1) Existing env (ANDROID_HOME/ANDROID_SDK_ROOT) if points to existing dir
-     * 2) $HOME/android-sdk (common Termux layout)
-     * 3) $HOME/Android/Sdk
-     * 4) /sdcard/Android/Sdk (fallback)
+     * Build environment overrides for running gradlew.
      */
-    fun resolveSdkDir(baseEnv: Map<String, String>): File? {
-        val fromEnv = (baseEnv["ANDROID_SDK_ROOT"] ?: baseEnv["ANDROID_HOME"])?.trim().orEmpty()
-        if (fromEnv.isNotEmpty()) {
-            val f = File(fromEnv)
-            if (f.exists() && f.isDirectory) return f
-        }
+    fun buildEnvOverrides(baseEnv: Map<String, String>): Map<String, String> {
+        val sdk = sdkDir.absolutePath
+        val path = listOf(
+            "$sdk/cmdline-tools/latest/bin",
+            "$sdk/platform-tools",
+            "$sdk/build-tools/$BUILD_TOOLS_VERSION",
+            baseEnv["PATH"].orEmpty()
+        ).filter { it.isNotBlank() }.joinToString(":")
 
-        val home = File(baseEnv["HOME"] ?: TermuxConstants.TERMUX_HOME_DIR_PATH)
-
-        val candidates = listOf(
-            File(home, "android-sdk"),
-            File(home, "Android/Sdk"),
-            File("/sdcard/Android/Sdk")
+        return mapOf(
+            "ANDROID_HOME" to sdk,
+            "ANDROID_SDK_ROOT" to sdk,
+            "PATH" to path
         )
-
-        return candidates.firstOrNull { it.exists() && it.isDirectory }
     }
 
-    private fun ensureLocalProperty(projectDir: File, key: String, value: String) {
+    private fun ensureNdkDir(projectDir: File) {
         val lp = File(projectDir, "local.properties")
-        val prefix = "$key="
+        val line = "ndk.dir=${ndkDir.absolutePath}"
 
-        // If already correct, do nothing.
         if (lp.exists()) {
-            runCatching {
-                val existing = lp.readLines().firstOrNull { it.trim().startsWith(prefix) }
-                if (existing != null && existing.trim() == prefix + value) return
+            val lines = lp.readLines().toMutableList()
+            val idx = lines.indexOfFirst { it.trim().startsWith("ndk.dir=") }
+            if (idx >= 0) {
+                if (lines[idx].trim() == line) return
+                lines[idx] = line
+            } else {
+                lines.add(line)
             }
-        }
-
-        // Merge/overwrite key line, preserve other properties.
-        runCatching {
-            val newLines = mutableListOf<String>()
-            if (lp.exists()) {
-                for (line in lp.readLines()) {
-                    if (line.trim().startsWith(prefix)) continue
-                    newLines.add(line)
-                }
-            }
-            newLines.add(prefix + value)
-            lp.writeText(newLines.joinToString("\n") + "\n")
-        }
-    }
-
-    /** Ensure project local.properties has sdk.dir so AGP doesn't complain. */
-    fun ensureSdkDir(projectDir: File, sdkDir: File) {
-        ensureLocalProperty(projectDir, "sdk.dir", sdkDir.absolutePath)
-    }
-
-    /**
-     * Pick best build-tools aapt2 binary that is runnable on Android (bionic/static), not a host glibc binary.
-     *
-     * Preference strategy:
-     * - Prefer newest build-tools version where aapt2 passes ELF check for current ABI and interpreter.
-     * - If newest is not runnable (e.g., x86_64 glibc), fall back to older versions until a bionic/static one is found.
-     */
-    fun resolveBestBionicAapt2(sdkDir: File): File? {
-        val buildToolsDir = File(sdkDir, "build-tools")
-        var result: File? = null
-
-        if (buildToolsDir.exists() && buildToolsDir.isDirectory) {
-            val supported = android.os.Build.SUPPORTED_ABIS?.toList() ?: emptyList()
-            val versions = buildToolsDir.listFiles()?.filter { it.isDirectory }
-                ?.sortedByDescending { it.name } ?: emptyList()
-
-            for (v in versions) {
-                val aapt2 = File(v, "aapt2")
-                if (aapt2.exists() && aapt2.isFile &&
-                    ElfInspector.isAndroidRunnable(aapt2, supported)
-                ) {
-                    result = aapt2
-                    break
-                }
-            }
-        }
-        return result
-    }
-
-    /** Ensure project local.properties has ndk.dir if ndk exists. */
-    fun ensureNdkDir(projectDir: File, ndkDir: File) {
-        ensureLocalProperty(projectDir, "ndk.dir", ndkDir.absolutePath)
-    }
-
-    /** Find the newest installed NDK under the SDK dir. */
-    fun resolveNdkDir(sdkDir: File): File? {
-        val ndkRoot = File(sdkDir, "ndk")
-        if (ndkRoot.exists() && ndkRoot.isDirectory) {
-            val versions =
-                ndkRoot.listFiles()?.filter { it.isDirectory }?.sortedBy { it.name } ?: emptyList()
-            if (versions.isNotEmpty()) return versions.last()
-        }
-
-        val ndkBundle = File(sdkDir, "ndk-bundle")
-        return ndkBundle.takeIf { it.exists() && it.isDirectory }
-    }
-
-    /**
-     * Patch <ndk>/ndk-build to a wrapper that works on Android/Termux.
-     *
-     * This matches the fix you provided:
-     *   #!/bin/sh
-     *   DIR=$(cd "$(dirname "$0")" && pwd)
-     *   /data/data/com.neonide.studio/files/usr/bin/bash "$DIR/build/ndk-build" "$@"
-     */
-    fun ensureNdkBuildPatched(ndkDir: File) {
-        val inner = File(ndkDir, "build/ndk-build")
-        if (!inner.exists()) return
-
-        val ndkBuild = File(ndkDir, "ndk-build")
-        val termuxBash = File(TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH, "bash").absolutePath
-
-        val desired = """
-            #!/bin/sh
-            DIR=${'$'}(cd "${'$'}(dirname "${'$'}0")" && pwd)
-            $termuxBash "${'$'}DIR/build/ndk-build" "${'$'}@"
-        """.trimIndent() + "\n"
-
-        // If already patched, do nothing.
-        if (ndkBuild.exists()) {
-            val current = runCatching { ndkBuild.readText() }.getOrNull()
-            if (current != null && current.contains(termuxBash) &&
-                current.contains("build/ndk-build")
-            ) {
-                runCatching { ndkBuild.setExecutable(true) }
-                return
-            }
-        }
-
-        runCatching {
-            ndkBuild.writeText(desired)
-            ndkBuild.setExecutable(true)
+            lp.writeText(lines.joinToString("\n") + "\n")
+        } else {
+            lp.writeText(line + "\n")
         }
     }
 
     /**
-     * Build environment overrides that mimic a typical Termux Android SDK setup.
-     */
-    fun buildEnvOverrides(baseEnv: Map<String, String>, sdkDir: File): Map<String, String> {
-        val overrides = HashMap<String, String>()
-        overrides["ANDROID_HOME"] = sdkDir.absolutePath
-        overrides["ANDROID_SDK_ROOT"] = sdkDir.absolutePath
-
-        val currentPath = baseEnv["PATH"].orEmpty()
-        val parts = ArrayList<String>()
-
-        fun addIfExists(path: File) {
-            if (path.exists() && path.isDirectory) parts.add(path.absolutePath)
-        }
-
-        // cmdline-tools/latest/bin
-        addIfExists(File(sdkDir, "cmdline-tools/latest/bin"))
-        // platform-tools
-        addIfExists(File(sdkDir, "platform-tools"))
-        // build-tools/<highest>
-        val buildToolsDir = File(sdkDir, "build-tools")
-        val buildTools =
-            buildToolsDir.listFiles()?.filter { it.isDirectory }?.sortedBy { it.name }
-                ?: emptyList()
-        if (buildTools.isNotEmpty()) addIfExists(buildTools.last())
-
-        // Keep whatever TermuxShellEnvironment provided as well.
-        if (currentPath.isNotBlank()) parts.add(currentPath)
-
-        overrides["PATH"] = parts.joinToString(":")
-        return overrides
-    }
-
-    /**
-     * Convenience: detect SDK (+ optional NDK), update local.properties, patch ndk-build, and return env overrides.
+     * Write ndk.dir to local.properties and return env overrides for Gradle.
      */
     fun configureForProject(projectDir: File, baseEnv: Map<String, String>): SdkConfig? {
-        val sdkDir = resolveSdkDir(baseEnv) ?: return null
+        if (!sdkDir.exists()) return null
 
-        ensureSdkDir(projectDir, sdkDir)
+        ensureNdkDir(projectDir)
 
-        val ndkDir = resolveNdkDir(sdkDir)
-        if (ndkDir != null) {
-            ensureNdkDir(projectDir, ndkDir)
-            ensureNdkBuildPatched(ndkDir)
-        }
-
-        // Patch aapt2 override in gradle.properties if a compatible build-tools aapt2 is found.
-        val aapt2 = resolveBestBionicAapt2(sdkDir)
-
-        val env = buildEnvOverrides(baseEnv, sdkDir)
-        return SdkConfig(sdkDir = sdkDir, env = env, aapt2Path = aapt2?.absolutePath)
+        val env = buildEnvOverrides(baseEnv)
+        return SdkConfig(sdkDir = sdkDir, env = env)
     }
 }
