@@ -129,9 +129,11 @@ class GradleService : Service() {
                 )
 
                 val envOverrides = sdk?.env ?: emptyMap()
-                val finalArgs = if (sdk?.aapt2Path != null) {
-                    val override = "-Pandroid.aapt2FromMavenOverride=${sdk.aapt2Path}"
-                    args.toMutableList().apply { add(0, override) }
+                val aapt2 = AndroidSdkUtils.aapt2Path
+                val finalArgs = if (aapt2.exists() && aapt2.isFile) {
+                    args.toMutableList().apply {
+                        add(0, "-Pandroid.aapt2FromMavenOverride=${aapt2.absolutePath}")
+                    }
                 } else {
                     args
                 }

@@ -3,8 +3,6 @@ package com.neonide.studio.app.editor.xml.framework
 import android.content.Context
 import android.util.Log
 import com.neonide.studio.utils.AndroidSdkUtils
-import com.neonide.studio.utils.GradleProjectActions
-import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 /**
@@ -34,13 +32,8 @@ object AndroidFrameworkAttrIndex {
         synchronized(this) {
             if (cached != null) return true
 
-            val baseEnv =
-                runCatching { GradleProjectActions.getGradleEnvironment(context) }.getOrNull()
-                    ?: emptyMap()
-            val sdkDir = AndroidSdkUtils.resolveSdkDir(baseEnv)
-                ?: File(TermuxConstants.TERMUX_HOME_DIR_PATH, "android-sdk").takeIf { it.exists() }
-
-            if (sdkDir == null || !sdkDir.exists()) {
+            val sdkDir = AndroidSdkUtils.sdkDir
+            if (!sdkDir.exists()) {
                 Log.w(TAG, "Android SDK not found; framework attr completion disabled")
                 return false
             }
