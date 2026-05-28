@@ -14,6 +14,16 @@
     <string name="granted">Granted</string>
     <string name="grant">Grant</string>
 
+    <!-- main activity -->
+    <string name="neonide">NeonIDE</string>
+    <string name="modern_mobile_development">Modern Mobile Development</string>
+    <string name="new_project">New Project</string>
+    <string name="git_clone">Git Clone</string>
+    <string name="setup_devkit">Setup DevKit</string>
+    <string name="terminal">Terminal</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+
     <string name="editor_text_to_search">Text to search</string>
     <string name="editor_replacement">Replacement</string>
 
@@ -44,10 +54,6 @@
     <string name="paste_text">Paste</string>
     <string name="copy_text">Copy</string>
     <string name="text_selection_more">More…</string>
-
-    <!-- DevKit -->
-    <string name="setup_development_kit">Development Kit Setup</string>
-    <string name="setup_development_kit_summary">Set up the development kit for building projects</string>
 
     <!-- Create Project -->
     <string name="choose_template">Choose Template</string>
