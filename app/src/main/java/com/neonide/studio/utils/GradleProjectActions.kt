@@ -22,13 +22,13 @@ object GradleProjectActions {
         return SyncPlan(args = args, description = "Gradle projects")
     }
 
-    fun createQuickRunPlan(projectDir: File): QuickRunPlan {
-        val tasks = listOf("assembleDebug")
-        val args = baseArgs() + tasks
+    fun createQuickRunPlan(projectDir: File, variant: String = "debug"): QuickRunPlan {
+        val taskName = "assemble${variant.replaceFirstChar { it.uppercase() }}"
+        val args = baseArgs() + listOf(taskName)
         val apkSearchDir = File(projectDir, "app/build/outputs/apk")
         return QuickRunPlan(
             args = args,
-            description = "Assemble debug",
+            description = "Assemble $variant",
             expectedApkSearchDir = apkSearchDir
         )
     }

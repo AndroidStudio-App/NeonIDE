@@ -139,12 +139,12 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
             useHorizontalScroll = true
         )
     }
-
     ModalDrawerSheet(
         drawerShape = RectangleShape,
         modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            horizontalDivider()
             FileTreeToolbar(
                 onCollapseAll = { tree.collapseAll() },
                 onExpandAll = { tree.expandAll() },

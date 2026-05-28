@@ -92,10 +92,16 @@ fun EditorScreen(
     val peekHeight = 15.dp + navBarHeight
 
     val gradleRunningState = remember { mutableStateOf(GradleBuildStatus.isRunning) }
+    val buildVariant = remember { mutableStateOf("debug") }
     DisposableEffect(Unit) {
         val listener: (Boolean) -> Unit = { gradleRunningState.value = it }
         GradleBuildStatus.addListener(listener)
         onDispose { GradleBuildStatus.removeListener(listener) }
+    }
+
+    // Pre-scan Gradle cache and build dirs so classPath is ready when a Java file is opened
+    LaunchedEffect(Unit) {
+        lspController.prefetchClassPath(projectPath)
     }
 
     BackHandler(enabled = scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded) {
@@ -217,8 +223,10 @@ fun EditorScreen(
                     )
                 },
                 isGradleRunning = gradleRunningState.value,
+                buildVariant = buildVariant.value,
+                onBuildVariantChange = { buildVariant.value = it },
                 onBuildClick = {
-                    gradleManager.onQuickRunOrCancel(projectPath)
+                    gradleManager.onQuickRunOrCancel(projectPath, buildVariant.value)
                     scope.launch { scaffoldState.bottomSheetState.expand() }
                 },
                 onSyncClick = { gradleManager.onSyncProject(projectPath) },

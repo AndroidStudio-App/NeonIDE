@@ -32,4 +32,12 @@ interface EditorLspController {
 
     /** Returns the currently attached [io.github.rosemoe.sora.lsp.editor.LspEditor], if any. */
     fun currentEditor(): io.github.rosemoe.sora.lsp.editor.LspEditor?
+
+    /**
+     * Pre-scan Gradle cache and build directories so [configureServer] can use the
+     * cached classpath instantly when a Java file is opened.
+     *
+     * Call this when the project is opened, before any Java file is attached.
+     */
+    fun prefetchClassPath(projectPath: File) {}
 }

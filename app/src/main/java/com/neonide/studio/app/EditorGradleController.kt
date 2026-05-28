@@ -53,7 +53,7 @@ class EditorGradleController(
         )
     }
 
-    fun onQuickRunOrCancel(projectRoot: File) {
+    fun onQuickRunOrCancel(projectRoot: File, variant: String = "debug") {
         if (gradleRunning) {
             GradleService.stopBuild(activity)
             gradleRunning = false
@@ -66,7 +66,7 @@ class EditorGradleController(
             Toast.LENGTH_SHORT
         ).show()
 
-        val plan = GradleProjectActions.createQuickRunPlan(projectRoot)
+        val plan = GradleProjectActions.createQuickRunPlan(projectRoot, variant)
         runGradle(
             projectDir = projectRoot,
             args = plan.args,

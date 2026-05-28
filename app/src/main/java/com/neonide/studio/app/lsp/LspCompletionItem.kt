@@ -7,7 +7,7 @@ import org.eclipse.lsp4j.CompletionItem
 class LspCompletionItem(val lspItem: CompletionItem, prefixLength: Int) :
     SimpleCompletionItem(
         lspItem.label,
-        lspItem.detail ?: "",
+        lspItem.detail,
         prefixLength,
         lspItem.insertText ?: lspItem.label
     ) {
