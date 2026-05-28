@@ -377,4 +377,3 @@ private fun openProject(context: Context, root: File) {
     intent.putExtra(EditorActivity.EXTRA_PROJECT_DIR, root.absolutePath)
     context.startActivity(intent)
 }
-

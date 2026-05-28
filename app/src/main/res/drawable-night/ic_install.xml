@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+
+    <!-- download arrow -->
+    <path
+        android:fillColor="#57965C"
+        android:pathData="M7.99994,1
+            C8.27608,1 8.49994,1.22386 8.49993,1.50001
+            L8.49984,6.79289
+            L10.1461,5.14661
+            C10.3414,4.95134 10.658,4.95134 10.8532,5.14661
+            C11.0485,5.34187 11.0485,5.65845 10.8532,5.85371
+            L7.99984,8.70711
+            L5.14645,5.85371
+            C4.95118,5.65845 4.95118,5.34187 5.14645,5.14661
+            C5.34171,4.95134 5.65829,4.95134 5.85355,5.14661
+            L7.49984,6.7929
+            L7.49993,1.49999
+            C7.49994,1.22385 7.7238,0.999997 7.99994,1
+            Z"/>
+
+    <!-- tray notch -->
+    <path
+        android:fillColor="#57965C"
+        android:pathData="M6,12
+            H4
+            V13
+            H6
+            V12
+            Z"/>
+
+    <!-- tray body -->
+    <path
+        android:fillColor="#57965C"
+        android:fillType="evenOdd"
+        android:pathData="M2,11
+            V14
+            C2,14.5523 2.44772,15 3,15
+            H13
+            C13.5523,15 14,14.5523 14,14
+            V11
+            C14,10.4477 13.5523,10 13,10
+            H3
+            C2.44772,10 2,10.4477 2,11
+            Z
+            M3,14
+            V11
+            H13
+            L13,14
+            H3
+            Z"/>
+
+</vector>

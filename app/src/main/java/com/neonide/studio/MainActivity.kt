@@ -11,40 +11,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.InstallMobile
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,8 +33,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +53,16 @@ import com.neonide.studio.layout.GitLayoutState
 import com.neonide.studio.layout.GitViewModel
 import com.neonide.studio.layout.mainLayout
 import com.neonide.studio.logger.IDEFileLogger
+import com.neonide.studio.ui.components.AppButton
+import com.neonide.studio.ui.components.AppCard
+import com.neonide.studio.ui.components.AppListItem
+import com.neonide.studio.ui.components.AppScaffold
+import com.neonide.studio.ui.components.AppSwitch
+import com.neonide.studio.ui.components.AppTopBar
+import com.neonide.studio.ui.layout.AppBox
+import com.neonide.studio.ui.layout.AppColumn
+import com.neonide.studio.ui.layout.AppLazyColumn
+import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.ui.theme.AppTheme
 import com.termux.app.TermuxActivity
 import com.termux.shared.termux.crash.TermuxCrashUtils
@@ -117,10 +109,9 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun mainNavigation() {
         val navController = rememberNavController()
-        Scaffold(
+        AppScaffold(
             modifier = Modifier.fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.background,
-            contentWindowInsets = WindowInsets.navigationBars
+            containerColor = MaterialTheme.colorScheme.background
         ) { innerPadding ->
             NavHost(
                 navController = navController,
@@ -187,16 +178,16 @@ class MainActivity : ComponentActivity() {
         val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
         var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopAppBar(
-                title = { Text("IDE Configurations") },
+        AppColumn(modifier = Modifier.fillMaxSize()) {
+            AppTopBar(
+                title = "IDE Configurations",
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            AppLazyColumn(modifier = Modifier.fillMaxSize()) {
                 item {
                     Text(
                         text = "Logging",
@@ -206,7 +197,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
                 item {
-                    ListItem(
+                    AppListItem(
                         headlineContent = { Text("Save IDE logs to Documents") },
                         supportingContent = {
                             Text(
@@ -218,7 +209,7 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         trailingContent = {
-                            Switch(
+                            AppSwitch(
                                 checked = isLoggingEnabled,
                                 onCheckedChange = { enabled ->
                                     isLoggingEnabled = enabled
@@ -256,11 +247,10 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun permissionScreen() {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Card(
+        AppBox(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            AppCard(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
+                shape = RoundedCornerShape(16.dp)
             ) {
                 permissionContent()
             }
@@ -272,13 +262,20 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val allGranted = isFilesGranted && isInstallGranted && isNotificationsGranted
 
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text("Permissions Required To Continue", fontSize = 15.sp, fontWeight = FontWeight.Bold)
+        AppColumn(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                stringResource(R.string.permissions_required_to_continue),
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             permissionItem(
-                icon = Icons.Default.Storage,
-                title = "All Files Access",
-                description = "Required to manage files on storage",
+                icon = painterResource(id = R.drawable.ic_files),
+                title = stringResource(R.string.all_files_access),
+                description = stringResource(R.string.all_files_access_desc),
                 isGranted = isFilesGranted
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -292,9 +289,9 @@ class MainActivity : ComponentActivity() {
             }
 
             permissionItem(
-                icon = Icons.Default.InstallMobile,
-                title = "Install Unknown Apps",
-                description = "Required to install Build APK file",
+                icon = painterResource(id = R.drawable.ic_install),
+                title = stringResource(R.string.install_unknown_apps),
+                description = stringResource(R.string.install_unknown_apps_desc),
                 isGranted = isInstallGranted
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -306,9 +303,9 @@ class MainActivity : ComponentActivity() {
             }
 
             permissionItem(
-                icon = Icons.Default.Notifications,
-                title = "Notifications",
-                description = "Receive Notifications from the app",
+                icon = painterResource(id = R.drawable.ic_notification),
+                title = stringResource(R.string.notifications),
+                description = stringResource(R.string.notifications_desc),
                 isGranted = isNotificationsGranted
             ) {
                 val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -323,45 +320,47 @@ class MainActivity : ComponentActivity() {
                 context.startActivity(intent)
             }
 
-            Button(
+            AppButton(
+                text = stringResource(R.string.continue_button),
                 onClick = { isSetupComplete = true },
                 enabled = allGranted,
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Continue", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            }
+            )
         }
     }
 
     @Composable
     private fun permissionItem(
-        icon: ImageVector,
+        icon: Painter,
         title: String,
         description: String,
         isGranted: Boolean,
         onClick: () -> Unit
     ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        AppRow(Modifier.fillMaxWidth()) {
             Icon(icon, null, Modifier.size(32.dp))
 
             Spacer(Modifier.width(16.dp))
 
-            Column(Modifier.weight(1f)) {
+            AppColumn(Modifier.weight(1f)) {
                 Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 Text(description, fontSize = 12.sp)
             }
 
             if (isGranted) {
-                Text("Granted", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text(
+                    stringResource(R.string.granted),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp
+                )
             } else {
-                Button(
+                AppButton(
+                    text = stringResource(R.string.grant),
                     onClick = onClick,
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
                     shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Grant", fontSize = 12.sp)
-                }
+                )
             }
         }
     }

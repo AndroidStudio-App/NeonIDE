@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NeonIDEA Studio</string>
+    <string name="app_name">NeonIDE Studio</string>
+
+    <!-- permission card -->
+    <string name="permissions_required_to_continue">Permissions Required To Continue</string>
+    <string name="all_files_access">All Files Access</string>
+    <string name="all_files_access_desc">Required to manage files on storage</string>
+    <string name="install_unknown_apps">Install Unknown Apps</string>
+    <string name="install_unknown_apps_desc">Required to install Build APK file</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_desc">Receive Notifications from the app</string>
+    <string name="continue_button">Continue</string>
+    <string name="granted">Granted</string>
+    <string name="grant">Grant</string>
 
     <string name="editor_text_to_search">Text to search</string>
     <string name="editor_replacement">Replacement</string>

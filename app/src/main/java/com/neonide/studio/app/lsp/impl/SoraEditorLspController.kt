@@ -23,6 +23,7 @@ import io.github.rosemoe.sora.lsp.client.languageserver.serverdefinition.Languag
 import io.github.rosemoe.sora.lsp.editor.LspEditor
 import io.github.rosemoe.sora.lsp.editor.LspLanguage
 import io.github.rosemoe.sora.lsp.editor.LspProject
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.ContentListener
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
@@ -196,12 +197,10 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
 
                     // Re-enable diagnostics on first user edit
                     val listener = object : ContentListener {
-                        override fun beforeReplace(
-                            content: io.github.rosemoe.sora.text.Content
-                        ) {
+                        override fun beforeReplace(content: Content) {
                         }
                         override fun afterInsert(
-                            content: io.github.rosemoe.sora.text.Content,
+                            content: Content,
                             startLine: Int,
                             startColumn: Int,
                             endLine: Int,
@@ -216,7 +215,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                             }
                         }
                         override fun afterDelete(
-                            content: io.github.rosemoe.sora.text.Content,
+                            content: Content,
                             startLine: Int,
                             startColumn: Int,
                             endLine: Int,
