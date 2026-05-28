@@ -14,4 +14,98 @@
     <string name="build_started">Build started…</string>
     <string name="sync_started">Sync started…</string>
     <string name="status_building">Building…</string>
+    <string name="sora_editor_last">Last</string>
+    <string name="sora_editor_next">Next</string>
+    <string name="sora_editor_replace">Replace</string>
+    <string name="sora_editor_replaceAll">Replace All</string>
+    <string name="sora_editor_replacement">Replacement</string>
+    <string name="sora_editor_text_to_search">Text to search</string>
+    <string name="sora_editor_editor_search_replacing">Replacing texts…</string>
+    <string name="sora_editor_editor_search_busy">Editor is still preparing…</string>
+    <string name="sora_editor_editor_formatting">Formatting your code…</string>
+    <string name="sora_editor_more">More</string>
+    <string name="sora_editor_diagnostics_more_actions">More Actions...</string>
+    <string name="sora_editor_clip_text_length_too_large">Text is too large to copy</string>
+    <string name="sora_editor_long_select">Long Select</string>
+    <string name="signature_help_prev">Previous signature</string>
+    <string name="signature_help_next">Next signature</string>
+    <string name="paste_text">Paste</string>
+    <string name="copy_text">Copy</string>
+    <string name="text_selection_more">More…</string>
+
+    <!-- DevKit -->
+    <string name="setup_development_kit">Development Kit Setup</string>
+    <string name="setup_development_kit_summary">Set up the development kit for building projects</string>
+
+    <!-- Create Project -->
+    <string name="choose_template">Choose Template</string>
+    <string name="project_configuration">Project Configuration</string>
+    <string name="project_name">Project Name</string>
+    <string name="package_name">Package Name</string>
+    <string name="project_location">Project Location</string>
+    <string name="browse">Browse</string>
+    <string name="language">Language</string>
+    <string name="minimum_sdk">Minimum SDK</string>
+    <string name="use_gradle_kotlin_dsl">Use Gradle Kotlin DSL</string>
+    <string name="create">Create</string>
+    <string name="back">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="create_project_error_invalid_name">Invalid project name</string>
+    <string name="create_project_error_invalid_package">Invalid package name</string>
+    <string name="create_project_error_dir_exists">Directory already exists: %s</string>
+    <string name="create_project_success">Project created successfully</string>
+    <string name="err_invalid_picked_dir">Invalid directory selected</string>
+
+    <!-- Template names & descriptions -->
+    <string name="tpl_no_activity_name">No Activity</string>
+    <string name="tpl_no_activity_desc">Empty project without any activity</string>
+    <string name="tpl_empty_activity_name">Empty Activity</string>
+    <string name="tpl_empty_activity_desc">Basic empty activity</string>
+    <string name="tpl_cpp_activity_name">Native C++</string>
+    <string name="tpl_cpp_activity_desc">Activity with native C++ support</string>
+    <string name="tpl_basic_activity_name">Basic Activity</string>
+    <string name="tpl_basic_activity_desc">Activity with a Floating Action Button</string>
+    <string name="tpl_nav_drawer_activity_name">Navigation Drawer</string>
+    <string name="tpl_nav_drawer_activity_desc">Activity with a navigation drawer</string>
+    <string name="tpl_bottom_nav_activity_name">Bottom Navigation</string>
+    <string name="tpl_bottom_nav_activity_desc">Activity with bottom navigation</string>
+    <string name="tpl_tabbed_activity_name">Tabbed Activity</string>
+    <string name="tpl_tabbed_activity_desc">Activity with tabs</string>
+    <string name="tpl_no_androidx_activity_name">No AndroidX Activity</string>
+    <string name="tpl_no_androidx_activity_desc">Activity without AndroidX dependencies</string>
+    <string name="tpl_compose_activity_name">Compose Activity</string>
+    <string name="tpl_compose_activity_desc">Activity using Jetpack Compose</string>
+
+    <!-- Open Project -->
+    <string name="open_project">Open Project</string>
+    <string name="browse_other_location">Browse other location</string>
+    <string name="search_projects_hint">Search projects…</string>
+    <string name="no_projects_found">No projects found</string>
+    <string name="no_projects_match_search">No projects match your search</string>
+    <string name="recent_badge">Recent</string>
+
+    <!-- Project Actions -->
+    <string name="backup_project">Backup project</string>
+    <string name="delete_project_title_short">Delete</string>
+    <string name="rename">Rename</string>
+    <string name="delete_project_title">Delete Project</string>
+    <string name="delete_project_message">Are you sure you want to delete \"%s\"? This cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="project_deleted_success">Project deleted successfully</string>
+    <string name="project_delete_failed">Failed to delete project</string>
+    <string name="new_project_name">New project name</string>
+    <string name="rename_project">Rename Project</string>
+    <string name="error">Error</string>
+    <string name="invalid_name">Invalid Name</string>
+    <string name="invalid_project_name_message">Project name must start with a letter and contain only letters, digits, or underscores.</string>
+    <string name="name_already_exists">Name Already Exists</string>
+    <string name="project_name_exists_message">A project named \"%s\" already exists.</string>
+    <string name="project_renamed_success">Project renamed successfully</string>
+    <string name="project_rename_failed">Failed to rename project</string>
+    <string name="backup_in_progress_title">Backing up…</string>
+    <string name="backup_in_progress_message">Creating backup archive…</string>
+    <string name="backup_completed_title">Backup Complete</string>
+    <string name="backup_completed_message">\"%1$s\" backed up to:\n%2$s</string>
+    <string name="backup_failed_title">Backup Failed</string>
+    <string name="backup_failed_message">Could not create backup: %s</string>
 </resources>

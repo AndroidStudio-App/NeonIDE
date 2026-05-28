@@ -68,4 +68,16 @@
         <item name="android:paddingLeft">20dp</item>
     </style>
 
+    <!-- Circle shape for project icons. -->
+    <style name="ShapeAppearanceOverlay.AcsHome.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Rounded square shape for template image. -->
+    <style name="AppTheme.ShapeOverlay.TemplateImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
 </resources>
