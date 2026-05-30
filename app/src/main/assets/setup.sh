@@ -8,11 +8,11 @@ echo "--- [1/5] Updating system packages ---"
 
 dpkg --configure -a
 apt update
-apt upgrade -y
+apt upgrade -y --no-install-recommends
 
 echo "--- [2/5] Installing packages ---"
 
-apt install -y $APT_OPTIONS \
+apt install -y --no-install-recommends \
     openjdk-21 \
     unzip \
     jq 
