@@ -16,7 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.neonide.studio.R
 import com.neonide.studio.utils.OpenFile
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
@@ -77,7 +79,7 @@ fun EditorTabRow(
                             onDismissRequest = { isMenuExpanded = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Close this") },
+                                text = { Text(stringResource(R.string.close_this)) },
                                 onClick = {
                                     isMenuExpanded = false
 
@@ -105,7 +107,7 @@ fun EditorTabRow(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Close others") },
+                                text = { Text(stringResource(R.string.close_others)) },
                                 onClick = {
                                     isMenuExpanded = false
                                     // TODO File(file.path).writeText(currentText)
@@ -127,7 +129,7 @@ fun EditorTabRow(
                                 }
                             )
                             DropdownMenuItem(
-                                text = { Text("Close all") },
+                                text = { Text(stringResource(R.string.close_all)) },
                                 onClick = {
                                     isMenuExpanded = false
                                     // TODO File(file.path).writeText(currentText)

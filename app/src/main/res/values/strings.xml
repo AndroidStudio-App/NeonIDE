@@ -87,7 +87,6 @@
     <string name="sora_editor_long_select">Long Select</string>
     <string name="signature_help_prev">Previous signature</string>
     <string name="signature_help_next">Next signature</string>
-    <string name="paste_text">Paste</string>
     <string name="copy_text">Copy</string>
     <string name="text_selection_more">More…</string>
 
@@ -163,4 +162,62 @@
     <string name="backup_completed_message">\"%1$s\" backed up to:\n%2$s</string>
     <string name="backup_failed_title">Backup Failed</string>
     <string name="backup_failed_message">Could not create backup: %s</string>
+    
+    <!-- file tree context menu -->
+    <string name="cut">Cut</string>
+    <string name="copy">Copy</string>
+    <string name="paste">Paste</string>
+    <string name="new_file">New File</string>
+    <string name="new_directory">New Directory</string>
+    <string name="copy_path">Copy Path</string>
+    <string name="clear_clipboard">Clear clipboard</string>
+    <string name="clipboard_hint">%1$s: %2$s — long-press a folder to paste</string>
+    <string name="file_or_folder_exists">file or folder already exists</string>
+    <string name="delete_confirm">Delete \'%s\'?</string>
+    <string name="collapse_all">Collapse All</string>
+    <string name="expand_all">Expand All</string>
+    <string name="search">Search</string>
+    <string name="close_search">Close search</string>
+    <string name="options">Options</string>
+    <string name="compact_tree">Compact Tree</string>
+    <string name="regex">Regex</string>
+    <string name="case_sensitive">Case Sensitive</string>
+    <string name="ok">OK</string>
+
+    <!-- editor -->
+    <string name="build">Build</string>
+    <string name="variant_build">Variant Build</string>
+    <string name="debug">Debug</string>
+    <string name="release">Release</string>
+    <string name="menu">Menu</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="save">Save</string>
+    <string name="build_run">Build/Run</string>
+    <string name="sync">Sync</string>
+    <string name="more">More</string>
+    <string name="action_mode">Action Mode</string>
+    <string name="search_panel">Search Panel</string>
+    <string name="feature_switches">Feature Switches</string>
+    <string name="symbol_bar">Symbol Bar</string>
+    <string name="wordwrap">Wordwrap</string>
+    <string name="line_number">Line Number</string>
+    <string name="pin_line_number">Pin Line Number</string>
+    <string name="magnifier">Magnifier</string>
+    <string name="use_icu">Use ICU</string>
+    <string name="completion_animation">Completion Animation</string>
+    <string name="soft_keyboard">Soft Keyboard</string>
+    <string name="disable_soft_kbd_hard_kbd">Disable Soft Kbd on Hard Kbd</string>
+    <string name="configuration">Configuration</string>
+    <string name="switch_color_scheme">Switch Color Scheme</string>
+    <string name="switch_typeface">Switch Typeface</string>
+    <string name="close_this">Close this</string>
+    <string name="close_others">Close others</string>
+    <string name="close_all">Close all</string>
+    <string name="replace">Replace</string>
+    <string name="all">All</string>
+    <string name="case_insensitive">Case Insensitive</string>
+    <string name="select_typeface">Select Typeface</string>
+    <string name="select_color_scheme">Select Color Scheme</string>
+
 </resources>

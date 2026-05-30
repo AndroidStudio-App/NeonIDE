@@ -2,7 +2,6 @@ package com.neonide.studio.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MenuAnchorType
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.painter.Painter
 /**
  * Reusable dropdown field backed by [FormTextField] with [ExposedDropdownMenuBox].
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownField(
     label: String,

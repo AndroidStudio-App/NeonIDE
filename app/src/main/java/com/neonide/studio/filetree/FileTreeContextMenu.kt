@@ -3,9 +3,6 @@ package com.neonide.studio.filetree
 import android.content.ClipData
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,12 +22,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.neonide.studio.R
+import com.neonide.studio.ui.layout.AppColumn
+import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.divider.horizontalDivider
 import kotlinx.coroutines.launch
 import okio.Path
@@ -64,7 +63,7 @@ fun FileTreeContextMenu(
         onDismissRequest = onDismiss,
         properties = PopupProperties(focusable = true)
     ) {
-        Column(
+        AppColumn(
             modifier = Modifier
                 .width(200.dp)
                 .shadow(8.dp, RoundedCornerShape(8.dp))
@@ -73,7 +72,7 @@ fun FileTreeContextMenu(
         ) {
             ContextMenuItem(
                 iconRes = R.drawable.ic_file_add,
-                label = "New File",
+                label = stringResource(R.string.new_file),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -82,7 +81,7 @@ fun FileTreeContextMenu(
             )
             ContextMenuItem(
                 iconRes = R.drawable.ic_folder_add,
-                label = "New Directory",
+                label = stringResource(R.string.new_directory),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -94,7 +93,7 @@ fun FileTreeContextMenu(
 
             ContextMenuItem(
                 iconRes = R.drawable.ic_cut,
-                label = "Cut",
+                label = stringResource(R.string.cut),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -103,7 +102,7 @@ fun FileTreeContextMenu(
             )
             ContextMenuItem(
                 iconRes = R.drawable.ic_copy,
-                label = "Copy",
+                label = stringResource(R.string.copy),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -112,7 +111,7 @@ fun FileTreeContextMenu(
             )
             ContextMenuItem(
                 iconRes = R.drawable.ic_paste,
-                label = "Paste",
+                label = stringResource(R.string.paste),
                 enabled = canPaste,
                 onClick = {
                     val t = target
@@ -125,7 +124,7 @@ fun FileTreeContextMenu(
 
             ContextMenuItem(
                 iconRes = R.drawable.ic_rename,
-                label = "Rename",
+                label = stringResource(R.string.rename),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -134,7 +133,7 @@ fun FileTreeContextMenu(
             )
             ContextMenuItem(
                 iconRes = R.drawable.ic_delete,
-                label = "Delete",
+                label = stringResource(R.string.delete),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -146,7 +145,7 @@ fun FileTreeContextMenu(
 
             ContextMenuItem(
                 iconRes = R.drawable.ic_copy,
-                label = "Copy Path",
+                label = stringResource(R.string.copy_path),
                 onClick = {
                     val t = target
                     onDismiss()
@@ -170,7 +169,7 @@ private fun ContextMenuItem(
 ) {
     val textColor = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
 
-    Row(
+    AppRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(30.dp)

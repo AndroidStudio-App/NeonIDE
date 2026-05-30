@@ -11,8 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.neonide.studio.R
 
 @Composable
 fun BuildVariantPanel(
@@ -30,7 +32,7 @@ fun BuildVariantPanel(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Build",
+            text = stringResource(R.string.build),
             fontSize = 15.sp,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
@@ -43,7 +45,7 @@ fun BuildVariantPanel(
             onDismissRequest = { onBuildMenuExpandedChange(false) }
         ) {
             DropdownMenuItem(
-                text = { Text("Variant Build") },
+                text = { Text(stringResource(R.string.variant_build)) },
                 onClick = {
                     onVariantBuildMenuExpandedChange(true)
                 }
@@ -56,7 +58,7 @@ fun BuildVariantPanel(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            "Debug",
+                            stringResource(R.string.debug),
                             color = if (buildVariant == "debug") {
                                 MaterialTheme.colorScheme.primary
                             } else {
@@ -73,7 +75,7 @@ fun BuildVariantPanel(
                 DropdownMenuItem(
                     text = {
                         Text(
-                            "Release",
+                            stringResource(R.string.release),
                             color = if (buildVariant == "release") {
                                 MaterialTheme.colorScheme.primary
                             } else {

@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
-import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.neonide.studio.app.utils.DisplayNameUtils
 import com.neonide.studio.app.utils.SafeDirLister
 import com.neonide.studio.ui.components.AppCard
@@ -57,6 +56,33 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+object WizardPreferences {
+
+    private const val PREFS_NAME = "atc_wizard_prefs"
+    private const val KEY_RECENT_PROJECTS = "recent_projects"
+    private const val MAX_RECENT = 5
+
+    fun addRecentProject(context: Context, projectPath: String) {
+        val recents = getRecentProjects(context).toMutableList()
+        recents.remove(projectPath)
+        recents.add(0, projectPath)
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .putString(KEY_RECENT_PROJECTS, recents.take(MAX_RECENT).joinToString(","))
+            .apply()
+    }
+
+    fun getRecentProjects(context: Context): List<String> {
+        val raw = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            .getString(KEY_RECENT_PROJECTS, "") ?: ""
+        if (raw.isBlank()) return emptyList()
+        return raw.split(',').filter { it.isNotBlank() }
+            .mapNotNull { path ->
+                path.takeIf { File(it).let { f -> f.exists() && f.isDirectory } }
+            }
+    }
+}
 
 @Composable
 fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
@@ -120,7 +146,7 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_folder),
-                        contentDescription = stringResource(id = R.string.browse_other_location)
+                        contentDescription = null
                     )
                 }
             }
@@ -203,7 +229,9 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
 private fun ProjectItem(project: File, onClick: () -> Unit, onLongClick: () -> Unit) {
     val context = LocalContext.current
     val recentRank =
-        remember(project) { WizardPreferences.getRecentProjectRank(context, project.absolutePath) }
+        remember(project) {
+            WizardPreferences.getRecentProjects(context).indexOf(project.absolutePath)
+        }
     val isRecent = recentRank in 0..2
 
     AppCard(

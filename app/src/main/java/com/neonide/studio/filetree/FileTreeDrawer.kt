@@ -28,6 +28,7 @@ import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -300,7 +301,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
     when (val mode = inlineMode) {
         is InlineMode.NewFile -> {
             InlineInputDialog(
-                title = "New File",
+                title = stringResource(R.string.new_file),
                 value = inlineText,
                 onValueChange = {
                     inlineText = it
@@ -311,7 +312,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
                     if (inlineText.isNotEmpty()) {
                         val file = File(mode.parentPath.toString(), inlineText)
                         if (file.exists()) {
-                            inlineError = "file or folder already exists"
+                            inlineError = context.getString(R.string.file_or_folder_exists)
                         } else {
                             file.parentFile?.mkdirs()
                             file.createNewFile()
@@ -329,7 +330,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
 
         is InlineMode.NewDirectory -> {
             InlineInputDialog(
-                title = "New Directory",
+                title = stringResource(R.string.new_directory),
                 value = inlineText,
                 onValueChange = {
                     inlineText = it
@@ -340,7 +341,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
                     if (inlineText.isNotEmpty()) {
                         val file = File(mode.parentPath.toString(), inlineText)
                         if (file.exists()) {
-                            inlineError = "file or folder already exists"
+                            inlineError = context.getString(R.string.file_or_folder_exists)
                         } else {
                             file.mkdirs()
                             refreshTrigger++
@@ -357,7 +358,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
 
         is InlineMode.Rename -> {
             InlineInputDialog(
-                title = "Rename",
+                title = stringResource(R.string.rename),
                 value = inlineText,
                 onValueChange = {
                     inlineText = it
@@ -369,7 +370,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
                         val oldFile = File(mode.path.toString())
                         val newFile = File(oldFile.parent, inlineText)
                         if (newFile.exists()) {
-                            inlineError = "file or folder already exists"
+                            inlineError = context.getString(R.string.file_or_folder_exists)
                         } else {
                             if (oldFile.renameTo(newFile)) refreshTrigger++
                             inlineMode = InlineMode.None
@@ -390,16 +391,18 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
         val target = deleteTarget!!
         AlertDialog(
             onDismissRequest = { deleteTarget = null },
-            text = { Text("Delete '${target.name}'?") },
+            text = { Text(stringResource(R.string.delete_confirm, target.name)) },
             confirmButton = {
                 TextButton(onClick = {
                     SafeFileDeleter.deleteRecursively(File(target.path.toString()))
                     refreshTrigger++
                     deleteTarget = null
-                }) { Text("Delete") }
+                }) { Text(stringResource(R.string.delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { deleteTarget = null }) { Text("Cancel") }
+                TextButton(onClick = {
+                    deleteTarget = null
+                }) { Text(stringResource(R.string.cancel)) }
             }
         )
     }

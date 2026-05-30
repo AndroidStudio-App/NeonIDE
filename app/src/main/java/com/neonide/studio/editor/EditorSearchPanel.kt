@@ -116,36 +116,36 @@ fun EditorSearchPanel(state: EditorSearchState) {
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(onClick = { state.gotoPrev() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
             }
             IconButton(onClick = { state.gotoNext() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next")
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
             }
             AnimatedVisibility(visible = state.showReplace) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     TextButton(onClick = { state.replaceCurrent() }) {
-                        Text("Replace")
+                        Text(stringResource(R.string.replace))
                     }
                     TextButton(onClick = { state.replaceAll() }) {
-                        Text("All")
+                        Text(stringResource(R.string.all))
                     }
                 }
             }
             IconButton(onClick = { state.showReplace = !state.showReplace }) {
-                Icon(Icons.Default.FindReplace, contentDescription = "Toggle replace")
+                Icon(Icons.Default.FindReplace, contentDescription = null)
             }
             IconButton(onClick = { state.toggle() }) {
-                Icon(Icons.Default.Close, contentDescription = "Close search")
+                Icon(Icons.Default.Close, contentDescription = null)
             }
             var optionsExpanded by remember { mutableStateOf(false) }
             IconButton(onClick = { optionsExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Options")
+                Icon(Icons.Default.MoreVert, contentDescription = null)
                 DropdownMenu(
                     expanded = optionsExpanded,
                     onDismissRequest = { optionsExpanded = false }
                 ) {
                     ToggleMenuItem(
-                        text = "Case Insensitive",
+                        text = stringResource(R.string.case_insensitive),
                         checked = state.isCaseInsensitive,
                         onToggle = {
                             state.isCaseInsensitive = !state.isCaseInsensitive
@@ -153,7 +153,7 @@ fun EditorSearchPanel(state: EditorSearchState) {
                         }
                     )
                     ToggleMenuItem(
-                        text = "Regex",
+                        text = stringResource(R.string.regex),
                         checked = state.isRegex,
                         onToggle = {
                             state.isRegex = !state.isRegex

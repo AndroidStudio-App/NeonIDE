@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,19 +53,19 @@ internal fun FileTreeToolbar(
         IconButton(onClick = onCollapseAll) {
             Icon(
                 painter = painterResource(R.drawable.ic_collapse_all),
-                contentDescription = "Collapse All"
+                contentDescription = null
             )
         }
         IconButton(onClick = onExpandAll) {
             Icon(
                 painter = painterResource(R.drawable.ic_expand_all),
-                contentDescription = "Expand All"
+                contentDescription = null
             )
         }
         IconButton(onClick = onToggleSearch) {
             Icon(
                 painter = painterResource(R.drawable.ic_search),
-                contentDescription = "Search"
+                contentDescription = null
             )
         }
 
@@ -97,7 +98,7 @@ internal fun FileTreeToolbar(
                     Box {
                         if (searchQuery.isEmpty()) {
                             Text(
-                                text = "Filter...",
+                                text = " ",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.outline
                             )
@@ -109,7 +110,7 @@ internal fun FileTreeToolbar(
             IconButton(onClick = onToggleSearch) {
                 Icon(
                     painter = painterResource(R.drawable.ic_close),
-                    contentDescription = "Close search"
+                    contentDescription = null
                 )
             }
         } else {
@@ -120,7 +121,7 @@ internal fun FileTreeToolbar(
             IconButton(onClick = onToggleMenu) {
                 Icon(
                     painter = painterResource(R.drawable.ic_menu),
-                    contentDescription = "Options"
+                    contentDescription = null
                 )
             }
             DropdownMenu(
@@ -128,7 +129,7 @@ internal fun FileTreeToolbar(
                 onDismissRequest = onDismissMenu
             ) {
                 ToggleMenuItem(
-                    text = "Compact Tree",
+                    text = stringResource(R.string.compact_tree),
                     checked = isCompactMode,
                     onToggle = {
                         onToggleCompact()
@@ -136,7 +137,7 @@ internal fun FileTreeToolbar(
                     }
                 )
                 ToggleMenuItem(
-                    text = "Regex",
+                    text = stringResource(R.string.regex),
                     checked = searchRegex,
                     onToggle = {
                         onToggleRegex()
@@ -144,7 +145,7 @@ internal fun FileTreeToolbar(
                     }
                 )
                 ToggleMenuItem(
-                    text = "Case Sensitive",
+                    text = stringResource(R.string.case_sensitive),
                     checked = searchCaseSensitive,
                     onToggle = {
                         onToggleCaseSensitive()

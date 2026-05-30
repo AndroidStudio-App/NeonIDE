@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
-import com.neonide.studio.app.home.preferences.WizardPreferences
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppSwitch
@@ -65,10 +64,9 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
     var isPackageNameManuallyEdited by remember { mutableStateOf(false) }
 
     var saveLocation by remember {
-        mutableStateOf(
-            WizardPreferences.getLastSaveLocation(context)
-                ?: File(TermuxConstants.TERMUX_HOME_DIR, "projects").absolutePath
-        )
+        val saved = context.getSharedPreferences("atc_wizard_prefs", Context.MODE_PRIVATE)
+            .getString("last_save_location", null)
+        mutableStateOf(saved ?: File(TermuxConstants.TERMUX_HOME_DIR, "projects").absolutePath)
     }
     var minSdk by remember { mutableStateOf("21") }
     var language by remember { mutableStateOf("Kotlin") }
@@ -255,7 +253,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                             }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_folder),
-                                    contentDescription = stringResource(id = R.string.browse)
+                                    contentDescription = null
                                 )
                             }
                         },
@@ -403,8 +401,8 @@ private fun createProject(
             language = lang,
             useKts = useKts
         )
-        WizardPreferences.setLastSaveLocation(context, base.absolutePath)
-        WizardPreferences.addRecentProject(context, projectDir.absolutePath)
+        context.getSharedPreferences("atc_wizard_prefs", Context.MODE_PRIVATE)
+            .edit().putString("last_save_location", base.absolutePath).apply()
         Toast.makeText(
             context,
             context.getString(R.string.create_project_success, projectDir.absolutePath),

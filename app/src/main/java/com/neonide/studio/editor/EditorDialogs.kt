@@ -3,6 +3,7 @@ package com.neonide.studio.editor
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Typeface
+import com.neonide.studio.R
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.GrammarRegistry
@@ -38,7 +39,7 @@ object EditorDialogs {
             arrayOf("JetBrainsMono-Regular.ttf", "UbuntuMono-Regular.ttf", "RobotoMono-Regular.ttf")
 
         AlertDialog.Builder(context)
-            .setTitle("Select Typeface")
+            .setTitle(context.getString(R.string.select_typeface))
             .setSingleChoiceItems(fonts, -1) { dialog, which ->
                 if (which in assetsPaths.indices) {
                     runCatching {
@@ -56,7 +57,7 @@ object EditorDialogs {
         val themes = arrayOf("QuietLight", "Darcula", "Ayu Dark", "Solarized Dark")
 
         AlertDialog.Builder(context)
-            .setTitle("Select Color Scheme")
+            .setTitle(context.getString(R.string.select_color_scheme))
             .setItems(themes) { _, which ->
                 if (editor == null) return@setItems
                 val themeName = when (which) {

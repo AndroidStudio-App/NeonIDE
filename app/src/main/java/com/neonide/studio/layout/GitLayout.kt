@@ -61,7 +61,7 @@ fun GitLayout(
                     IconButton(onClick = onBack) {
                         Icon(
                             painterResource(R.drawable.ic_chevron_left),
-                            contentDescription = stringResource(R.string.back)
+                            contentDescription = null
                         )
                     }
                 }

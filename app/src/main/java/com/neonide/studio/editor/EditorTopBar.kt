@@ -34,7 +34,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.neonide.studio.R
 import com.neonide.studio.ui.components.ToggleMenuItem
 import com.neonide.studio.utils.divider.horizontalDivider
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -107,39 +109,39 @@ fun EditorTopBar(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow
             ),
             navigationIcon = {
-                IconButton(onClick = onNavigationClick) { Icon(Icons.Default.Menu, "Menu") }
+                IconButton(onClick = onNavigationClick) { Icon(Icons.Default.Menu, null) }
             },
             actions = {
-                IconButton(onClick = onUndoClick) { Icon(Icons.AutoMirrored.Filled.Undo, "Undo") }
-                IconButton(onClick = onRedoClick) { Icon(Icons.AutoMirrored.Filled.Redo, "Redo") }
-                IconButton(onClick = onSaveClick) { Icon(Icons.Filled.Save, "Save") }
+                IconButton(onClick = onUndoClick) { Icon(Icons.AutoMirrored.Filled.Undo, null) }
+                IconButton(onClick = onRedoClick) { Icon(Icons.AutoMirrored.Filled.Redo, null) }
+                IconButton(onClick = onSaveClick) { Icon(Icons.Filled.Save, null) }
                 IconButton(onClick = onBuildClick) {
                     if (isGradleRunning) {
-                        Icon(Icons.Filled.Stop, "Cancel")
+                        Icon(Icons.Filled.Stop, null)
                     } else {
-                        Icon(Icons.Filled.PlayArrow, "Build/Run")
+                        Icon(Icons.Filled.PlayArrow, null)
                     }
                 }
-                IconButton(onClick = onSyncClick) { Icon(Icons.Filled.Refresh, "Sync") }
-                IconButton(onClick = onTerminalClick) { Icon(Icons.Filled.Terminal, "Terminal") }
+                IconButton(onClick = onSyncClick) { Icon(Icons.Filled.Refresh, null) }
+                IconButton(onClick = onTerminalClick) { Icon(Icons.Filled.Terminal, null) }
                 IconButton(onClick = { menuExpanded = true }) {
-                    Icon(Icons.Default.MoreVert, "More")
+                    Icon(Icons.Default.MoreVert, null)
                 }
 
                 DropdownMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
-                    MenuCategoryTitle("Search")
+                    MenuCategoryTitle(stringResource(R.string.search))
                     DropdownMenuItem(
-                        text = { Text("Action Mode") },
+                        text = { Text(stringResource(R.string.action_mode)) },
                         onClick = {
                             onSearchActionMode()
                             menuExpanded = false
                         }
                     )
                     ToggleMenuItem(
-                        text = "Search Panel",
+                        text = stringResource(R.string.search_panel),
                         checked = searchPanelVisible,
                         onToggle = {
                             onSearchPanelToggle()
@@ -149,14 +151,14 @@ fun EditorTopBar(
 
                     horizontalDivider(color = Color.Gray)
 
-                    MenuCategoryTitle("Feature Switches")
+                    MenuCategoryTitle(stringResource(R.string.feature_switches))
                     ToggleMenuItem(
-                        text = "Symbol Bar",
+                        text = stringResource(R.string.symbol_bar),
                         checked = settings.isSymbolBarVisible,
                         onToggle = { settings.isSymbolBarVisible = !settings.isSymbolBarVisible }
                     )
                     ToggleMenuItem(
-                        text = "Wordwrap",
+                        text = stringResource(R.string.wordwrap),
                         checked = settings.isWordwrap,
                         onToggle = {
                             settings.isWordwrap = !settings.isWordwrap
@@ -164,7 +166,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Line Number",
+                        text = stringResource(R.string.line_number),
                         checked = settings.isLineNumberVisible,
                         onToggle = {
                             settings.isLineNumberVisible = !settings.isLineNumberVisible
@@ -172,7 +174,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Pin Line Number",
+                        text = stringResource(R.string.pin_line_number),
                         checked = settings.isLineNumberPinned,
                         onToggle = {
                             settings.isLineNumberPinned = !settings.isLineNumberPinned
@@ -180,7 +182,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Magnifier",
+                        text = stringResource(R.string.magnifier),
                         checked = settings.isMagnifierEnabled,
                         onToggle = {
                             settings.isMagnifierEnabled = !settings.isMagnifierEnabled
@@ -189,7 +191,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Use ICU",
+                        text = stringResource(R.string.use_icu),
                         checked = settings.useIcu,
                         onToggle = {
                             settings.useIcu = !settings.useIcu
@@ -197,7 +199,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Completion Animation",
+                        text = stringResource(R.string.completion_animation),
                         checked = settings.completionAnim,
                         onToggle = {
                             settings.completionAnim = !settings.completionAnim
@@ -207,7 +209,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Soft Keyboard",
+                        text = stringResource(R.string.soft_keyboard),
                         checked = settings.softKbdEnabled,
                         onToggle = {
                             settings.softKbdEnabled = !settings.softKbdEnabled
@@ -215,7 +217,7 @@ fun EditorTopBar(
                         }
                     )
                     ToggleMenuItem(
-                        text = "Disable Soft Kbd on Hard Kbd",
+                        text = stringResource(R.string.disable_soft_kbd_hard_kbd),
                         checked = settings.hardKbdDisabled,
                         onToggle = {
                             settings.hardKbdDisabled = !settings.hardKbdDisabled
@@ -225,16 +227,16 @@ fun EditorTopBar(
 
                     horizontalDivider(color = Color.Gray)
 
-                    MenuCategoryTitle("Configuration")
+                    MenuCategoryTitle(stringResource(R.string.configuration))
                     DropdownMenuItem(
-                        text = { Text("Switch Color Scheme") },
+                        text = { Text(stringResource(R.string.switch_color_scheme)) },
                         onClick = {
                             onSwitchColors()
                             menuExpanded = false
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Switch Typeface") },
+                        text = { Text(stringResource(R.string.switch_typeface)) },
                         onClick = {
                             onSwitchTypeface()
                             menuExpanded = false
