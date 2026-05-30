@@ -93,6 +93,7 @@
 
     <!-- Create Project -->
     <string name="choose_template">Choose Template</string>
+    <string name="pick_template_hint">Pick a starter template and configure your project</string>
     <string name="project_configuration">Project Configuration</string>
     <string name="project_name">Project Name</string>
     <string name="package_name">Package Name</string>
@@ -106,7 +107,7 @@
     <string name="cancel">Cancel</string>
     <string name="create_project_error_invalid_name">Invalid project name</string>
     <string name="create_project_error_invalid_package">Invalid package name</string>
-    <string name="create_project_error_dir_exists">Directory already exists: %s</string>
+    <string name="create_project_error_dir_exists">Directory already exists</string>
     <string name="create_project_success">Project created successfully</string>
     <string name="err_invalid_picked_dir">Invalid directory selected</string>
 

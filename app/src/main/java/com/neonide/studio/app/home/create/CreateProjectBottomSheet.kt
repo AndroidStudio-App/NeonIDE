@@ -2,51 +2,24 @@ package com.neonide.studio.app.home.create
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Environment
-import android.provider.DocumentsContract
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -58,7 +31,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,11 +38,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.documentfile.provider.DocumentFile
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
 import com.neonide.studio.app.home.preferences.WizardPreferences
+import com.neonide.studio.ui.components.AppButton
+import com.neonide.studio.ui.components.AppCard
+import com.neonide.studio.ui.components.AppSwitch
+import com.neonide.studio.ui.components.DropdownField
 import com.neonide.studio.ui.components.FormTextField
+import com.neonide.studio.ui.layout.AppColumn
+import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.rememberDirectoryLauncher
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
@@ -80,7 +57,6 @@ import kotlinx.coroutines.launch
 fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    // Using skipPartiallyExpanded = true for forms prevents jumping when keyboard opens
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var selectedTemplate by remember { mutableStateOf<ProjectTemplate?>(null) }
@@ -98,10 +74,15 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
     var language by remember { mutableStateOf("Kotlin") }
     var useKts by remember { mutableStateOf(true) }
 
+    var projectNameError by remember { mutableStateOf<String?>(null) }
+    var packageNameError by remember { mutableStateOf<String?>(null) }
+    var saveLocationError by remember { mutableStateOf<String?>(null) }
+
     val templates = remember { ProjectTemplateRegistry.all() }
 
     val folderPickerLauncher = rememberDirectoryLauncher { file ->
         saveLocation = file.absolutePath
+        saveLocationError = null
     }
 
     fun updatePackageName(name: String, template: ProjectTemplate) {
@@ -117,15 +98,42 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
         packageName = if (projectSanitized.isNotEmpty()) "$prefix.$projectSanitized" else prefix
     }
 
+    fun validate(): Boolean {
+        var valid = true
+
+        if (!ProjectValidators.isValidProjectName(projectName)) {
+            projectNameError = context.getString(R.string.create_project_error_invalid_name)
+            valid = false
+        } else {
+            projectNameError = null
+        }
+
+        if (!ProjectValidators.isValidPackageName(packageName)) {
+            packageNameError = context.getString(R.string.create_project_error_invalid_package)
+            valid = false
+        } else {
+            packageNameError = null
+        }
+
+        val base = File(saveLocation)
+        val projectDir = File(base, projectName)
+        if (projectDir.exists()) {
+            saveLocationError = context.getString(R.string.create_project_error_dir_exists)
+            valid = false
+        } else {
+            saveLocationError = null
+        }
+
+        return valid
+    }
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .windowInsetsPadding(WindowInsets.statusBars)
+        AppColumn(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (selectedTemplate == null) {
                 Text(
@@ -134,7 +142,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Pick a starter template and configure your project",
+                    text = stringResource(id = R.string.pick_template_hint),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
@@ -161,33 +169,23 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                     }
                 }
             } else {
-                Column(
+                AppColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(18.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                    AppCard(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
+                        AppRow(
                             modifier = Modifier.padding(14.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
                                 painter = painterResource(id = selectedTemplate!!.iconRes),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Fit
+                                contentDescription = null
                             )
-                            Column(modifier = Modifier.padding(start = 12.dp)) {
+                            AppColumn(modifier = Modifier.padding(start = 12.dp)) {
                                 Text(
                                     text = stringResource(id = selectedTemplate!!.nameRes),
                                     style = MaterialTheme.typography.titleMedium,
@@ -213,12 +211,15 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         value = projectName,
                         onValueChange = {
                             projectName = it
+                            projectNameError = null
                             if (!isPackageNameManuallyEdited) {
                                 updatePackageName(it, selectedTemplate!!)
                             }
                         },
                         label = stringResource(id = R.string.project_name),
                         leadingIcon = painterResource(id = R.drawable.ic_add),
+                        isError = projectNameError != null,
+                        supportingText = projectNameError,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp)
@@ -228,10 +229,13 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         value = packageName,
                         onValueChange = {
                             packageName = it
+                            packageNameError = null
                             isPackageNameManuallyEdited = true
                         },
                         label = stringResource(id = R.string.package_name),
                         leadingIcon = painterResource(id = R.drawable.ic_language_android),
+                        isError = packageNameError != null,
+                        supportingText = packageNameError,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp)
@@ -239,7 +243,10 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
 
                     FormTextField(
                         value = saveLocation,
-                        onValueChange = { saveLocation = it },
+                        onValueChange = {
+                            saveLocation = it
+                            saveLocationError = null
+                        },
                         label = stringResource(id = R.string.project_location),
                         leadingIcon = painterResource(id = R.drawable.ic_folder),
                         trailingIcon = {
@@ -252,6 +259,8 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                                 )
                             }
                         },
+                        isError = saveLocationError != null,
+                        supportingText = saveLocationError,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp)
@@ -262,7 +271,8 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         options = listOf("Kotlin", "Java"),
                         selectedOption = language,
                         onOptionSelected = { language = it },
-                        leadingIconRes = R.drawable.ic_filetype_kotlin
+                        leadingIcon = painterResource(id = R.drawable.ic_filetype_kotlin),
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                     )
 
                     DropdownField(
@@ -270,10 +280,11 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         options = listOf("21", "24", "26", "28", "29", "30", "33"),
                         selectedOption = minSdk,
                         onOptionSelected = { minSdk = it },
-                        leadingIconRes = R.drawable.ic_filetype_gradle
+                        leadingIcon = painterResource(id = R.drawable.ic_filetype_gradle),
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                     )
 
-                    Row(
+                    AppRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 12.dp),
@@ -284,13 +295,13 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.weight(1f)
                         )
-                        Switch(
+                        AppSwitch(
                             checked = useKts,
                             onCheckedChange = { useKts = it }
                         )
                     }
 
-                    Row(
+                    AppRow(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 20.dp),
@@ -305,23 +316,25 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                             Text(stringResource(id = R.string.back))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = {
-                            createProject(
-                                context = context,
-                                tpl = selectedTemplate!!,
-                                name = projectName,
-                                pkg = packageName,
-                                baseDir = saveLocation,
-                                minSdk = minSdk,
-                                lang = language,
-                                useKts = useKts,
-                                onSuccess = {
-                                    scope.launch {
-                                        sheetState.hide()
-                                        onDismiss()
+                        AppButton(onClick = {
+                            if (validate()) {
+                                createProject(
+                                    context = context,
+                                    tpl = selectedTemplate!!,
+                                    name = projectName,
+                                    pkg = packageName,
+                                    baseDir = saveLocation,
+                                    minSdk = minSdk,
+                                    lang = language,
+                                    useKts = useKts,
+                                    onSuccess = {
+                                        scope.launch {
+                                            sheetState.hide()
+                                            onDismiss()
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }) {
                             Text(stringResource(id = R.string.create))
                         }
@@ -334,17 +347,14 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
 
 @Composable
 private fun TemplateItem(template: ProjectTemplate, onClick: () -> Unit) {
-    Card(
+    AppCard(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(18.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+            .clickable(onClick = onClick)
     ) {
-        Column(
+        AppColumn(
             modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -353,8 +363,7 @@ private fun TemplateItem(template: ProjectTemplate, onClick: () -> Unit) {
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .fillMaxHeight(),
                 contentScale = ContentScale.Crop
             )
             Text(
@@ -365,54 +374,6 @@ private fun TemplateItem(template: ProjectTemplate, onClick: () -> Unit) {
                 maxLines = 2,
                 modifier = Modifier.padding(top = 10.dp)
             )
-        }
-    }
-}
-
-@Composable
-private fun DropdownField(
-    label: String,
-    options: List<String>,
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit,
-    leadingIconRes: Int
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 12.dp)
-    ) {
-        OutlinedTextField(
-            value = selectedOption,
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            leadingIcon = {
-                Icon(painter = painterResource(id = leadingIconRes), contentDescription = null)
-            },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier
-                .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)
-                .fillMaxWidth(),
-            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
-        )
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            options.forEach { selectionOption ->
-                DropdownMenuItem(
-                    text = { Text(selectionOption) },
-                    onClick = {
-                        onOptionSelected(selectionOption)
-                        expanded = false
-                    }
-                )
-            }
         }
     }
 }
@@ -428,30 +389,9 @@ private fun createProject(
     useKts: Boolean,
     onSuccess: () -> Unit
 ) {
-    if (!ProjectValidators.isValidProjectName(name)) {
-        Toast.makeText(
-            context,
-            R.string.create_project_error_invalid_name,
-            Toast.LENGTH_SHORT
-        ).show()
-        return
-    }
-    if (!ProjectValidators.isValidPackageName(pkg)) {
-        Toast.makeText(
-            context,
-            R.string.create_project_error_invalid_package,
-            Toast.LENGTH_SHORT
-        ).show()
-        return
-    }
-
     val base = File(baseDir)
     if (!base.exists()) base.mkdirs()
     val projectDir = File(base, name)
-    if (projectDir.exists()) {
-        Toast.makeText(context, R.string.create_project_error_dir_exists, Toast.LENGTH_SHORT).show()
-        return
-    }
 
     try {
         AndroidProjectGenerator.generate(
@@ -477,6 +417,10 @@ private fun createProject(
         context.startActivity(intent)
         onSuccess()
     } catch (t: Throwable) {
-        Toast.makeText(context, t.message ?: "Failed", Toast.LENGTH_LONG).show()
+        Toast.makeText(
+            context,
+            t.message ?: context.getString(R.string.failed),
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
