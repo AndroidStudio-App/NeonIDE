@@ -8,19 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Redo
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,9 +23,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.ToggleMenuItem
 import com.neonide.studio.utils.divider.horizontalDivider
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -109,23 +100,29 @@ fun EditorTopBar(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow
             ),
             navigationIcon = {
-                IconButton(onClick = onNavigationClick) { Icon(Icons.Default.Menu, null) }
+                IconButton(onClick = onNavigationClick) {
+                    AppIcon(painterResource(R.drawable.ic_menu))
+                }
             },
             actions = {
-                IconButton(onClick = onUndoClick) { Icon(Icons.AutoMirrored.Filled.Undo, null) }
-                IconButton(onClick = onRedoClick) { Icon(Icons.AutoMirrored.Filled.Redo, null) }
-                IconButton(onClick = onSaveClick) { Icon(Icons.Filled.Save, null) }
+                IconButton(onClick = onUndoClick) { AppIcon(painterResource(R.drawable.ic_undo)) }
+                IconButton(onClick = onRedoClick) { AppIcon(painterResource(R.drawable.ic_redo)) }
+                IconButton(onClick = onSaveClick) { AppIcon(painterResource(R.drawable.ic_save)) }
                 IconButton(onClick = onBuildClick) {
                     if (isGradleRunning) {
-                        Icon(Icons.Filled.Stop, null)
+                        AppIcon(painterResource(R.drawable.ic_stop))
                     } else {
-                        Icon(Icons.Filled.PlayArrow, null)
+                        AppIcon(painterResource(R.drawable.ic_play))
                     }
                 }
-                IconButton(onClick = onSyncClick) { Icon(Icons.Filled.Refresh, null) }
-                IconButton(onClick = onTerminalClick) { Icon(Icons.Filled.Terminal, null) }
+                IconButton(onClick = onSyncClick) {
+                    AppIcon(painterResource(R.drawable.ic_refresh))
+                }
+                IconButton(onClick = onTerminalClick) {
+                    AppIcon(painterResource(R.drawable.ic_terminal))
+                }
                 IconButton(onClick = { menuExpanded = true }) {
-                    Icon(Icons.Default.MoreVert, null)
+                    AppIcon(painterResource(R.drawable.ic_menu))
                 }
 
                 DropdownMenu(

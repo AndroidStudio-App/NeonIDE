@@ -19,9 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,6 +52,7 @@ import com.neonide.studio.layout.mainLayout
 import com.neonide.studio.logger.IDEFileLogger
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppListItem
 import com.neonide.studio.ui.components.AppScaffold
 import com.neonide.studio.ui.components.AppSwitch
@@ -182,7 +180,7 @@ class MainActivity : ComponentActivity() {
                 title = "IDE Configurations",
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        AppIcon(painterResource(R.drawable.ic_chevron_left))
                     }
                 }
             )
@@ -338,7 +336,7 @@ class MainActivity : ComponentActivity() {
         onClick: () -> Unit
     ) {
         AppRow(Modifier.fillMaxWidth()) {
-            Icon(icon, null, Modifier.size(32.dp))
+            AppIcon(icon, size = 32.dp)
 
             Spacer(Modifier.width(16.dp))
 

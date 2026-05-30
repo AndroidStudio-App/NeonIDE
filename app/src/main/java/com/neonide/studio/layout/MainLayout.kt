@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
 import com.neonide.studio.ui.components.AppCard
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 
@@ -43,10 +44,9 @@ fun mainLayout(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(60.dp))
-        Icon(
+        AppIcon(
             painter = painterResource(R.drawable.ic_terminal),
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
+            size = 64.dp,
             tint = MaterialTheme.colorScheme.primary
         )
         Text(
@@ -131,11 +131,10 @@ fun LayoutItem(title: String, icon: Painter, onClick: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             AppColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(
+                AppIcon(
                     painter = icon,
-                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(30.dp)
+                    size = 30.dp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(

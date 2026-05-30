@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+
+    <!-- search circle -->
+    <path
+        android:fillColor="#6C707E"
+        android:pathData="M10.164,10.872
+            C9.302,11.577 8.200,12 7,12
+            C6.594,12 6.200,11.952 5.823,11.861
+            L5.363,10.651
+            C5.863,10.875 6.417,11 7,11
+            C9.209,11 11,9.209 11,7
+            C11,4.791 9.209,3 7,3
+            C4.791,3 3,4.791 3,7
+            C3,7.345 3.044,7.680 3.126,8
+            H2.100
+            C2.034,7.677 2,7.342 2,7
+            C2,4.239 4.239,2 7,2
+            C9.761,2 12,4.239 12,7
+            C12,8.201 11.577,9.303 10.871,10.165
+            L13.853,13.142
+            C14.048,13.338 14.048,13.654 13.853,13.850
+            C13.658,14.045 13.341,14.045 13.146,13.850
+            L10.164,10.872Z" />
+
+    <!-- replace arrows -->
+    <path
+        android:fillColor="#6C707E"
+        android:fillType="evenOdd"
+        android:pathData="M3.665,9
+            H2.570
+            L0,16
+            H1.075
+            L1.670,14.220
+            H4.635
+            L5.275,16
+            H6.325
+            L3.665,9Z
+            M3.225,10.330
+            L4.335,13.385
+            H1.950
+            L3,10.330
+            L3.110,9.900
+            L3.225,10.330Z" />
+
+</vector>

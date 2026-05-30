@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.ToggleMenuItem
 
 @Composable
@@ -51,22 +51,13 @@ internal fun FileTreeToolbar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onCollapseAll) {
-            Icon(
-                painter = painterResource(R.drawable.ic_collapse_all),
-                contentDescription = null
-            )
+            AppIcon(painter = painterResource(R.drawable.ic_collapse_all))
         }
         IconButton(onClick = onExpandAll) {
-            Icon(
-                painter = painterResource(R.drawable.ic_expand_all),
-                contentDescription = null
-            )
+            AppIcon(painter = painterResource(R.drawable.ic_expand_all))
         }
         IconButton(onClick = onToggleSearch) {
-            Icon(
-                painter = painterResource(R.drawable.ic_search),
-                contentDescription = null
-            )
+            AppIcon(painter = painterResource(R.drawable.ic_search))
         }
 
         if (searchOpen) {
@@ -108,10 +99,7 @@ internal fun FileTreeToolbar(
                 }
             )
             IconButton(onClick = onToggleSearch) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_close),
-                    contentDescription = null
-                )
+                AppIcon(painter = painterResource(R.drawable.ic_close))
             }
         } else {
             Spacer(modifier = Modifier.weight(1f))
@@ -119,10 +107,7 @@ internal fun FileTreeToolbar(
 
         Box {
             IconButton(onClick = onToggleMenu) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_menu),
-                    contentDescription = null
-                )
+                AppIcon(painter = painterResource(R.drawable.ic_menu))
             }
             DropdownMenu(
                 expanded = menuExpanded,

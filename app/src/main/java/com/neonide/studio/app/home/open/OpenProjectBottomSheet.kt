@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -43,6 +42,7 @@ import com.neonide.studio.R
 import com.neonide.studio.app.utils.DisplayNameUtils
 import com.neonide.studio.app.utils.SafeDirLister
 import com.neonide.studio.ui.components.AppCard
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppIconButton
 import com.neonide.studio.ui.components.AppSurface
 import com.neonide.studio.ui.components.FormTextField
@@ -144,10 +144,7 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
                 AppIconButton(
                     onClick = { startForResult.launch(null) }
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_folder),
-                        contentDescription = null
-                    )
+                    AppIcon(painter = painterResource(id = R.drawable.ic_folder))
                 }
             }
             FormTextField(
@@ -159,10 +156,7 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { searchQuery = "" }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_close),
-                                contentDescription = null
-                            )
+                            AppIcon(painter = painterResource(id = R.drawable.ic_close))
                         }
                     }
                 }
@@ -258,11 +252,10 @@ private fun ProjectItem(project: File, onClick: () -> Unit, onLongClick: () -> U
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
+                AppIcon(
                     painter = painterResource(id = R.drawable.ic_folder),
-                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp)
+                    size = 24.dp
                 )
             }
 

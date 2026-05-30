@@ -3,7 +3,6 @@ package com.neonide.studio.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,7 +40,7 @@ fun FormTextField(
         onValueChange = onValueChange,
         label = label?.let { { Text(it) } },
         placeholder = placeholder?.let { { Text(it) } },
-        leadingIcon = leadingIcon?.let { painter -> { Icon(painter, null) } },
+        leadingIcon = leadingIcon?.let { painter -> { AppIcon(painter) } },
         trailingIcon = trailingIcon,
         isError = isError,
         supportingText = supportingText?.let { { Text(it) } },

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
 import com.neonide.studio.ui.components.AppButton
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppScaffold
 import com.neonide.studio.ui.components.AppSwitch
 import com.neonide.studio.ui.components.AppTopBar
@@ -59,10 +59,7 @@ fun GitLayout(
                 title = stringResource(R.string.clone_repository),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            painterResource(R.drawable.ic_chevron_left),
-                            contentDescription = null
-                        )
+                        AppIcon(painterResource(R.drawable.ic_chevron_left))
                     }
                 }
             )
@@ -91,10 +88,7 @@ fun GitLayout(
                     trailingIcon = {
                         if (state.url.isNotEmpty()) {
                             IconButton(onClick = { viewModel.updateUrl("") }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_close),
-                                    contentDescription = null
-                                )
+                                AppIcon(painter = painterResource(id = R.drawable.ic_close))
                             }
                         }
                     }
@@ -119,10 +113,7 @@ fun GitLayout(
                     leadingIcon = painterResource(R.drawable.ic_folder),
                     trailingIcon = {
                         IconButton(onClick = { dirPickerLauncher.launch(null) }) {
-                            Icon(
-                                painterResource(R.drawable.ic_folder_open),
-                                stringResource(R.string.choose_folder)
-                            )
+                            AppIcon(painterResource(R.drawable.ic_folder_open))
                         }
                     },
                     isError = state.destinationError != null,

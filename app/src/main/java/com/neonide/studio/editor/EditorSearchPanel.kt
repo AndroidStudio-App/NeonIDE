@@ -8,14 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.FindReplace
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,10 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.ui.components.ToggleMenuItem
 import io.github.rosemoe.sora.util.regex.RegexBackrefGrammar
@@ -116,10 +111,10 @@ fun EditorSearchPanel(state: EditorSearchState) {
             horizontalArrangement = Arrangement.End
         ) {
             IconButton(onClick = { state.gotoPrev() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                AppIcon(painterResource(R.drawable.ic_chevron_left))
             }
             IconButton(onClick = { state.gotoNext() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = null)
+                AppIcon(painterResource(R.drawable.ic_chevron_right))
             }
             AnimatedVisibility(visible = state.showReplace) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -132,14 +127,14 @@ fun EditorSearchPanel(state: EditorSearchState) {
                 }
             }
             IconButton(onClick = { state.showReplace = !state.showReplace }) {
-                Icon(Icons.Default.FindReplace, contentDescription = null)
+                AppIcon(painterResource(R.drawable.ic_replace))
             }
             IconButton(onClick = { state.toggle() }) {
-                Icon(Icons.Default.Close, contentDescription = null)
+                AppIcon(painterResource(R.drawable.ic_close))
             }
             var optionsExpanded by remember { mutableStateOf(false) }
             IconButton(onClick = { optionsExpanded = true }) {
-                Icon(Icons.Default.MoreVert, contentDescription = null)
+                AppIcon(painterResource(R.drawable.ic_menu))
                 DropdownMenu(
                     expanded = optionsExpanded,
                     onDismissRequest = { optionsExpanded = false }

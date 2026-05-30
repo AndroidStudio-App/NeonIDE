@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -22,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.divider.horizontalDivider
@@ -67,11 +67,10 @@ fun ClipboardIndicatorBar(
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
+                AppIcon(
                     painter = painterResource(iconRes),
-                    contentDescription = modeLabel,
                     tint = iconTint,
-                    modifier = Modifier.size(16.dp)
+                    size = 16.dp
                 )
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
@@ -86,11 +85,10 @@ fun ClipboardIndicatorBar(
                     onClick = onClear,
                     modifier = Modifier.size(20.dp)
                 ) {
-                    Icon(
+                    AppIcon(
                         painter = painterResource(R.drawable.ic_close),
-                        contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(14.dp)
+                        size = 14.dp
                     )
                 }
             }

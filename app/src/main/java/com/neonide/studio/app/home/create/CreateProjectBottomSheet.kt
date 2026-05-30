@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -42,6 +41,7 @@ import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppSwitch
 import com.neonide.studio.ui.components.DropdownField
 import com.neonide.studio.ui.components.FormTextField
@@ -251,10 +251,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                             IconButton(onClick = {
                                 folderPickerLauncher.launch(null)
                             }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_folder),
-                                    contentDescription = null
-                                )
+                                AppIcon(painter = painterResource(id = R.drawable.ic_folder))
                             }
                         },
                         isError = saveLocationError != null,
@@ -269,7 +266,11 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         options = listOf("Kotlin", "Java"),
                         selectedOption = language,
                         onOptionSelected = { language = it },
-                        leadingIcon = painterResource(id = R.drawable.ic_filetype_kotlin),
+                        leadingIcon = if (language == "Java") {
+                            painterResource(id = R.drawable.ic_filetype_java)
+                        } else {
+                            painterResource(id = R.drawable.ic_filetype_kotlin)
+                        },
                         modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                     )
 

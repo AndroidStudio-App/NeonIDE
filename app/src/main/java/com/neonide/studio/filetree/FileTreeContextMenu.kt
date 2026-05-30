@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.divider.horizontalDivider
@@ -177,11 +177,10 @@ private fun ContextMenuItem(
             .padding(horizontal = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
+        AppIcon(
             painter = painterResource(iconRes),
-            contentDescription = label,
             tint = Color.Unspecified,
-            modifier = Modifier.size(20.dp)
+            size = 20.dp
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
