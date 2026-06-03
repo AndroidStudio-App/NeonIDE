@@ -10,6 +10,11 @@ Modern Integrated Development Environment(IDE) for Android That Lets you write c
 2. Open terminal to install system image or directly install it in SetupDevkit
 
 ## Useful Tips
+ - Panel option for Variant build
+<div> 
+  <img src="/images/feat/Panel_01.jpg" width="49%" /> 
+  <img src="/images/feat/Panel_02.jpg" width="49%" />
+</div>
 
 ## Screenshots
 <div>
