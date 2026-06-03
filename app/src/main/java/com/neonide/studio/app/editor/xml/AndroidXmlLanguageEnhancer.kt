@@ -116,8 +116,7 @@ class AndroidXmlLanguageEnhancer(private val base: Language, private val file: F
             }
         }
 
-        // LSP completions are already provided by editor-lsp when attached.
-        // UnifiedCompletionProvider's legacy LspManager integration is removed separately.
+        // LSP completions are provided by editor-lsp when attached (non-XML files).
     }
 
     override fun getAnalyzeManager(): AnalyzeManager {

@@ -11,9 +11,9 @@ class LanguageProvider(
     fun getLanguage(file: File): Language {
         val ext = file.extension.lowercase()
         return when (ext) {
-            "java" -> tmFactory("java") ?: tsFactory("java") ?: EmptyLanguage()
+            "java" -> tsFactory("java") ?: tmFactory("java") ?: EmptyLanguage()
 
-            "kt", "kts" -> tmFactory("kotlin") ?: tsFactory("kotlin") ?: EmptyLanguage()
+            "kt", "kts" -> tsFactory("kotlin") ?: tmFactory("kotlin") ?: EmptyLanguage()
 
             "xml" -> tsFactory("xml") ?: tmFactory("xml") ?: EmptyLanguage()
 

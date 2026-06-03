@@ -8,28 +8,28 @@
   name: (_) @qualified_name)
 
 ; import package.name.Type;
-(single_type_import
+(import_declaration
   (scoped_identifier
     scope: (_) @qualified_name
     name: (_) @type))
 
 ; import package.name.*;
-(type_import_on_demand
+(import_declaration
   (scoped_identifier) @qualified_name
   (asterisk) @imported_member)
 
-; import package.name.Type.MEMBER;
-(single_static_import
+; import static package.name.Type.MEMBER;
+(import_declaration
+  "static"
   (scoped_identifier
     scope: (_) @qualified_name
     name: (_) @type)
   (identifier) @imported_member .)
 
 ; import static package.name.Type.*;
-(static_import_on_demand
-  (scoped_identifier
-    scope: (_) @qualified_name
-    name: (_) @type)
+(import_declaration
+  "static"
+  (scoped_identifier) @qualified_name
   (asterisk) @imported_member)
 
 (method_declaration

@@ -47,7 +47,7 @@ class EditorActivity : ComponentActivity() {
     private val editorState = mutableStateOf<CodeEditor?>(null)
     private val editorVm: EditorViewModel by viewModels()
     private val bottomSheetVm: BottomSheetViewModel by viewModels()
-    private val settingsState = EditorSettingsState()
+    private val settingsState by lazy { EditorSettingsState(this) }
 
     private val languageProvider: SoraLanguageProvider by lazy { SoraLanguageProvider(this) }
     private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }

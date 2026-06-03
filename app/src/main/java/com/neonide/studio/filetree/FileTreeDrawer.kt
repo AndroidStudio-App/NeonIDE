@@ -39,6 +39,7 @@ import cafe.adriel.bonsai.core.node.BranchNode
 import com.neonide.studio.R
 import com.neonide.studio.app.utils.SafeFileDeleter
 import com.neonide.studio.utils.ApkInstallUtils
+import com.neonide.studio.utils.PersistedBoolean
 import com.neonide.studio.utils.divider.horizontalDivider
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -63,9 +64,12 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
     var inlineText by remember { mutableStateOf("") }
     var inlineError by remember { mutableStateOf<String?>(null) }
     var deleteTarget by remember { mutableStateOf<ContextMenuTarget?>(null) }
-    var isCompactMode by remember { mutableStateOf(true) }
-    var searchRegex by remember { mutableStateOf(false) }
-    var searchCaseSensitive by remember { mutableStateOf(false) }
+    val prefs = remember {
+        context.getSharedPreferences("filetree_prefs", android.content.Context.MODE_PRIVATE)
+    }
+    val isCompactMode = remember { PersistedBoolean(prefs, "compact_mode", true) }
+    val searchRegex = remember { PersistedBoolean(prefs, "search_regex", false) }
+    val searchCaseSensitive = remember { PersistedBoolean(prefs, "case_sensitive", false) }
     var menuExpanded by remember { mutableStateOf(false) }
     val lastTouch = remember { intArrayOf(0, 0) }
 
@@ -75,7 +79,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
         selfInclude = true,
         refreshTrigger = refreshTrigger,
         uiScale = uiScale,
-        compactMode = isCompactMode
+        compactMode = isCompactMode.value
     )
 
     LaunchedEffect(rootPathOkio) {
@@ -153,12 +157,12 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
                     searchOpen = !searchOpen
                     if (!searchOpen) searchQuery = ""
                 },
-                isCompactMode = isCompactMode,
-                onToggleCompact = { isCompactMode = !isCompactMode },
-                searchRegex = searchRegex,
-                onToggleRegex = { searchRegex = !searchRegex },
-                searchCaseSensitive = searchCaseSensitive,
-                onToggleCaseSensitive = { searchCaseSensitive = !searchCaseSensitive },
+                isCompactMode = isCompactMode.value,
+                onToggleCompact = { isCompactMode.value = !isCompactMode.value },
+                searchRegex = searchRegex.value,
+                onToggleRegex = { searchRegex.value = !searchRegex.value },
+                searchCaseSensitive = searchCaseSensitive.value,
+                onToggleCaseSensitive = { searchCaseSensitive.value = !searchCaseSensitive.value },
                 menuExpanded = menuExpanded,
                 onToggleMenu = { menuExpanded = !menuExpanded },
                 onDismissMenu = { menuExpanded = false },
@@ -195,8 +199,8 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
                         rootPath = rootPathOkio,
                         query = searchQuery,
                         uiScale = uiScale,
-                        useRegex = searchRegex,
-                        caseSensitive = searchCaseSensitive,
+                        useRegex = searchRegex.value,
+                        caseSensitive = searchCaseSensitive.value,
                         onFileClick = { path -> onFileClick(path) },
                         onFolderLongClick = { path, name ->
                             contextTarget = ContextMenuTarget(path, name, true)

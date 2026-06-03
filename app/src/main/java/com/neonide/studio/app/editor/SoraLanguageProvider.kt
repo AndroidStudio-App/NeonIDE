@@ -12,12 +12,11 @@ import com.itsaky.androidide.treesitter.log.TSLanguageLog
 import com.itsaky.androidide.treesitter.properties.TSLanguageProperties
 import com.itsaky.androidide.treesitter.python.TSLanguagePython
 import com.itsaky.androidide.treesitter.xml.TSLanguageXml
-import com.neonide.studio.app.editor.completion.UnifiedCompletionProvider
 import com.neonide.studio.app.editor.xml.AndroidXmlLanguageEnhancer
+import com.neonide.studio.app.editor.xml.framework.AndroidFrameworkAttrIndex
 import io.github.rosemoe.sora.editor.ts.LocalsCaptureSpec
 import io.github.rosemoe.sora.editor.ts.TsLanguage
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
-import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.lang.styling.TextStyle
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
@@ -28,6 +27,15 @@ class SoraLanguageProvider(private val context: Context) {
 
     private var treeSitterLoaded = false
 
+    init {
+        AndroidXmlLanguageEnhancer.setAndroidFrameworkAttrsProvider {
+            AndroidFrameworkAttrIndex.allAttrs().toList()
+        }
+        Thread {
+            AndroidFrameworkAttrIndex.ensureLoaded(context)
+        }.start()
+    }
+
     private val baseProvider = LanguageProvider(
         tsFactory = { type -> createTreeSitterLanguage(type) },
         tmFactory = { type -> createTextMateLanguage(type) }
@@ -36,13 +44,18 @@ class SoraLanguageProvider(private val context: Context) {
     fun getLanguage(file: File): Language {
         val base = baseProvider.getLanguage(file)
 
-        val enhanced = if (file.extension.equals("xml", ignoreCase = true)) {
+        return if (isAndroidResourceXml(file)) {
             AndroidXmlLanguageEnhancer(base, file)
         } else {
             base
         }
+    }
 
-        return UnifiedCompletionProvider(enhanced, file)
+    private fun isAndroidResourceXml(file: File): Boolean {
+        if (!file.extension.equals("xml", ignoreCase = true)) return false
+        val path = file.path
+        return path.contains("/res/") ||
+            path.endsWith("AndroidManifest.xml")
     }
 
     private fun createTreeSitterLanguage(type: String): Language? = runCatching {

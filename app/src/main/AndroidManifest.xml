@@ -136,17 +136,7 @@
                 android:resource="@xml/provider_paths" />
         </provider>
 
-        <!-- LSP language server bridge services (API 26+ only; guarded at runtime) -->
-        <service
-            android:name="com.neonide.studio.app.lsp.server.KotlinLanguageServerService"
-            android:exported="false" />
-        <service
-            android:name="com.neonide.studio.app.lsp.server.JavaLanguageServerService"
-            android:exported="false" />
-        <service
-            android:name="com.neonide.studio.app.lsp.server.XmlLanguageServerService"
-            android:exported="false" />
-            
+
         <!--for executing command without view-->
         <service
             android:name="com.termux.app.RunCommandService"

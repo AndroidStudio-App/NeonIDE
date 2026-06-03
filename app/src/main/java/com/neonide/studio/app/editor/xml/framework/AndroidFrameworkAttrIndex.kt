@@ -1,31 +1,19 @@
 package com.neonide.studio.app.editor.xml.framework
 
 import android.content.Context
-import android.util.Log
 import com.neonide.studio.utils.AndroidSdkUtils
 import java.io.File
 
 /**
  * Lazy, cached index of Android framework XML attributes.
  *
- * ACS uses a resource table + manifest tables. Here we approximate that by parsing
- * <sdk>/platforms/android-<api>/data/res/values/attrs.xml and extracting <attr name="...">.
- *
- * This provides a very large attribute set (thousands) so typing "a" shows many android:* entries.
+ * Parses <sdk>/platforms/android-<api>/data/res/values/attrs.xml
+ * and extracts <attr name="..."> for autocompletion.
  */
 object AndroidFrameworkAttrIndex {
 
-    private const val TAG = "AndroidFwAttrIndex"
-
     @Volatile private var cached: Set<String>? = null
 
-    @Volatile private var cachedSource: File? = null
-
-    /**
-     * Ensure the framework attribute index is loaded.
-     *
-     * @return true if loaded successfully.
-     */
     fun ensureLoaded(context: Context): Boolean {
         if (cached != null) return true
 
@@ -33,36 +21,17 @@ object AndroidFrameworkAttrIndex {
             if (cached != null) return true
 
             val sdkDir = AndroidSdkUtils.sdkDir
-            if (!sdkDir.exists()) {
-                Log.w(TAG, "Android SDK not found; framework attr completion disabled")
-                return false
-            }
-
-            val attrsFile = resolveBestAttrsXml(sdkDir) ?: run {
-                Log.w(TAG, "framework attrs.xml not found under ${sdkDir.absolutePath}")
-                return false
-            }
-
-            val names = runCatching { parseAttrNames(attrsFile) }.getOrElse {
-                Log.e(TAG, "Failed parsing attrs.xml: ${it.message}")
-                emptySet()
-            }
-
-            if (names.isEmpty()) {
-                Log.w(TAG, "No attrs extracted from ${attrsFile.absolutePath}")
-                return false
-            }
+            val attrsFile = resolveBestAttrsXml(sdkDir) ?: return false
+            val names = parseAttrNames(attrsFile)
+            if (names.isEmpty()) return false
 
             cached = names
-            cachedSource = attrsFile
-            Log.d(TAG, "Loaded ${names.size} framework attrs from ${attrsFile.name}")
             return true
         }
     }
 
     fun isLoaded(): Boolean = cached != null
 
-    /** Return all loaded framework attrs (raw names, without "android:"). */
     fun allAttrs(): Set<String> = cached ?: emptySet()
 
     fun suggestions(prefix: String, limit: Int = 400): List<String> {
@@ -96,40 +65,11 @@ object AndroidFrameworkAttrIndex {
     }
 
     private fun parseAttrNames(attrsXml: File): Set<String> {
-        // Fast streaming parse. We only need <attr name="..."> tokens.
-        // Use byte scanning to avoid heavyweight XML parsers.
-        val bytes = attrsXml.inputStream().use { it.readBytes() }
-        val out = HashSet<String>(5000)
-
-        val key = "<attr name=\"".toByteArray()
-        var i = 0
-        while (i < bytes.size - key.size) {
-            var matched = true
-            for (k in key.indices) {
-                if (bytes[i + k] != key[k]) {
-                    matched = false
-                    break
-                }
-            }
-            if (!matched) {
-                i++
-                continue
-            }
-
-            val start = i + key.size
-            var end = start
-            while (end < bytes.size && bytes[end] != '"'.code.toByte()) {
-                end++
-            }
-            if (end > start) {
-                val name = String(bytes, start, end - start, Charsets.UTF_8)
-                if (name.isNotBlank()) {
-                    out.add(name)
-                }
-            }
-            i = end + 1
-        }
-
-        return out
+        val text = attrsXml.readText(Charsets.UTF_8)
+        val regex = Regex("""<attr name="([^"]+)"""")
+        return regex.findAll(text)
+            .map { it.groupValues[1] }
+            .filter { it.isNotBlank() }
+            .toHashSet()
     }
 }

@@ -152,7 +152,9 @@ fun EditorTopBar(
                     ToggleMenuItem(
                         text = stringResource(R.string.symbol_bar),
                         checked = settings.isSymbolBarVisible,
-                        onToggle = { settings.isSymbolBarVisible = !settings.isSymbolBarVisible }
+                        onToggle = {
+                            settings.isSymbolBarVisible = !settings.isSymbolBarVisible
+                        }
                     )
                     ToggleMenuItem(
                         text = stringResource(R.string.wordwrap),

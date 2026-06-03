@@ -48,7 +48,6 @@ import com.neonide.studio.app.bottomsheet.BottomSheetTabRow
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.app.editor.SoraLanguageProvider
-import com.neonide.studio.app.editor.completion.UnifiedCompletionProvider
 import com.neonide.studio.utils.GradleBuildStatus
 import com.neonide.studio.utils.HexColorScanner
 import com.neonide.studio.utils.OpenFile
@@ -113,11 +112,7 @@ fun EditorScreen(
     LaunchedEffect(editorState.value) {
         val editor = editorState.value ?: return@LaunchedEffect
         EditorDialogs.setupTextmate()
-        if (editor.colorScheme !is TextMateColorScheme) {
-            editor.colorScheme = TextMateColorScheme.create(
-                ThemeRegistry.getInstance()
-            )
-        }
+        EditorDialogs.restoreAppearance(context, editor)
         Logger.logInfo(
             TAG,
             "theme initialized, colorScheme=${editor.colorScheme::class.simpleName}"
@@ -130,10 +125,9 @@ fun EditorScreen(
         if (activeFile != null && editor != null) {
             val file = java.io.File(activeFile.path)
             val language = languageProvider.getLanguage(file)
-            val innerName = (language as? UnifiedCompletionProvider)?.baseLanguageClassName
             Logger.logInfo(
                 TAG,
-                "file=${file.name}, language=${language::class.simpleName}, inner=${innerName ?: "none"}, colorScheme=${editor.colorScheme::class.simpleName}"
+                "file=${file.name}, language=${language::class.simpleName}, colorScheme=${editor.colorScheme::class.simpleName}"
             )
             editor.setEditorLanguage(language)
             if (editor.text.toString() != activeFile.content) {

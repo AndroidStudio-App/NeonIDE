@@ -6,7 +6,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.neonide.studio.app.lsp.LspManager
 import com.neonide.studio.app.lsp.LspStatus
 
 /**
@@ -15,15 +14,6 @@ import com.neonide.studio.app.lsp.LspStatus
 class EditorViewModel : ViewModel() {
 
     var positionText by mutableStateOf("")
-
-    /**
-     * Manager for Language Server Protocol integration.
-     */
-    val lspManager = LspManager().apply {
-        setStatusListener { status ->
-            setLspStatus(status)
-        }
-    }
 
     private val _connectionStatus = MutableLiveData<LspStatus>(LspStatus.Disconnected)
 
@@ -37,11 +27,5 @@ class EditorViewModel : ViewModel() {
      */
     fun setLspStatus(status: LspStatus) {
         _connectionStatus.postValue(status)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        // Ensure the LSP manager is shut down when the ViewModel is cleared.
-        lspManager.shutdown()
     }
 }

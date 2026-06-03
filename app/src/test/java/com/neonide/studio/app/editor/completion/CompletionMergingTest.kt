@@ -21,9 +21,8 @@ class CompletionMergingTest {
             }
         )
 
-        // UnifiedCompletionProvider should merge and sort them.
+        // Merge and sort completions from multiple sources.
         // Usually snippets are preferred or sorted by label if score is same.
-        // We will implement a simple merger first.
         val merged = mergeAndSort(lspItems, snippets)
 
         assertEquals(2, merged.size)
@@ -36,7 +35,7 @@ class CompletionMergingTest {
         lsp: List<CompletionItem>,
         snippets: List<CompletionItem>
     ): List<CompletionItem> {
-        // This is a placeholder for the logic we will implement in UnifiedCompletionProvider
+        // Merge and sort completions from multiple sources
         val all = lsp + snippets
         return all.sortedWith { a, b -> a.label.toString().compareTo(b.label.toString()) }
     }
