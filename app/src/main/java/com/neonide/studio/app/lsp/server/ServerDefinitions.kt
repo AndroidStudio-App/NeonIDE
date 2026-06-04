@@ -90,7 +90,18 @@ object ServerDefinitions {
             val classpath = (rootJars + klsJars).joinToString(":")
 
             ProcessStreamConnectionProvider(
-                listOf(termuxJava, "-cp", classpath, "org.javacs.kt.MainKt"),
+                listOf(
+                    termuxJava,
+                    "-Xms128m",
+                    "-Xmx512m",
+                    "-XX:+UseG1GC",
+                    "-XX:TieredStopAtLevel=1",
+                    "-XX:+UseStringDeduplication",
+                    "-Djava.awt.headless=true",
+                    "-cp",
+                    classpath,
+                    "org.javacs.kt.MainKt"
+                ),
                 workingDir = serverDir,
                 env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
             )

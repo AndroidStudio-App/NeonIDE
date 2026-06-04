@@ -87,7 +87,11 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
         val lspEditor = try {
             p.getOrCreateEditor(file.absolutePath)
         } catch (t: Throwable) {
-            Logger.logDebug(TAG, "Failed to create LSP editor for ${file.absolutePath}", t)
+            Logger.logStackTraceWithMessage(
+                TAG,
+                "Failed to create LSP editor for ${file.absolutePath}",
+                t
+            )
             return false
         }
 
@@ -110,7 +114,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                     withContext(Dispatchers.IO) {
                         runCatching { configureServer(serverId, lspEditor) }
                             .onFailure { t ->
-                                Logger.logDebug(
+                                Logger.logStackTraceWithMessage(
                                     TAG,
                                     "Failed to configure server",
                                     t
@@ -120,7 +124,7 @@ class SoraEditorLspController(private val context: android.content.Context) : Ed
                 }
             } catch (t: Throwable) {
                 if (t !is kotlinx.coroutines.CancellationException) {
-                    Logger.logDebug(
+                    Logger.logStackTraceWithMessage(
                         TAG,
                         "LSP connect failed for ${file.absolutePath}",
                         t

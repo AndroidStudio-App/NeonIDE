@@ -59,6 +59,7 @@ import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
+import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -278,6 +279,15 @@ fun EditorScreen(
                             val highlights = HexColorScanner.computeHighlights(editor.text)
                             withContext(Dispatchers.Main) {
                                 editor.setHighlightTexts(highlights)
+                                // Force dismiss diagnostic tooltip when typing to prioritize completion
+                                try {
+                                    val tooltip = editor.getComponent(
+                                        EditorDiagnosticTooltipWindow::class.java
+                                    )
+                                    if (tooltip != null && tooltip.isShowing) {
+                                        tooltip.dismiss()
+                                    }
+                                } catch (e: Exception) { }
                             }
                         }
                     }
