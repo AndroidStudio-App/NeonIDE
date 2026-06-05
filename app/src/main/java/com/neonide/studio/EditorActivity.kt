@@ -67,6 +67,21 @@ class EditorActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_editor)
 
+        savedInstanceState?.let { bundle ->
+            val paths = bundle.getStringArrayList("open_paths") ?: return@let
+            openFilesState.value = paths.mapNotNull { path ->
+                val file = File(path)
+                if (file.exists() && file.isFile) {
+                    val content = runCatching { file.readText() }.getOrDefault("")
+                    OpenFile(path, file.name, content)
+                } else {
+                    null
+                }
+            }
+            activeFileState.value =
+                openFilesState.value.find { it.path == bundle.getString("active_path") }
+        }
+
         lifecycleScope.launch {
             BuildOutputBuffer.output.collectLatest { output ->
                 bottomSheetVm.setBuildOutput(output)
@@ -155,6 +170,12 @@ class EditorActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArrayList("open_paths", ArrayList(openFilesState.value.map { it.path }))
+        outState.putString("active_path", activeFileState.value?.path)
     }
 
     override fun onDestroy() {
