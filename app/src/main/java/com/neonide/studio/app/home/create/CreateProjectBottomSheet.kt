@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -181,7 +182,8 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         ) {
                             Image(
                                 painter = painterResource(id = selectedTemplate!!.iconRes),
-                                contentDescription = null
+                                contentDescription = null,
+                                modifier = Modifier.size(150.dp)
                             )
                             AppColumn(modifier = Modifier.padding(start = 12.dp)) {
                                 Text(
@@ -360,9 +362,7 @@ private fun TemplateItem(template: ProjectTemplate, onClick: () -> Unit) {
             Image(
                 painter = painterResource(id = template.iconRes),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
+                modifier = Modifier.size(150.dp),
                 contentScale = ContentScale.Crop
             )
             Text(
