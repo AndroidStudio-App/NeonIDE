@@ -20,10 +20,19 @@ object HexColorScanner {
     private val VALID_HEX_LENGTHS = setOf(3, 4, 6, 8)
 
     fun computeHighlights(text: CharSequence): HighlightTextContainer? {
-        val source = text.toString()
-        if (source.isEmpty()) return null
-
         val container = HighlightTextContainer()
+        appendHighlights(text, container)
+        return if (container.isEmpty()) null else container
+    }
+
+    /**
+     * Scans [text] for hex color literals and appends them as [HighlightText]
+     * to the given [container].
+     */
+    fun appendHighlights(text: CharSequence, container: HighlightTextContainer) {
+        val source = text.toString()
+        if (source.isEmpty()) return
+
         var line = 0
         var column = 0
         var highlightCount = 0
@@ -115,8 +124,6 @@ object HexColorScanner {
             }
             index++
         }
-
-        return if (container.isEmpty()) null else container
     }
 
     /**

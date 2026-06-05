@@ -134,12 +134,7 @@ fun EditorScreen(
             if (editor.text.toString() != activeFile.content) {
                 editor.setText(activeFile.content)
             } else {
-                scope.launch(Dispatchers.Default) {
-                    val highlights = HexColorScanner.computeHighlights(editor.text)
-                    withContext(Dispatchers.Main) {
-                        editor.setHighlightTexts(highlights)
-                    }
-                }
+                editor.setHighlightTexts(null)
             }
             val ext = file.extension.lowercase()
             if (ext in listOf("java", "kt", "kts", "xml")) {
@@ -275,21 +270,16 @@ fun EditorScreen(
                                 }
                             }
                         }
-                        scope.launch(Dispatchers.Default) {
-                            val highlights = HexColorScanner.computeHighlights(editor.text)
-                            withContext(Dispatchers.Main) {
-                                editor.setHighlightTexts(highlights)
-                                // Force dismiss diagnostic tooltip when typing to prioritize completion
-                                try {
-                                    val tooltip = editor.getComponent(
-                                        EditorDiagnosticTooltipWindow::class.java
-                                    )
-                                    if (tooltip != null && tooltip.isShowing) {
-                                        tooltip.dismiss()
-                                    }
-                                } catch (e: Exception) { }
+                        editor.setHighlightTexts(null)
+                        // Force dismiss diagnostic tooltip when typing to prioritize completion
+                        try {
+                            val tooltip = editor.getComponent(
+                                EditorDiagnosticTooltipWindow::class.java
+                            )
+                            if (tooltip != null && tooltip.isShowing) {
+                                tooltip.dismiss()
                             }
-                        }
+                        } catch (e: Exception) { }
                     }
                     updatePositionText(editor, editorVm)
                 }
