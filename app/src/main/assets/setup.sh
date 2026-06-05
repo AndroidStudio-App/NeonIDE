@@ -74,6 +74,39 @@ if [ ! -d "$HOME/android-sdk/ndk/29.0.14206865" ]; then
     
 fi
 
+if [ ! -d "$HOME/.config/kotlin-language-server" ]; then
+    
+    mkdir -p $HOME/.config/kotlin-language-server
+    cat > "$HOME/.config/kotlin-language-server/classpath" << 'EOF'
+#!/data/data/com.neonide.studio/files/usr/bin/sh
+
+GRADLE_CACHE="$HOME/.gradle/caches/modules-2/files-2.1"
+TRANSFORMS="$HOME/.gradle/caches"
+
+ANDROID_JAR="$ANDROID_SDK/platforms/android-35/android.jar"
+KOTLIN_STDLIB=$(find "$GRADLE_CACHE" -name "kotlin-stdlib-*.jar" 2>/dev/null | head -1)
+
+ANDROIDX_JARS=$(find "$TRANSFORMS" \( -name "classes.jar" -o -name "*.jar" \) \
+    \( -path "*transformed*" -o -path "*modules-2*" \) 2>/dev/null | \
+    grep -iE "kotlin-stdlib|kotlin-reflect|kotlinx-coroutines|kotlinx-serialization|\
+activity|annotation|core|appcompat|material|constraintlayout|recyclerview|\
+fragment|lifecycle|viewmodel|core-ktx|coordinatorlayout|drawerlayout|cardview|\
+savedstate|startup|window|transition|vectordrawable|viewpager|\
+compose|ui-tooling|ui-graphics|ui-text|ui-unit|ui-geometry|\
+runtime|foundation|material3|animation|compiler|snapshot|\
+accompanist|coil|hilt-navigation-compose|navigation-compose" | \
+    grep -v "sources\.jar\|javadoc\.jar\|-sources-\|-javadoc-" | \
+    sort -u)
+
+printf "%s" "$ANDROID_JAR:$KOTLIN_STDLIB"
+for jar in $ANDROIDX_JARS; do
+    printf ":%s" "$jar"
+done
+printf "\n"
+
+EOF
+fi
+
 create_ndk_metadata() {
     cat > "$HOME/android-sdk/ndk/29.0.14206865/source.properties" << 'EOF'
 Pkg.Desc = Android NDK
@@ -112,7 +145,6 @@ EOF
 
 echo "--- [5/5] Finalizing ---"
 source $HOME/.bashrc
-
+chmod +x $HOME/.config/kotlin-language-server/classpath
 yes | $PREFIX/bin/bash $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-
-clear
+clear && rm setup.sh
