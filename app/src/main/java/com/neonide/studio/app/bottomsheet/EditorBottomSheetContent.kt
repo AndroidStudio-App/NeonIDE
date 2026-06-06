@@ -45,7 +45,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-data class NavigationItem(val uri: String, val line: Int, val character: Int, val displayText: String)
+data class NavigationItem(
+    val uri: String,
+    val line: Int,
+    val character: Int,
+    val displayText: String
+)
 
 enum class BottomSheetTab(val title: String) {
     BUILD_OUTPUT("Build"),
@@ -154,7 +159,11 @@ object BuildOutputBuffer {
 }
 
 @Composable
-fun BottomSheetTabRow(pagerState: PagerState, tabs: List<BottomSheetTab>, modifier: Modifier = Modifier) {
+fun BottomSheetTabRow(
+    pagerState: PagerState,
+    tabs: List<BottomSheetTab>,
+    modifier: Modifier = Modifier
+) {
     val scope = rememberCoroutineScope()
 
     TabRow(
@@ -345,7 +354,10 @@ private fun SimpleListPage(items: List<String>) {
 }
 
 @Composable
-private fun NavigationResultsPage(viewModel: BottomSheetViewModel, onNavigate: (NavigationItem) -> Unit) {
+private fun NavigationResultsPage(
+    viewModel: BottomSheetViewModel,
+    onNavigate: (NavigationItem) -> Unit
+) {
     val items by viewModel.navigationResults.observeAsState(emptyList())
 
     if (items.isEmpty()) {

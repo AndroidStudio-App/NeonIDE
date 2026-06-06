@@ -13,7 +13,10 @@ import java.io.File
 /**
  * Controller for handling Gradle build and sync operations.
  */
-class EditorGradleController(private val activity: Activity, private val bottomSheetVm: BottomSheetViewModel) {
+class EditorGradleController(
+    private val activity: Activity,
+    private val bottomSheetVm: BottomSheetViewModel
+) {
     @Volatile var gradleRunning: Boolean = false
         private set
 

@@ -29,10 +29,19 @@ import okio.Path
 
 enum class ClipboardMode { CUT, COPY }
 
-data class ClipboardEntry(val path: Path, val name: String, val isDirectory: Boolean, val mode: ClipboardMode)
+data class ClipboardEntry(
+    val path: Path,
+    val name: String,
+    val isDirectory: Boolean,
+    val mode: ClipboardMode
+)
 
 @Composable
-fun ClipboardIndicatorBar(clipboard: ClipboardEntry?, onClear: () -> Unit, modifier: Modifier = Modifier) {
+fun ClipboardIndicatorBar(
+    clipboard: ClipboardEntry?,
+    onClear: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     AnimatedVisibility(
         visible = clipboard != null,
         enter = slideInVertically { it },

@@ -91,7 +91,11 @@ fun AppOutlinedButton(
 }
 
 @Composable
-fun AppIconButton(onClick: () -> Unit, modifier: Modifier = Modifier.size(48.dp), content: @Composable () -> Unit) {
+fun AppIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier.size(48.dp),
+    content: @Composable () -> Unit
+) {
     AppOutlinedButton(
         onClick = onClick,
         modifier = modifier,

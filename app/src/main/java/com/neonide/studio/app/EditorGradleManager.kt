@@ -4,7 +4,10 @@ import android.app.Activity
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import java.io.File
 
-class EditorGradleManager(private val activity: Activity, private val bottomSheetVm: BottomSheetViewModel) {
+class EditorGradleManager(
+    private val activity: Activity,
+    private val bottomSheetVm: BottomSheetViewModel
+) {
     private val gradleController = EditorGradleController(activity, bottomSheetVm)
 
     fun onQuickRunOrCancel(projectRoot: File, variant: String = "debug") {

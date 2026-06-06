@@ -17,7 +17,12 @@ interface EditorLspController {
      *                    [file]'s parent. Passing a stable project root improves features like XML
      *                    schema/catalog resolution.
      */
-    fun attach(editor: CodeEditor, file: File, wrapperLanguage: Language, projectRoot: File? = null): Boolean
+    fun attach(
+        editor: CodeEditor,
+        file: File,
+        wrapperLanguage: Language,
+        projectRoot: File? = null
+    ): Boolean
 
     /** Detach currently attached LSP editor (if any). */
     fun detach()

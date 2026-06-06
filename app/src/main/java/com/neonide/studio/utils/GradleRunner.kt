@@ -55,7 +55,10 @@ object GradleRunner {
     /**
      * Wraps a running Gradle process, streaming output line-by-line.
      */
-    class Handle internal constructor(private val process: Process, private val onOutputLine: (String) -> Unit) {
+    class Handle internal constructor(
+        private val process: Process,
+        private val onOutputLine: (String) -> Unit
+    ) {
         private val cancelled = AtomicBoolean(false)
 
         companion object {

@@ -49,7 +49,12 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
     private var cachedClassPath: List<String>? = null
     private var cachedClassPathProject: String? = null
 
-    override fun attach(editor: CodeEditor, file: File, wrapperLanguage: Language, projectRoot: File?): Boolean {
+    override fun attach(
+        editor: CodeEditor,
+        file: File,
+        wrapperLanguage: Language,
+        projectRoot: File?
+    ): Boolean {
         val isSameFile = currentFile?.absolutePath == file.absolutePath
         val isSameEditor = current?.editor == editor
         val isConnected = current?.isConnected == true
@@ -303,7 +308,11 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         return if (jar.exists()) jar else null
     }
 
-    private fun addGradleCacheJars(gradleCacheDir: File, projectPath: String, out: MutableList<String>) {
+    private fun addGradleCacheJars(
+        gradleCacheDir: File,
+        projectPath: String,
+        out: MutableList<String>
+    ) {
         if (!gradleCacheDir.isDirectory) return
 
         val needed = setOf(

@@ -4,7 +4,10 @@ import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import java.io.File
 
-class LanguageProvider(private val tsFactory: (String) -> Language?, private val tmFactory: (String) -> Language?) {
+class LanguageProvider(
+    private val tsFactory: (String) -> Language?,
+    private val tmFactory: (String) -> Language?
+) {
     fun getLanguage(file: File): Language {
         val ext = file.extension.lowercase()
         return when (ext) {

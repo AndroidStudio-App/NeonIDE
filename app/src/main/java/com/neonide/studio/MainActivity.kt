@@ -339,7 +339,13 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun permissionItem(icon: Painter, title: String, description: String, isGranted: Boolean, onClick: () -> Unit) {
+    private fun permissionItem(
+        icon: Painter,
+        title: String,
+        description: String,
+        isGranted: Boolean,
+        onClick: () -> Unit
+    ) {
         AppRow(Modifier.fillMaxWidth()) {
             AppIcon(icon, size = 32.dp)
 

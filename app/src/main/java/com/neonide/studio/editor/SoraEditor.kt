@@ -22,7 +22,11 @@ class NeonCodeEditor(context: Context) : CodeEditor(context) {
 }
 
 @Composable
-fun SoraEditor(modifier: Modifier = Modifier, filePath: String?, onEditorCreated: (CodeEditor) -> Unit) {
+fun SoraEditor(
+    modifier: Modifier = Modifier,
+    filePath: String?,
+    onEditorCreated: (CodeEditor) -> Unit
+) {
     AndroidView(
         modifier = modifier.fillMaxSize(),
         factory = { context ->

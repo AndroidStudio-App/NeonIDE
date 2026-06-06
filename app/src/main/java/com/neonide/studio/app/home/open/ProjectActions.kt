@@ -21,7 +21,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-internal fun showProjectOptionsDialog(context: Context, project: File, onActionComplete: () -> Unit) {
+internal fun showProjectOptionsDialog(
+    context: Context,
+    project: File,
+    onActionComplete: () -> Unit
+) {
     val options = arrayOf(
         context.getString(R.string.backup_project),
         context.getString(R.string.delete_project_title_short),
@@ -145,7 +149,12 @@ private fun showRenameDialog(context: Context, project: File, onComplete: () -> 
     }, 100)
 }
 
-private fun renameProject(context: Context, oldProject: File, newProject: File, onComplete: () -> Unit) {
+private fun renameProject(
+    context: Context,
+    oldProject: File,
+    newProject: File,
+    onComplete: () -> Unit
+) {
     val scope = CoroutineScope(Dispatchers.IO)
     scope.launch {
         val renamed = runCatching { oldProject.renameTo(newProject) }.getOrDefault(false)

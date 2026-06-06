@@ -4,7 +4,8 @@ import android.content.SharedPreferences
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 
-class PersistedBoolean(prefs: SharedPreferences, private val key: String, default: Boolean) : MutableState<Boolean> {
+class PersistedBoolean(prefs: SharedPreferences, private val key: String, default: Boolean) :
+    MutableState<Boolean> {
 
     private val state = mutableStateOf(prefs.getBoolean(key, default))
     private val editor = prefs.edit()

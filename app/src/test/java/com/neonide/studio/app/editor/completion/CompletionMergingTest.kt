@@ -31,7 +31,10 @@ class CompletionMergingTest {
         assertEquals("abc", merged[1].label)
     }
 
-    private fun mergeAndSort(lsp: List<CompletionItem>, snippets: List<CompletionItem>): List<CompletionItem> {
+    private fun mergeAndSort(
+        lsp: List<CompletionItem>,
+        snippets: List<CompletionItem>
+    ): List<CompletionItem> {
         // Merge and sort completions from multiple sources
         val all = lsp + snippets
         return all.sortedWith { a, b -> a.label.toString().compareTo(b.label.toString()) }

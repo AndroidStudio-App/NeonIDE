@@ -188,13 +188,14 @@ class GradleService : Service() {
         }
     }
 
-    private fun createNotification(title: String, content: String): Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle(title)
-        .setContentText(content)
-        .setSmallIcon(R.drawable.ic_service_notification)
-        .setPriority(NotificationCompat.PRIORITY_LOW)
-        .setOngoing(true)
-        .build()
+    private fun createNotification(title: String, content: String): Notification =
+        NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setSmallIcon(R.drawable.ic_service_notification)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .build()
 
     private fun updateNotification(title: String, content: String) {
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager

@@ -31,7 +31,8 @@ import java.io.File
  *
  * It keeps the base language's highlighting/formatting/snippets/etc.
  */
-class AndroidXmlLanguageEnhancer(private val base: Language, private val file: File?) : Language by base {
+class AndroidXmlLanguageEnhancer(private val base: Language, private val file: File?) :
+    Language by base {
 
     override fun requireAutoComplete(
         content: ContentReference,
@@ -234,7 +235,11 @@ class AndroidXmlLanguageEnhancer(private val base: Language, private val file: F
 
         private data class SlashEdits(val insertText: String?)
 
-        private fun computeAdvancedSlashEdits(content: StringBuilder, insertionIndex: Int, openSlash: Boolean): SlashEdits {
+        private fun computeAdvancedSlashEdits(
+            content: StringBuilder,
+            insertionIndex: Int,
+            openSlash: Boolean
+        ): SlashEdits {
             ensureTreeSitterLoaded()
 
             TSParser.create().use { parser ->
@@ -604,7 +609,11 @@ private object AndroidXmlCompletions {
     }
 }
 
-private class XmlCompletionContext(val nodeType: NodeType, val prefix: String, val attributeName: String?) {
+private class XmlCompletionContext(
+    val nodeType: NodeType,
+    val prefix: String,
+    val attributeName: String?
+) {
     enum class NodeType {
         TAG,
         ATTRIBUTE_NAME,

@@ -500,7 +500,8 @@ include(":app")
 
         val deps = mutableListOf<String>()
 
-        fun imp(notation: String): String = if (useKts) "implementation(\"$notation\")" else "implementation '$notation'"
+        fun imp(notation: String): String =
+            if (useKts) "implementation(\"$notation\")" else "implementation '$notation'"
 
         if (useKotlin) {
             deps += imp("androidx.core:core-ktx:1.13.1")
@@ -659,7 +660,12 @@ dependencies {
 
     // ----------------- Manifest -----------------
 
-    private fun appManifest(appId: String, kind: ProjectTemplate.Kind, writeThemes: Boolean, projectName: String): String {
+    private fun appManifest(
+        appId: String,
+        kind: ProjectTemplate.Kind,
+        writeThemes: Boolean,
+        projectName: String
+    ): String {
         val themeAttr = if (writeThemes) "@style/AppTheme" else "@android:style/Theme.DeviceDefault"
 
         // For templates that don't have a strings.xml app_name by default, we use the project name directly
@@ -787,7 +793,8 @@ $activityBlock
 
     // ----------------- Navigation graphs & strings -----------------
 
-    private fun bottomNavNavigationXml(pkg: String, navGraphName: String) = """<?xml version="1.0" encoding="utf-8"?>
+    private fun bottomNavNavigationXml(pkg: String, navGraphName: String) =
+        """<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -814,7 +821,8 @@ $activityBlock
 </navigation>
 """ + "\n"
 
-    private fun navDrawerNavigationXml(pkg: String, navGraphName: String) = """<?xml version="1.0" encoding="utf-8"?>
+    private fun navDrawerNavigationXml(pkg: String, navGraphName: String) =
+        """<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"

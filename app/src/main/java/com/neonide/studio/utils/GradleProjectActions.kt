@@ -11,7 +11,11 @@ object GradleProjectActions {
 
     data class SyncPlan(val args: List<String>, val description: String)
 
-    data class QuickRunPlan(val args: List<String>, val description: String, val expectedApkSearchDir: File?)
+    data class QuickRunPlan(
+        val args: List<String>,
+        val description: String,
+        val expectedApkSearchDir: File?
+    )
 
     fun createSyncPlan(): SyncPlan {
         val args = baseArgs() + listOf("projects")
@@ -35,5 +39,6 @@ object GradleProjectActions {
         "--console=plain"
     )
 
-    fun getGradleEnvironment(context: Context): Map<String, String> = TermuxShellEnvironment().getEnvironment(context, false)
+    fun getGradleEnvironment(context: Context): Map<String, String> =
+        TermuxShellEnvironment().getEnvironment(context, false)
 }

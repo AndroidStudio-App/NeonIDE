@@ -161,7 +161,12 @@ fun FileTreeContextMenu(
 }
 
 @Composable
-private fun ContextMenuItem(iconRes: Int, label: String, enabled: Boolean = true, onClick: () -> Unit) {
+private fun ContextMenuItem(
+    iconRes: Int,
+    label: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     val textColor = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
 
     AppRow(

@@ -71,82 +71,84 @@ class ExtensionsManager(private val context: Context) {
         else -> "${String.format("%.1f", bytes / (1024.0 * 1024.0 * 1024.0))} GB"
     }
 
-    suspend fun installExtension(extension: ExtensionEntry): Result<String> = withContext(Dispatchers.IO) {
-        try {
-            val downloadFile = File(context.cacheDir, "${extension.id}.download")
-            val extensionDir = getExtensionDir(extension.id)
+    suspend fun installExtension(extension: ExtensionEntry): Result<String> =
+        withContext(Dispatchers.IO) {
+            try {
+                val downloadFile = File(context.cacheDir, "${extension.id}.download")
+                val extensionDir = getExtensionDir(extension.id)
 
-            java.net.URL(extension.url).openConnection().let { connection ->
-                val httpConnection = connection as java.net.HttpURLConnection
-                httpConnection.connectTimeout = 30000
-                httpConnection.readTimeout = 30000
-                httpConnection.setRequestProperty("User-Agent", "NeonIDE-Extensions/1.0")
-                httpConnection.connect()
-                val responseCode = httpConnection.responseCode
-                if (responseCode != 200) {
+                java.net.URL(extension.url).openConnection().let { connection ->
+                    val httpConnection = connection as java.net.HttpURLConnection
+                    httpConnection.connectTimeout = 30000
+                    httpConnection.readTimeout = 30000
+                    httpConnection.setRequestProperty("User-Agent", "NeonIDE-Extensions/1.0")
+                    httpConnection.connect()
+                    val responseCode = httpConnection.responseCode
+                    if (responseCode != 200) {
+                        httpConnection.disconnect()
+                        return@withContext Result.failure(
+                            Exception("Download failed: HTTP $responseCode")
+                        )
+                    }
+                    httpConnection.inputStream.use { input ->
+                        downloadFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
                     httpConnection.disconnect()
+                }
+
+                if (!downloadFile.exists() || downloadFile.length() == 0L) {
                     return@withContext Result.failure(
-                        Exception("Download failed: HTTP $responseCode")
+                        Exception("Download failed: file empty or missing")
                     )
                 }
-                httpConnection.inputStream.use { input ->
-                    downloadFile.outputStream().use { output ->
-                        input.copyTo(output)
+
+                val actualSha256 = calculateSha256(downloadFile)
+                if (!actualSha256.equals(extension.sha256, ignoreCase = true)) {
+                    downloadFile.delete()
+                    return@withContext Result.failure(Exception("SHA-256 checksum mismatch"))
+                }
+
+                val extensionName = extension.url.substringAfterLast('/')
+                when {
+                    extensionName.endsWith(".zip") -> {
+                        unzipFile(downloadFile, extensionDir)
+                    }
+
+                    extensionName.endsWith(".jar") -> {
+                        val targetJar = File(extensionDir, extensionName)
+                        downloadFile.copyTo(targetJar, overwrite = true)
+                    }
+
+                    else -> {
+                        val targetFile = File(extensionDir, extensionName)
+                        downloadFile.copyTo(targetFile, overwrite = true)
                     }
                 }
-                httpConnection.disconnect()
-            }
 
-            if (!downloadFile.exists() || downloadFile.length() == 0L) {
-                return@withContext Result.failure(
-                    Exception("Download failed: file empty or missing")
-                )
-            }
-
-            val actualSha256 = calculateSha256(downloadFile)
-            if (!actualSha256.equals(extension.sha256, ignoreCase = true)) {
                 downloadFile.delete()
-                return@withContext Result.failure(Exception("SHA-256 checksum mismatch"))
+                setInstalledSha256(extension.id, actualSha256)
+
+                Result.success(extensionDir.absolutePath)
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-
-            val extensionName = extension.url.substringAfterLast('/')
-            when {
-                extensionName.endsWith(".zip") -> {
-                    unzipFile(downloadFile, extensionDir)
-                }
-
-                extensionName.endsWith(".jar") -> {
-                    val targetJar = File(extensionDir, extensionName)
-                    downloadFile.copyTo(targetJar, overwrite = true)
-                }
-
-                else -> {
-                    val targetFile = File(extensionDir, extensionName)
-                    downloadFile.copyTo(targetFile, overwrite = true)
-                }
-            }
-
-            downloadFile.delete()
-            setInstalledSha256(extension.id, actualSha256)
-
-            Result.success(extensionDir.absolutePath)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
-    }
 
-    suspend fun uninstallExtension(extension: ExtensionEntry): Result<Unit> = withContext(Dispatchers.IO) {
-        try {
-            val extensionDir = getExtensionDir(extension.id)
-            if (extensionDir.exists()) {
-                extensionDir.deleteRecursively()
+    suspend fun uninstallExtension(extension: ExtensionEntry): Result<Unit> =
+        withContext(Dispatchers.IO) {
+            try {
+                val extensionDir = getExtensionDir(extension.id)
+                if (extensionDir.exists()) {
+                    extensionDir.deleteRecursively()
+                }
+                prefs.edit().remove(KEY_SHA_PREFIX + extension.id).apply()
+                Result.success(Unit)
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-            prefs.edit().remove(KEY_SHA_PREFIX + extension.id).apply()
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
-    }
 
     private fun calculateSha256(file: File): String {
         val digest = MessageDigest.getInstance("SHA-256")

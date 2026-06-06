@@ -7,8 +7,11 @@ import android.view.ViewConfiguration
 import androidx.drawerlayout.widget.DrawerLayout
 import kotlin.math.sqrt
 
-class NoSwipeDrawerLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
-    DrawerLayout(context, attrs, defStyleAttr) {
+class NoSwipeDrawerLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : DrawerLayout(context, attrs, defStyleAttr) {
 
     private var downX = 0f
     private var downY = 0f
