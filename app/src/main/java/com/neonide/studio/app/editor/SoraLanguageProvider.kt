@@ -94,6 +94,8 @@ class SoraLanguageProvider(private val context: Context) {
 
             "xml" -> TextMateLanguage.create("text.xml", true)
 
+            "yaml" -> TextMateLanguage.create("source.yaml", true)
+
             else -> null
         }
     }.getOrNull()

@@ -45,6 +45,8 @@ class LanguageProvider(
 
             "ts" -> tmFactory("typescript") ?: EmptyLanguage()
 
+            "yaml", "yml" -> tmFactory("yaml") ?: EmptyLanguage()
+
             else -> EmptyLanguage()
         }
     }

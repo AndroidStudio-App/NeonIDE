@@ -2,10 +2,16 @@ package com.neonide.studio.extensions
 
 import android.content.Context
 import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
 import java.security.MessageDigest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Server directory under filesDir where LSP controller looks for servers.
+ * e.g., "java-language-server" -> /data/data/.../files/java-language-server/
+ */
 class ExtensionsManager(private val context: Context) {
 
     companion object {
@@ -17,10 +23,6 @@ class ExtensionsManager(private val context: Context) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    /**
-     * Server directory under filesDir where LSP controller looks for servers.
-     * e.g., "java-language-server" -> /data/data/.../files/java-language-server/
-     */
     private fun getServerDir(id: String): File = File(context.filesDir, id)
 
     fun getExtensionDir(id: String): File = getServerDir(id)
@@ -77,31 +79,19 @@ class ExtensionsManager(private val context: Context) {
                 val downloadFile = File(context.cacheDir, "${extension.id}.download")
                 val extensionDir = getExtensionDir(extension.id)
 
-                java.net.URL(extension.url).openConnection().let { connection ->
-                    val httpConnection = connection as java.net.HttpURLConnection
-                    httpConnection.connectTimeout = 30000
-                    httpConnection.readTimeout = 30000
+                URL(extension.url).openConnection().let { connection ->
+                    val httpConnection = connection as HttpURLConnection
+                    httpConnection.connectTimeout = 10000
+                    httpConnection.readTimeout = 10000
                     httpConnection.setRequestProperty("User-Agent", "NeonIDE-Extensions/1.0")
                     httpConnection.connect()
                     val responseCode = httpConnection.responseCode
-                    if (responseCode != 200) {
-                        httpConnection.disconnect()
-                        return@withContext Result.failure(
-                            Exception("Download failed: HTTP $responseCode")
-                        )
-                    }
                     httpConnection.inputStream.use { input ->
                         downloadFile.outputStream().use { output ->
                             input.copyTo(output)
                         }
                     }
                     httpConnection.disconnect()
-                }
-
-                if (!downloadFile.exists() || downloadFile.length() == 0L) {
-                    return@withContext Result.failure(
-                        Exception("Download failed: file empty or missing")
-                    )
                 }
 
                 val actualSha256 = calculateSha256(downloadFile)

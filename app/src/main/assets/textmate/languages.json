@@ -51,6 +51,12 @@
         "meta.embedded.block.xml": "xml",
         "meta.embedded.block.python": "python"
       }
+    },
+    {
+      "name": "yaml",
+      "scopeName": "source.yaml",
+      "grammar": "textmate/yaml/syntaxes/yaml.tmLanguage.json",
+      "languageConfiguration": "textmate/yaml/language-configuration.json"
     }
   ]
 }

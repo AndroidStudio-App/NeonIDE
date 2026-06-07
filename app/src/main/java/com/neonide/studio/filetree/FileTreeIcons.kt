@@ -14,7 +14,7 @@ fun iconForExtension(extension: String): Int = when (extension.lowercase()) {
     "apk" -> R.drawable.ic_file_apk
     "txt", "log" -> R.drawable.ic_filetype_txt
     "cpp", "c", "h" -> R.drawable.ic_filetype_cpp
-    "yml" -> R.drawable.ic_filetype_yml
+    "yml", "yaml" -> R.drawable.ic_filetype_yml
     "toml" -> R.drawable.ic_filetype_toml
     "gitignore" -> R.drawable.ic_filetype_gitignore
     "md" -> R.drawable.ic_filetype_markdown

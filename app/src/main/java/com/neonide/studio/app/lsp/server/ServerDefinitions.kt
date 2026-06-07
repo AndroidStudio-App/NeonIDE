@@ -18,6 +18,12 @@ object ServerDefinitions {
             return if (f.exists()) f.absolutePath else "java"
         }
 
+    private val termuxNode: String
+        get() {
+            val f = File(TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH, "node")
+            return if (f.exists()) f.absolutePath else "node"
+        }
+
     /**
      * LemMinX XML language server.
      * JAR is extracted from assets on first use.
@@ -28,6 +34,23 @@ object ServerDefinitions {
         connect { _ ->
             ProcessStreamConnectionProvider(
                 listOf(termuxJava, "-jar", lemminxJar.absolutePath)
+            )
+        }
+    }
+
+    /**
+     * YAML language server.
+     */
+    fun yaml(serverDir: File) = languageServerDefinition {
+        name("yaml")
+        ext("yaml")
+        exts("yml")
+        connect { _ ->
+            val executable = File(serverDir, "bin/yaml-language-server")
+            ProcessStreamConnectionProvider(
+                listOf(termuxNode, executable.absolutePath, "--stdio"),
+                workingDir = serverDir,
+                env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
             )
         }
     }

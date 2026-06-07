@@ -37,6 +37,8 @@ import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppLazyColumn
 import com.neonide.studio.ui.layout.AppRow
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -84,19 +86,17 @@ fun ExtensionsScreen(context: Context, onBack: () -> Unit) {
     fun loadExtensions() {
         scope.launch {
             try {
-                val url = "https://raw.githubusercontent.com/AndroidStudio-App/NeonIDE-Extension/main/extensions.json"
+                val url =
+                    URL(
+                        "https://raw.githubusercontent.com/AndroidStudio-App/NeonIDE-Extension/main/extensions.json"
+                    )
                 val jsonText = withContext(Dispatchers.IO) {
-                    val connection = java.net.URL(
-                        url
-                    ).openConnection() as java.net.HttpURLConnection
-                    connection.connectTimeout = 10000
-                    connection.readTimeout = 10000
+                    val connection = url.openConnection() as HttpURLConnection
+                    connection.connectTimeout = 5000
+                    connection.readTimeout = 5000
                     connection.requestMethod = "GET"
                     try {
                         connection.connect()
-                        if (connection.responseCode != 200) {
-                            throw RuntimeException("HTTP error: ${connection.responseCode}")
-                        }
                         connection.inputStream.bufferedReader().use { it.readText() }
                     } finally {
                         connection.disconnect()

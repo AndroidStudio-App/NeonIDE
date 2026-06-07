@@ -94,9 +94,7 @@ class MainActivity : ComponentActivity() {
         updatePermissionStates()
 
         // skip if granted all
-        if (isFilesGranted && isInstallGranted && isNotificationsGranted) {
-            isSetupComplete = true
-        }
+        isSetupComplete = isFilesGranted && isInstallGranted && isNotificationsGranted
 
         setContent {
             AppTheme {

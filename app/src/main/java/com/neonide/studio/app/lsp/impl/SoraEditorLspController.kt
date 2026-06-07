@@ -9,6 +9,7 @@ import com.neonide.studio.app.lsp.server.JavaLanguageServer
 import com.neonide.studio.app.lsp.server.KotlinLanguageServer
 import com.neonide.studio.app.lsp.server.ServerDefinitions
 import com.neonide.studio.app.lsp.server.XMLLanguageServer
+import com.neonide.studio.app.lsp.server.YamlLanguageServer
 import com.termux.shared.logger.Logger
 import com.termux.shared.termux.TermuxConstants
 import io.github.rosemoe.sora.lang.Language
@@ -209,6 +210,9 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         addIfAbsent("xml", "xml") {
             ServerDefinitions.xml(File(getServerDir("xml-language-server"), "lemminx-uber.jar"))
         }
+        val yamlDef = { ServerDefinitions.yaml(getServerDir("yaml-language-server")) }
+        addIfAbsent("yaml", "yaml", yamlDef)
+        addIfAbsent("yml", "yaml", yamlDef)
     }
 
     private fun getServerDir(id: String): File = File(context.filesDir, id)
@@ -243,6 +247,16 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                 format.addProperty("enabled", true)
                 xml.add("format", format)
                 root.add("xml", xml)
+                rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
+            }
+
+            YamlLanguageServer.SERVER_ID -> {
+                val root = JsonObject()
+                val yaml = JsonObject()
+                val format = JsonObject()
+                format.addProperty("enable", true)
+                yaml.add("format", format)
+                root.add("yaml", yaml)
                 rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
             }
 
