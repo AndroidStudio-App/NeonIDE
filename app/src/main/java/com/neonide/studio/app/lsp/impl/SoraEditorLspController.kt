@@ -5,6 +5,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.neonide.studio.app.lsp.EditorLspController
 import com.neonide.studio.app.lsp.LspUtils
+import com.neonide.studio.app.lsp.server.BashLanguageServer
 import com.neonide.studio.app.lsp.server.JavaLanguageServer
 import com.neonide.studio.app.lsp.server.KotlinLanguageServer
 import com.neonide.studio.app.lsp.server.ServerDefinitions
@@ -210,6 +211,9 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         addIfAbsent("xml", "xml") {
             ServerDefinitions.xml(File(getServerDir("xml-language-server"), "lemminx-uber.jar"))
         }
+        addIfAbsent("bash", "bash") {
+            ServerDefinitions.bash(getServerDir("bash-language-server"))
+        }
         val yamlDef = { ServerDefinitions.yaml(getServerDir("yaml-language-server")) }
         addIfAbsent("yaml", "yaml", yamlDef)
         addIfAbsent("yml", "yaml", yamlDef)
@@ -284,6 +288,10 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                 root.addProperty("disableDependencyResolution", true)
                 root.add("classpath", classPathArr)
                 rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
+            }
+
+            BashLanguageServer.SERVER_ID -> {
+                // bash-language-server requires no special configuration
             }
         }
     }

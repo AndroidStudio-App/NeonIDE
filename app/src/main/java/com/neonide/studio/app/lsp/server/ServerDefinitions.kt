@@ -56,6 +56,24 @@ object ServerDefinitions {
     }
 
     /**
+     * Bash language server.
+     * Extracted from bash-language-server.zip.
+     */
+    fun bash(serverDir: File) = languageServerDefinition {
+        name("bash")
+        ext("bash")
+        exts("sh", "zsh")
+        connect { _ ->
+            val executable = File(serverDir, "server/out/cli.js")
+            ProcessStreamConnectionProvider(
+                listOf(termuxNode, executable.absolutePath, "start"),
+                workingDir = serverDir,
+                env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
+            )
+        }
+    }
+
+    /**
      * Java language server (org.javacs).
      * JARs are extracted from assets on first use.
      */

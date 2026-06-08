@@ -18,7 +18,7 @@ fun iconForExtension(extension: String): Int = when (extension.lowercase()) {
     "toml" -> R.drawable.ic_filetype_toml
     "gitignore" -> R.drawable.ic_filetype_gitignore
     "md" -> R.drawable.ic_filetype_markdown
-    "gradlew", "bat", "sh" -> R.drawable.ic_filetype_shell
+    "gradlew", "bat", "sh", "bash", "zsh" -> R.drawable.ic_filetype_shell
     else -> R.drawable.ic_filetype_any
 }
 

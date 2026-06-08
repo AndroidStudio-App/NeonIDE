@@ -47,6 +47,12 @@ class LanguageProvider(
 
             "yaml", "yml" -> tmFactory("yaml") ?: EmptyLanguage()
 
+            "sh" -> tmFactory("sh") ?: EmptyLanguage()
+
+            "bash" -> tmFactory("bash") ?: EmptyLanguage()
+
+            "zsh" -> tmFactory("zsh") ?: EmptyLanguage()
+
             else -> EmptyLanguage()
         }
     }
