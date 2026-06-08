@@ -4,7 +4,12 @@ Modern Integrated Development Environment(IDE) for Android That Lets you write c
 ***! local properties*** will be overwrite/written for ndk path
 
 ***Experimental project,*** Development are slow
-
+## Language Servers
+***language servers / more will be implemented***
+- [x] Java and kotlin language 
+- [x] Yaml language
+- [x] Xml language
+- [x] Bash language
 ## Installation
 1. Download and install the apk from [GithubRelease](https://github.com/AndroidStudio-App/NeonIDE/releases)
 2. Open terminal to install system image or directly install it in SetupDevkit
