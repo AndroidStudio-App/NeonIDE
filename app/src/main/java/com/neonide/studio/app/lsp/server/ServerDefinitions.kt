@@ -74,6 +74,23 @@ object ServerDefinitions {
     }
 
     /**
+     * JSON language server.
+     */
+    fun json(serverDir: File) = languageServerDefinition {
+        name("json")
+        ext("json")
+        exts("js")
+        connect { _ ->
+            val executable = File(serverDir, "dist/node/jsonServerMain.js")
+            ProcessStreamConnectionProvider(
+                listOf(termuxNode, executable.absolutePath, "--stdio"),
+                workingDir = serverDir,
+                env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
+            )
+        }
+    }
+
+    /**
      * Java language server (org.javacs).
      * JARs are extracted from assets on first use.
      */

@@ -5,12 +5,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.neonide.studio.app.lsp.EditorLspController
 import com.neonide.studio.app.lsp.LspUtils
-import com.neonide.studio.app.lsp.server.BashLanguageServer
-import com.neonide.studio.app.lsp.server.JavaLanguageServer
-import com.neonide.studio.app.lsp.server.KotlinLanguageServer
+import com.neonide.studio.app.lsp.server.LspServerIds
 import com.neonide.studio.app.lsp.server.ServerDefinitions
-import com.neonide.studio.app.lsp.server.XMLLanguageServer
-import com.neonide.studio.app.lsp.server.YamlLanguageServer
 import com.termux.shared.logger.Logger
 import com.termux.shared.termux.TermuxConstants
 import io.github.rosemoe.sora.lang.Language
@@ -211,9 +207,13 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         addIfAbsent("xml", "xml") {
             ServerDefinitions.xml(File(getServerDir("xml-language-server"), "lemminx-uber.jar"))
         }
-        addIfAbsent("bash", "bash") {
-            ServerDefinitions.bash(getServerDir("bash-language-server"))
-        }
+        val jsonDef = { ServerDefinitions.json(getServerDir("json-language-server")) }
+        addIfAbsent("json", "json", jsonDef)
+        addIfAbsent("js", "json", jsonDef)
+        val bashDef = { ServerDefinitions.bash(getServerDir("bash-language-server")) }
+        addIfAbsent("bash", "bash", bashDef)
+        addIfAbsent("sh", "bash", bashDef)
+        addIfAbsent("zsh", "bash", bashDef)
         val yamlDef = { ServerDefinitions.yaml(getServerDir("yaml-language-server")) }
         addIfAbsent("yaml", "yaml", yamlDef)
         addIfAbsent("yml", "yaml", yamlDef)
@@ -225,7 +225,7 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         val rm = lspEditor.requestManager
 
         when (serverId) {
-            JavaLanguageServer.SERVER_ID -> {
+            LspServerIds.JAVA -> {
                 val root = JsonObject()
                 val java = JsonObject()
                 val projectPath = lspEditor.project.projectUri.path
@@ -244,7 +244,7 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                 rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
             }
 
-            XMLLanguageServer.SERVER_ID -> {
+            LspServerIds.XML -> {
                 val root = JsonObject()
                 val xml = JsonObject()
                 val format = JsonObject()
@@ -254,7 +254,16 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                 rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
             }
 
-            YamlLanguageServer.SERVER_ID -> {
+            LspServerIds.JSON -> {
+                val root = JsonObject()
+                val json = JsonObject()
+                json.addProperty("validate", true)
+                json.addProperty("allowComments", true)
+                root.add("json", json)
+                rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
+            }
+
+            LspServerIds.YAML -> {
                 val root = JsonObject()
                 val yaml = JsonObject()
                 val format = JsonObject()
@@ -264,7 +273,7 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                 rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
             }
 
-            KotlinLanguageServer.SERVER_ID -> {
+            LspServerIds.KOTLIN -> {
                 val projectPath = lspEditor.project.projectUri.path
                 val classPathArr = JsonArray()
 
@@ -290,7 +299,7 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                 rm.didChangeConfiguration(DidChangeConfigurationParams().apply { settings = root })
             }
 
-            BashLanguageServer.SERVER_ID -> {
+            LspServerIds.BASH -> {
                 // bash-language-server requires no special configuration
             }
         }

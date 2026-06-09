@@ -34,10 +34,16 @@
       }
     },
     {
-      "grammar": "textmate/javascript/syntaxes/JavaScript.tmLanguage.json",
       "name": "javascript",
       "scopeName": "source.js",
+      "grammar": "textmate/javascript/syntaxes/JavaScript.tmLanguage.json",
       "languageConfiguration": "textmate/javascript/language-configuration.json"
+    },
+    {
+      "name": "json",
+      "scopeName": "source.json",
+      "grammar": "textmate/json/syntaxes/JSON.tmLanguage.json",
+      "languageConfiguration": "textmate/json/language-configuration.json"
     },
     {
       "name": "markdown",
