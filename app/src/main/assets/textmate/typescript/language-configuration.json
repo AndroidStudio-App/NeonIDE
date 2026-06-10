@@ -1,5 +1,5 @@
 {
-	// Note that this file should stay in sync with 'typescript-language-basics/language-configuration.json'
+	// Note that this file should stay in sync with 'javascript-language-basics/javascript-language-configuration.json'
 	"comments": {
 		"lineComment": "//",
 		"blockComment": [
@@ -111,6 +111,24 @@
 			">"
 		]
 	],
+	"colorizedBracketPairs": [
+		[
+			"(",
+			")"
+		],
+		[
+			"[",
+			"]"
+		],
+		[
+			"{",
+			"}"
+		],
+		[
+			"<",
+			">"
+		]
+	],
 	"autoCloseBefore": ";:.,=}])>` \n\t",
 	"folding": {
 		"markers": {
@@ -119,7 +137,7 @@
 		}
 	},
 	"wordPattern": {
-		"pattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\@\\!\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>/\\?\\s]+)",
+		"pattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\@\\~\\!\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>/\\?\\s]+)",
 	},
 	"indentationRules": {
 		"decreaseIndentPattern": {
@@ -130,7 +148,7 @@
 		},
 		// e.g.  * ...| or */| or *-----*/|
 		"unIndentedLinePattern": {
-			"pattern": "^(\\t|[ ])*[ ]\\*[^/]*\\*/\\s*$|^(\\t|[ ])*[ ]\\*/\\s*$|^(\\t|[ ])*[ ]\\*([ ]([^\\*]|\\*(?!/))*)?$"
+			"pattern": "^(\\t|[ ])*[ ]\\*[^/]*\\*/\\s*$|^(\\t|[ ])*[ ]\\*/\\s*$|^(\\t|[ ])*\\*([ ]([^\\*]|\\*(?!/))*)?$"
 		},
 		"indentNextLinePattern": {
 			"pattern": "^((.*=>\\s*)|((.*[^\\w]+|\\s*)((if|while|for)\\s*\\(.*\\)\\s*|else\\s*)))$"
@@ -163,7 +181,7 @@
 		{
 			// e.g.  * ...|
 			"beforeText": {
-				"pattern": "^(\\t|[ ])*[ ]\\*([ ]([^\\*]|\\*(?!/))*)?$"
+				"pattern": "^(\\t|[ ])*\\*([ ]([^\\*]|\\*(?!/))*)?$"
 			},
 			"previousLineText": {
 				"pattern": "(?=^(\\s*(/\\*\\*|\\*)).*)(?=(?!(\\s*\\*/)))"

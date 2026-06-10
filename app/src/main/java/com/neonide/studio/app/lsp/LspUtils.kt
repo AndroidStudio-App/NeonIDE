@@ -1,20 +1,18 @@
 
 package com.neonide.studio.app.lsp
 
-import com.neonide.studio.app.lsp.server.BashLanguageServer
-import com.neonide.studio.app.lsp.server.JavaLanguageServer
-import com.neonide.studio.app.lsp.server.KotlinLanguageServer
-import com.neonide.studio.app.lsp.server.XMLLanguageServer
-import com.neonide.studio.app.lsp.server.YamlLanguageServer
+import com.neonide.studio.app.lsp.server.LspServerIds
 import java.io.File
 
 object LspUtils {
-    fun getServerId(file: File): String? = when (file.extension) {
-        "java" -> JavaLanguageServer.SERVER_ID
-        "kt", "kts" -> KotlinLanguageServer.SERVER_ID
-        "xml" -> XMLLanguageServer.SERVER_ID
-        "yaml", "yml" -> YamlLanguageServer.SERVER_ID
-        "sh", "bash", "zsh" -> BashLanguageServer.SERVER_ID
+    fun getServerId(file: File): String? = when (file.extension.lowercase()) {
+        "java" -> LspServerIds.JAVA
+        "kt", "kts" -> LspServerIds.KOTLIN
+        "xml" -> LspServerIds.XML
+        "yaml", "yml" -> LspServerIds.YAML
+        "json" -> LspServerIds.JSON
+        "js", "ts", "jsx", "tsx" -> LspServerIds.JAVASCRIPT
+        "sh", "bash", "zsh" -> LspServerIds.BASH
         else -> null
     }
 }

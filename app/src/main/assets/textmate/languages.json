@@ -34,10 +34,34 @@
       }
     },
     {
-      "grammar": "textmate/javascript/syntaxes/JavaScript.tmLanguage.json",
       "name": "javascript",
       "scopeName": "source.js",
+      "grammar": "textmate/javascript/syntaxes/JavaScript.tmLanguage.json",
       "languageConfiguration": "textmate/javascript/language-configuration.json"
+    },
+    {
+      "name": "javascriptreact",
+      "scopeName": "source.js.jsx",
+      "grammar": "textmate/javascript/syntaxes/JavaScriptReact.tmLanguage.json",
+      "languageConfiguration": "textmate/javascript/language-configuration.json"
+    },
+    {
+      "name": "json",
+      "scopeName": "source.json",
+      "grammar": "textmate/json/syntaxes/JSON.tmLanguage.json",
+      "languageConfiguration": "textmate/json/language-configuration.json"
+    },
+    {
+      "name": "typescript",
+      "scopeName": "source.ts",
+      "grammar": "textmate/typescript/syntaxes/TypeScript.tmLanguage.json",
+      "languageConfiguration": "textmate/typescript/language-configuration.json"
+    },
+    {
+      "name": "typescriptreact",
+      "scopeName": "source.tsx",
+      "grammar": "textmate/typescript/syntaxes/TypeScriptReact.tmLanguage.json",
+      "languageConfiguration": "textmate/typescript/language-configuration.json"
     },
     {
       "name": "markdown",

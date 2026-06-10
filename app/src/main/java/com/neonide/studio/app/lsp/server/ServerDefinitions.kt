@@ -74,6 +74,40 @@ object ServerDefinitions {
     }
 
     /**
+     * JSON language server.
+     */
+    fun json(serverDir: File) = languageServerDefinition {
+        name("json")
+        ext("json")
+        exts("js")
+        connect { _ ->
+            val executable = File(serverDir, "dist/node/jsonServerMain.js")
+            ProcessStreamConnectionProvider(
+                listOf(termuxNode, executable.absolutePath, "--stdio"),
+                workingDir = serverDir,
+                env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
+            )
+        }
+    }
+
+    /**
+     * JavaScript/TypeScript language server.
+     */
+    fun javascript(serverDir: File) = languageServerDefinition {
+        name("javascript")
+        ext("js")
+        exts("ts", "jsx", "tsx")
+        connect { _ ->
+            val executable = File(serverDir, "lib/cli.mjs")
+            ProcessStreamConnectionProvider(
+                listOf(termuxNode, executable.absolutePath, "--stdio"),
+                workingDir = serverDir,
+                env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
+            )
+        }
+    }
+
+    /**
      * Java language server (org.javacs).
      * JARs are extracted from assets on first use.
      */

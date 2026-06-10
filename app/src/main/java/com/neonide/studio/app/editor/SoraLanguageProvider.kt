@@ -77,27 +77,18 @@ class SoraLanguageProvider(private val context: Context) {
     private fun createTextMateLanguage(type: String): Language? = runCatching {
         when (type) {
             "java" -> TextMateLanguage.create("source.java", true)
-
             "kotlin" -> TextMateLanguage.create("source.kotlin", true)
-
             "python" -> TextMateLanguage.create("source.python", true)
-
             "html" -> TextMateLanguage.create("text.html.basic", true)
-
             "javascript" -> TextMateLanguage.create("source.js", true)
-
+            "javascriptreact" -> TextMateLanguage.create("source.js.jsx", true)
             "markdown" -> TextMateLanguage.create("text.html.markdown", true)
-
-            // Provided for completeness; our bundled textmate pack currently doesn't include TS grammar,
-            // but users may load it via "TM Language from file".
-            "typescript" -> TextMateLanguage.create("source.typescript", true)
-
+            "typescript" -> TextMateLanguage.create("source.ts", true)
+            "typescriptreact" -> TextMateLanguage.create("source.tsx", true)
             "xml" -> TextMateLanguage.create("text.xml", true)
-
+            "json" -> TextMateLanguage.create("source.json", true)
             "yaml" -> TextMateLanguage.create("source.yaml", true)
-
             "sh", "bash", "zsh" -> TextMateLanguage.create("source.shell", true)
-
             else -> null
         }
     }.getOrNull()
