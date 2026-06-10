@@ -48,5 +48,5 @@ The Editor show's false diagnostic/tooltip
 - XML Language Server : [LemMinX](https://github.com/eclipse-lemminx/lemminx)
 ## Acknowledgements
 
-Thanks to [JetBrains](https://www.jetbrains.com/?from=CodeEditor) for allocating free open-source
-licences for IDEs such as [IntelliJ IDEA](https://www.jetbrains.com/idea/?from=CodeEditor)
+Thanks to [JetBrains](https://www.jetbrains.com/?from=CodeEditor) and [vscode](https://github.com/microsoft/vscode) for allocating free open-source
+licences for IDEs such as [IntelliJ IDEA](https://www.jetbrains.com/idea/?from=CodeEditor) and [Visual Studio Code](https://code.visualstudio.com/)
