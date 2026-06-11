@@ -10,6 +10,11 @@ Modern Integrated Development Environment(IDE) for Android That Lets you write c
 - [x] Yaml language
 - [x] Xml language
 - [x] Bash language
+- [x] Json and Typescript language
+- [x] Dart language (To install dart-sdk)
+
+      apt install -y dart
+
 ## Installation
 1. Download and install the apk from [GithubRelease](https://github.com/AndroidStudio-App/NeonIDE/releases)
 2. Open terminal to install system image or directly install it in SetupDevkit
@@ -42,6 +47,7 @@ The Editor show's false diagnostic/tooltip
 - Code Editor : [sora-editor](https://github.com/Rosemoe/sora-editor)
 - Terminal Emulator : [Termux application](https://github.com/termux/termux-app?tab=readme-ov-file)
 - File Tree : [bonsai](https://github.com/adrielcafe/bonsai)
+- Textmate Grammars : [tm-grammars / tm-themes](https://github.com/shikijs/textmate-grammars-themes)
 - Tree Sitter : [android-tree-sitter](https://github.com/AndroidIDEOfficial/android-tree-sitter)
 - Java Language Server : [Java](https://github.com/georgewfraser/java-language-server)
 - Kotlin Language Server : [kotlin](https://github.com/fwcd/kotlin-language-server)
