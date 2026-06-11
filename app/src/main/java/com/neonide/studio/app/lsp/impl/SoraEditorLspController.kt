@@ -220,6 +220,7 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         val yamlDef = { ServerDefinitions.yaml(getServerDir("yaml-language-server")) }
         addIfAbsent("yaml", "yaml", yamlDef)
         addIfAbsent("yml", "yaml", yamlDef)
+        addIfAbsent("dart", "dart") { ServerDefinitions.dart() }
     }
 
     private fun getServerDir(id: String): File = File(context.filesDir, id)
@@ -312,6 +313,10 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
 
             LspServerIds.BASH -> {
                 // bash-language-server requires no special configuration
+            }
+
+            LspServerIds.DART -> {
+                // dart language-server requires no special configuration here
             }
         }
     }

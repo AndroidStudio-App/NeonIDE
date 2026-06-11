@@ -13,6 +13,7 @@ object LspUtils {
         "json" -> LspServerIds.JSON
         "js", "ts", "jsx", "tsx" -> LspServerIds.JAVASCRIPT
         "sh", "bash", "zsh" -> LspServerIds.BASH
+        "dart" -> LspServerIds.DART
         else -> null
     }
 }

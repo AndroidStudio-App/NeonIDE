@@ -24,6 +24,42 @@ object ServerDefinitions {
             return if (f.exists()) f.absolutePath else "node"
         }
 
+    private val flutterDart: String
+        get() {
+            val f = File(TermuxConstants.TERMUX_HOME_DIR, "flutter/bin/cache/dart-sdk/bin/dart")
+            return if (f.exists()) f.absolutePath else "dart"
+        }
+
+    private val flutterDartSnapshot: String
+        get() {
+            val f = File(
+                TermuxConstants.TERMUX_HOME_DIR,
+                "flutter/bin/cache/dart-sdk/bin/snapshots/analysis_server.dart.snapshot"
+            )
+            return f.absolutePath
+        }
+
+    /**
+     * Dart language server.
+     * Uses the analysis_server snapshot from Flutter SDK.
+     */
+    fun dart() = languageServerDefinition {
+        name("dart")
+        ext("dart")
+        connect { _ ->
+            ProcessStreamConnectionProvider(
+                listOf(
+                    flutterDart,
+                    flutterDartSnapshot,
+                    "--protocol=lsp",
+                    "--client-id=neonide",
+                    "--client-version=1.0.0"
+                ),
+                env = mapOf("HOME" to TermuxConstants.TERMUX_HOME_DIR_PATH)
+            )
+        }
+    }
+
     /**
      * LemMinX XML language server.
      * JAR is extracted from assets on first use.

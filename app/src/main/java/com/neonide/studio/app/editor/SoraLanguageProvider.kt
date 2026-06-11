@@ -89,6 +89,7 @@ class SoraLanguageProvider(private val context: Context) {
             "json" -> TextMateLanguage.create("source.json", true)
             "yaml" -> TextMateLanguage.create("source.yaml", true)
             "sh", "bash", "zsh" -> TextMateLanguage.create("source.shell", true)
+            "dart" -> TextMateLanguage.create("source.dart", true)
             else -> null
         }
     }.getOrNull()

@@ -11,4 +11,5 @@ object LspServerIds {
     const val JAVASCRIPT = "javascript"
     const val BASH = "bash"
     const val YAML = "yaml"
+    const val DART = "dart"
 }
