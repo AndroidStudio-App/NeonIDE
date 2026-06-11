@@ -48,7 +48,7 @@ jdt-annotation = "2.4.100"
 lsp4j = "1.0.0"
 jgit = "7.6.0.202603022253-r"
 desugar = "2.1.5"
-rosemoe-editor = "0.24.5"
+rosemoe-editor = "0.24.6"
 
 junit = "4.13.2"
 robolectric = "4.16.1"
