@@ -33,6 +33,7 @@ class LanguageProvider(
             "sh" -> tmFactory("sh") ?: EmptyLanguage()
             "bash" -> tmFactory("bash") ?: EmptyLanguage()
             "zsh" -> tmFactory("zsh") ?: EmptyLanguage()
+            "dart" -> tmFactory("dart") ?: EmptyLanguage()
             else -> EmptyLanguage()
         }
     }

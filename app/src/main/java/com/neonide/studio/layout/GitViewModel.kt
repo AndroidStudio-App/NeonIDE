@@ -208,7 +208,10 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
                 .setProgressMonitor(progressMonitor)
 
             configureCloneCommand(cmd, state)
-            cmd.call().close()
+            try {
+                cmd.call().close()
+            } catch (closeEx: Exception) {
+            }
 
             handleCloneResult(targetDir, onSuccess)
         } catch (e: org.eclipse.jgit.api.errors.GitAPIException) {
