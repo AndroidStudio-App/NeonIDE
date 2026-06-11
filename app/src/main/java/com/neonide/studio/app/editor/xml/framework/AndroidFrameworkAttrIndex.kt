@@ -1,7 +1,7 @@
 package com.neonide.studio.app.editor.xml.framework
 
 import android.content.Context
-import com.neonide.studio.utils.AndroidSdkUtils
+import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 /**
@@ -20,7 +20,9 @@ object AndroidFrameworkAttrIndex {
         synchronized(this) {
             if (cached != null) return true
 
-            val sdkDir = AndroidSdkUtils.sdkDir
+            val sdkDir = File(TermuxConstants.TERMUX_HOME_DIR_PATH, "android-sdk")
+            if (!sdkDir.exists()) return false
+
             val attrsFile = resolveBestAttrsXml(sdkDir) ?: return false
             val names = parseAttrNames(attrsFile)
             if (names.isEmpty()) return false

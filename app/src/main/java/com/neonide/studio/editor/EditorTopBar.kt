@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.ToggleMenuItem
+import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.utils.Divider.horizontalDivider
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.component.EditorAutoCompletion
@@ -58,6 +59,7 @@ fun EditorTopBar(
     var menuExpanded by remember { mutableStateOf(false) }
     var buildMenuExpanded by remember { mutableStateOf(false) }
     var variantBuildMenuExpanded by remember { mutableStateOf(false) }
+    var propertiesDialogEnabled by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -86,7 +88,9 @@ fun EditorTopBar(
                 buildMenuExpanded = buildMenuExpanded,
                 onBuildMenuExpandedChange = { buildMenuExpanded = it },
                 variantBuildMenuExpanded = variantBuildMenuExpanded,
-                onVariantBuildMenuExpandedChange = { variantBuildMenuExpanded = it }
+                onVariantBuildMenuExpandedChange = { variantBuildMenuExpanded = it },
+                propertiesDialogEnabled = propertiesDialogEnabled,
+                onPropertiesDialogChange = { propertiesDialogEnabled = it }
             )
         }
 
@@ -121,126 +125,122 @@ fun EditorTopBar(
                 IconButton(onClick = onTerminalClick) {
                     AppIcon(painterResource(R.drawable.ic_terminal))
                 }
-                IconButton(onClick = { menuExpanded = true }) {
-                    AppIcon(painterResource(R.drawable.ic_menu))
-                }
 
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false }
-                ) {
-                    MenuCategoryTitle(stringResource(R.string.search))
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.action_mode)) },
-                        onClick = {
-                            onSearchActionMode()
-                            menuExpanded = false
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.search_panel),
-                        checked = searchPanelVisible,
-                        onToggle = {
-                            onSearchPanelToggle()
-                            menuExpanded = false
-                        }
-                    )
+                AppBox {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        AppIcon(painterResource(R.drawable.ic_menu_kebab))
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        MenuCategoryTitle(stringResource(R.string.search))
+                        ToggleMenuItem(
+                            text = stringResource(R.string.search_panel),
+                            checked = searchPanelVisible,
+                            onToggle = {
+                                onSearchPanelToggle()
+                                menuExpanded = false
+                            }
+                        )
 
-                    horizontalDivider(color = Color.Gray)
+                        horizontalDivider(color = Color.Gray)
 
-                    MenuCategoryTitle(stringResource(R.string.feature_switches))
-                    ToggleMenuItem(
-                        text = stringResource(R.string.symbol_bar),
-                        checked = settings.isSymbolBarVisible,
-                        onToggle = {
-                            settings.isSymbolBarVisible = !settings.isSymbolBarVisible
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.wordwrap),
-                        checked = settings.isWordwrap,
-                        onToggle = {
-                            settings.isWordwrap = !settings.isWordwrap
-                            editor?.isWordwrap = settings.isWordwrap
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.line_number),
-                        checked = settings.isLineNumberVisible,
-                        onToggle = {
-                            settings.isLineNumberVisible = !settings.isLineNumberVisible
-                            editor?.isLineNumberEnabled = settings.isLineNumberVisible
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.pin_line_number),
-                        checked = settings.isLineNumberPinned,
-                        onToggle = {
-                            settings.isLineNumberPinned = !settings.isLineNumberPinned
-                            editor?.setPinLineNumber(settings.isLineNumberPinned)
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.magnifier),
-                        checked = settings.isMagnifierEnabled,
-                        onToggle = {
-                            settings.isMagnifierEnabled = !settings.isMagnifierEnabled
-                            editor?.getComponent(Magnifier::class.java)?.isEnabled =
-                                settings.isMagnifierEnabled
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.use_icu),
-                        checked = settings.useIcu,
-                        onToggle = {
-                            settings.useIcu = !settings.useIcu
-                            editor?.props?.useICULibToSelectWords = settings.useIcu
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.completion_animation),
-                        checked = settings.completionAnim,
-                        onToggle = {
-                            settings.completionAnim = !settings.completionAnim
-                            editor?.getComponent(
-                                EditorAutoCompletion::class.java
-                            )?.setEnabledAnimation(settings.completionAnim)
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.soft_keyboard),
-                        checked = settings.softKbdEnabled,
-                        onToggle = {
-                            settings.softKbdEnabled = !settings.softKbdEnabled
-                            editor?.isSoftKeyboardEnabled = settings.softKbdEnabled
-                        }
-                    )
-                    ToggleMenuItem(
-                        text = stringResource(R.string.disable_soft_kbd_hard_kbd),
-                        checked = settings.hardKbdDisabled,
-                        onToggle = {
-                            settings.hardKbdDisabled = !settings.hardKbdDisabled
-                            editor?.isDisableSoftKbdIfHardKbdAvailable = settings.hardKbdDisabled
-                        }
-                    )
+                        MenuCategoryTitle(stringResource(R.string.feature_switches))
+                        ToggleMenuItem(
+                            text = stringResource(R.string.symbol_bar),
+                            checked = settings.isSymbolBarVisible,
+                            onToggle = {
+                                settings.isSymbolBarVisible = !settings.isSymbolBarVisible
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.wordwrap),
+                            checked = settings.isWordwrap,
+                            onToggle = {
+                                settings.isWordwrap = !settings.isWordwrap
+                                editor?.isWordwrap = settings.isWordwrap
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.line_number),
+                            checked = settings.isLineNumberVisible,
+                            onToggle = {
+                                settings.isLineNumberVisible = !settings.isLineNumberVisible
+                                editor?.isLineNumberEnabled = settings.isLineNumberVisible
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.pin_line_number),
+                            checked = settings.isLineNumberPinned,
+                            onToggle = {
+                                settings.isLineNumberPinned = !settings.isLineNumberPinned
+                                editor?.setPinLineNumber(settings.isLineNumberPinned)
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.magnifier),
+                            checked = settings.isMagnifierEnabled,
+                            onToggle = {
+                                settings.isMagnifierEnabled = !settings.isMagnifierEnabled
+                                editor?.getComponent(Magnifier::class.java)?.isEnabled =
+                                    settings.isMagnifierEnabled
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.use_icu),
+                            checked = settings.useIcu,
+                            onToggle = {
+                                settings.useIcu = !settings.useIcu
+                                editor?.props?.useICULibToSelectWords = settings.useIcu
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.completion_animation),
+                            checked = settings.completionAnim,
+                            onToggle = {
+                                settings.completionAnim = !settings.completionAnim
+                                editor?.getComponent(
+                                    EditorAutoCompletion::class.java
+                                )?.setEnabledAnimation(settings.completionAnim)
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.soft_keyboard),
+                            checked = settings.softKbdEnabled,
+                            onToggle = {
+                                settings.softKbdEnabled = !settings.softKbdEnabled
+                                editor?.isSoftKeyboardEnabled = settings.softKbdEnabled
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.disable_soft_kbd_hard_kbd),
+                            checked = settings.hardKbdDisabled,
+                            onToggle = {
+                                settings.hardKbdDisabled = !settings.hardKbdDisabled
+                                editor?.isDisableSoftKbdIfHardKbdAvailable =
+                                    settings.hardKbdDisabled
+                            }
+                        )
 
-                    horizontalDivider(color = Color.Gray)
+                        horizontalDivider(color = Color.Gray)
 
-                    MenuCategoryTitle(stringResource(R.string.configuration))
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.switch_color_scheme)) },
-                        onClick = {
-                            onSwitchColors()
-                            menuExpanded = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.switch_typeface)) },
-                        onClick = {
-                            onSwitchTypeface()
-                            menuExpanded = false
-                        }
-                    )
+                        MenuCategoryTitle(stringResource(R.string.configuration))
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.switch_color_scheme)) },
+                            onClick = {
+                                onSwitchColors()
+                                menuExpanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.switch_typeface)) },
+                            onClick = {
+                                onSwitchTypeface()
+                                menuExpanded = false
+                            }
+                        )
+                    }
                 }
             }
         )

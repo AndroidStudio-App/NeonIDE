@@ -29,24 +29,23 @@ object GradleRunner {
     ): Handle {
         val gradlew = File(projectDir, "gradlew")
 
+        // Explicitly source .bashrc to load ANDROID_HOME and other env vars
+        val bashrcPath = File(TermuxConstants.TERMUX_HOME_DIR_PATH, ".bashrc").absolutePath
         val cmd = listOf(
             File(TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH, "bash").absolutePath,
-            "-lc",
-            (listOf(gradlew.absolutePath) + args).joinToString(" ")
+            "-c",
+            "source $bashrcPath && ${gradlew.absolutePath} ${(args).joinToString(" ")}"
         )
 
         val pb = ProcessBuilder(cmd)
         pb.directory(projectDir)
         pb.redirectErrorStream(true)
 
-        // Use TermuxShellEnvironment so PATH/TMPDIR etc match runtime.
-        val env = pb.environment()
-        val termuxEnv = TermuxShellEnvironment()
-            .getEnvironment(context, false)
-        env.putAll(termuxEnv)
-
-        // Apply custom overrides last.
-        env.putAll(envOverrides)
+        // bash -lc already loads .bashrc, just apply custom overrides
+        if (envOverrides.isNotEmpty()) {
+            val env = pb.environment()
+            env.putAll(envOverrides)
+        }
 
         val process = pb.start()
         return Handle(process, onOutputLine)

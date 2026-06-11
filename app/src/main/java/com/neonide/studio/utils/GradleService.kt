@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
+import com.neonide.studio.utils.GradleProjectActions.getGradleEnvironment
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
@@ -134,28 +135,14 @@ class GradleService : Service() {
             try {
                 val logFile = logFilePath?.let { File(it) }
 
-                val baseEnv = GradleProjectActions.getGradleEnvironment(this@GradleService)
-                val sdk = AndroidSdkUtils.configureForProject(
-                    projectDir = projectDir,
-                    baseEnv = baseEnv
-                )
-
-                val envOverrides = sdk?.env ?: emptyMap()
-                val aapt2 = AndroidSdkUtils.aapt2Path
-                val finalArgs = if (aapt2.exists() && aapt2.isFile) {
-                    args.toMutableList().apply {
-                        add(0, "-Pandroid.aapt2FromMavenOverride=${aapt2.absolutePath}")
-                    }
-                } else {
-                    args
-                }
+                val baseEnv = getGradleEnvironment(this@GradleService)
 
                 val handle = withContext(Dispatchers.IO) {
                     GradleRunner.start(
                         context = this@GradleService,
                         projectDir = projectDir,
-                        args = finalArgs,
-                        envOverrides = envOverrides
+                        args = args,
+                        envOverrides = baseEnv
                     ) { line ->
                         logFile?.appendText(line + "\n")
                         BuildOutputBuffer.appendLine(line)

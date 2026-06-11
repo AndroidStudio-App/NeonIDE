@@ -226,5 +226,9 @@
     <string name="remove">Remove</string>
     <string name="update">Update</string>
     <string name="install">Install</string>
-
+    <string name="properties">Properties</string>
+    <string name="global_properties">Global Properties</string>
+    <string name="enable_global_properties">Enable global properties</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
 </resources>

@@ -278,7 +278,7 @@ fun EditorScreen(
                             val tooltip = editor.getComponent(
                                 EditorDiagnosticTooltipWindow::class.java
                             )
-                            if (tooltip?.isShowing == true) {
+                            if (tooltip.isShowing) {
                                 tooltip.dismiss()
                             }
                         } catch (e: Exception) { }
