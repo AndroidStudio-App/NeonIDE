@@ -147,8 +147,9 @@ EOF
 echo "--- [5/5] Finalizing ---"
 source $HOME/.bashrc
 chmod +x $HOME/.config/kotlin-language-server/classpath
-~/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platforms;android-36" #for flutter
 yes | $PREFIX/bin/bash $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
-termux-fix-shebang  $HOME/android-sdk/ndk/29.0.14206865/build/ndk-build
-termux-fix-shebang  $HOME/android-sdk/ndk/29.0.14206865/ndk-build
+termux-fix-shebang $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager
+termux-fix-shebang $HOME/android-sdk/ndk/29.0.14206865/build/ndk-build
+termux-fix-shebang $HOME/android-sdk/ndk/29.0.14206865/ndk-build
+~/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/android-sdk "platforms;android-36" #for flutter
 clear && rm setup.sh
