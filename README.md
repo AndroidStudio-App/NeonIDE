@@ -88,6 +88,7 @@ The Editor show's false diagnostic/tooltip
 - File Tree : [bonsai](https://github.com/adrielcafe/bonsai)
 - Textmate Grammars : [tm-grammars / tm-themes](https://github.com/shikijs/textmate-grammars-themes)
 - Tree Sitter : [android-tree-sitter](https://github.com/AndroidIDEOfficial/android-tree-sitter)
+- Flutter Source code [Flutter](https://github.com/flutter/flutter)
 - Java Language Server : [Java](https://github.com/georgewfraser/java-language-server)
 - Kotlin Language Server : [kotlin](https://github.com/fwcd/kotlin-language-server)
 - XML Language Server : [LemMinX](https://github.com/eclipse-lemminx/lemminx)
