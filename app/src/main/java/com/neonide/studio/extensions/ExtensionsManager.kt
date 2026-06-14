@@ -193,11 +193,14 @@ class ExtensionsManager(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
+        val canonicalTargetDir = targetDir.canonicalPath
         java.util.zip.ZipInputStream(zipFile.inputStream()).use { zip ->
             var entry = zip.nextEntry
             while (entry != null) {
                 val outFile = File(targetDir, entry.name)
+                if (!outFile.canonicalPath.startsWith(canonicalTargetDir)) {
+                    throw SecurityException("Invalid zip entry: ${entry.name}")
+                }
                 if (entry.isDirectory) {
                     outFile.mkdirs()
                 } else {
