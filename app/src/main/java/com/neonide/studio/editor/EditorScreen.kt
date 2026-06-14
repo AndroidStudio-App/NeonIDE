@@ -111,8 +111,14 @@ fun EditorScreen(
                         ?: EditorGlobalProperties.DEFAULT_GRADLE
                 val localText =
                     properties.getString("local_text", null) ?: EditorGlobalProperties.DEFAULT_LOCAL
-                File(dir, "gradle.properties").writeText(gradleText)
-                File(dir, "local.properties").writeText(localText)
+                val gradleFile = File(dir, "gradle.properties")
+                val localFile = File(dir, "local.properties")
+                if (!gradleFile.exists() || gradleFile.readText() != gradleText) {
+                    gradleFile.writeText(gradleText)
+                }
+                if (!localFile.exists() || localFile.readText() != localText) {
+                    localFile.writeText(localText)
+                }
             }
             lspController.prefetchClassPath(projectPath)
         }
