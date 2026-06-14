@@ -186,10 +186,11 @@ class ExtensionsManager(private val context: Context) {
 
     private fun unzipFile(zipFile: File, targetDir: File) {
         try {
-            val process = Runtime.getRuntime().exec(
-                arrayOf("unzip", "-oq", zipFile.absolutePath, "-d", targetDir.absolutePath)
-            )
-            if (process.waitFor() == 0) return
+            val process = ProcessBuilder(
+                "unzip", "-oq", zipFile.absolutePath, "-d", targetDir.absolutePath
+            ).start()
+            if (process.waitFor(30, java.util.concurrent.TimeUnit.SECONDS) && process.exitValue() == 0) return
+            process.destroyForcibly()
         } catch (e: Exception) {
             e.printStackTrace()
         }
