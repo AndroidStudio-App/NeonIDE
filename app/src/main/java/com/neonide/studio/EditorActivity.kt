@@ -79,6 +79,7 @@ class EditorActivity : ComponentActivity() {
             }
             activeFileState.value =
                 openFilesState.value.find { it.path == bundle.getString("active_path") }
+            positionTextState.value = bundle.getString("position_text", "")    
         }
 
         lifecycleScope.launch {
@@ -175,6 +176,7 @@ class EditorActivity : ComponentActivity() {
         super.onSaveInstanceState(outState)
         outState.putStringArrayList("open_paths", ArrayList(openFilesState.value.map { it.path }))
         outState.putString("active_path", activeFileState.value?.path)
+        outState.putString("position_text", positionTextState.value)
     }
 
     override fun onDestroy() {
