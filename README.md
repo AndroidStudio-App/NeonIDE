@@ -28,6 +28,10 @@ apt install -y git which cmake ninja
 ```
 flutter doctor -v
 ```
+Run this command If you received permission denied
+```
+find $PREFIX/opt/flutter/bin -type d -exec chmod 755 {} + && chmod +x $PREFIX/bin/flutter
+```
 ### Create Flutter project
 1. create a project
 ```
@@ -46,12 +50,12 @@ android {
 ```
 3. Build APK.
 ```
-# debug
-flutter run
+# debug / if adb connected, flutter run
+flutter build apk --debug --target-platform android-arm64
 ```
 ```
-# release
-flutter run --release
+# release / if adb connected, flutter run --release
+flutter build apk --release --target-platform android-arm64
 ```
 ____
 ## Installation
