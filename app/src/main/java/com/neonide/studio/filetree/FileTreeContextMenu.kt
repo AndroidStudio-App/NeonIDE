@@ -1,6 +1,5 @@
 package com.neonide.studio.filetree
 
-import android.content.ClipData
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
@@ -18,10 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ClipEntry
-import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -54,7 +53,7 @@ fun FileTreeContextMenu(
     if (target == null) return
 
     val canPaste = clipboard != null
-    val clipboardManager = LocalClipboard.current
+    val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
     Popup(
@@ -151,8 +150,7 @@ fun FileTreeContextMenu(
                     onDismiss()
                     onCopyPath(t)
                     scope.launch {
-                        val clipData = ClipData.newPlainText("path", t.path.toString())
-                        clipboardManager.setClipEntry(ClipEntry(clipData))
+                        clipboardManager.setText(AnnotatedString(t.path.toString()))
                     }
                 }
             )
