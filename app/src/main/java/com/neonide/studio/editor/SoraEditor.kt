@@ -11,7 +11,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.utils.HexColorScanner
 import io.github.rosemoe.sora.lang.styling.HighlightTextContainer
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 
 class NeonCodeEditor(context: Context) : CodeEditor(context) {
     override fun setHighlightTexts(highlights: HighlightTextContainer?) {
@@ -22,11 +21,7 @@ class NeonCodeEditor(context: Context) : CodeEditor(context) {
 }
 
 @Composable
-fun SoraEditor(
-    modifier: Modifier = Modifier,
-    filePath: String?,
-    onEditorCreated: (CodeEditor) -> Unit
-) {
+fun SoraEditor(modifier: Modifier = Modifier, onEditorCreated: (CodeEditor) -> Unit) {
     AndroidView(
         modifier = modifier.fillMaxSize(),
         factory = { context ->

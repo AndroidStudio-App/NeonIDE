@@ -1,8 +1,6 @@
 package com.neonide.studio.utils
 
-import android.content.Context
 import com.termux.shared.termux.TermuxConstants
-import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicBoolean
@@ -21,7 +19,6 @@ object GradleRunner {
      */
     @Throws(IOException::class)
     fun start(
-        context: Context,
         projectDir: File,
         args: List<String>,
         envOverrides: Map<String, String> = emptyMap(),

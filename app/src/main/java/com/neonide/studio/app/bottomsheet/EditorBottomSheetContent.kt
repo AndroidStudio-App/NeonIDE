@@ -15,17 +15,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +39,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import io.github.rosemoe.sora.lang.EmptyLanguage
+import com.neonide.studio.utils.GradleBuildStatus
+import com.termux.shared.logger.Logger
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,6 +64,8 @@ enum class BottomSheetTab(val title: String) {
     SEARCH("Search"),
     REFERENCES("References")
 }
+
+private const val BOTTOM_SHEET_TAG = "EditorBottomSheet"
 
 class BottomSheetViewModel : ViewModel() {
 
@@ -189,6 +195,17 @@ fun BottomSheetTabRow(
 }
 
 @Composable
+private fun rememberGradleRunning(): Boolean {
+    var running by remember { mutableStateOf(GradleBuildStatus.isRunning) }
+    DisposableEffect(Unit) {
+        val listener: (Boolean) -> Unit = { running = it }
+        GradleBuildStatus.addListener(listener)
+        onDispose { GradleBuildStatus.removeListener(listener) }
+    }
+    return running
+}
+
+@Composable
 fun EditorBottomSheetContent(
     viewModel: BottomSheetViewModel,
     pagerState: PagerState,
@@ -211,16 +228,9 @@ fun EditorBottomSheetContent(
     }
 
     Column(modifier = modifier.fillMaxSize().navigationBarsPadding()) {
-        val status by viewModel.status.observeAsState()
-        status?.let { msg ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(text = msg, style = MaterialTheme.typography.bodySmall)
-            }
+        val gradleRunning = rememberGradleRunning()
+        if (gradleRunning) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
         HorizontalPager(
@@ -276,9 +286,7 @@ private fun LogViewerPage(contentStream: String) {
             val snapshot = contentStream
 
             if (snapshot.isEmpty()) {
-                try {
-                    ed.setText("", true, null)
-                } catch (e: Exception) {}
+                ed.setText("", true, null)
                 state.lastLen = 0
                 return@AndroidView
             }
@@ -287,9 +295,7 @@ private fun LogViewerPage(contentStream: String) {
                 snapshot.substring(state.lastLen)
             } else {
                 state.lastLen = 0
-                try {
-                    ed.setText("", true, null)
-                } catch (e: Exception) {}
+                ed.setText("", true, null)
                 snapshot
             }
 
@@ -310,13 +316,14 @@ private fun LogViewerPage(contentStream: String) {
                 val newLine = content.lineCount - 1
                 val newCol = content.getColumnCount(newLine)
                 ed.setSelection(newLine, newCol)
-            } catch (e: Exception) {
-                try {
+            } catch (e: IllegalStateException) {
+                Logger.logDebug(BOTTOM_SHEET_TAG, "insert failed: ${e.message}")
+                runCatching {
                     ed.setText(snapshot)
                     val content = ed.text
                     val lastLine = content.lineCount - 1
                     ed.setSelection(lastLine, content.getColumnCount(lastLine))
-                } catch (e2: Exception) {}
+                }
             }
 
             state.lastLen = snapshot.length

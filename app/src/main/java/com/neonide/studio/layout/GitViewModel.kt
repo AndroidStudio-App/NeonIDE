@@ -2,15 +2,12 @@ package com.neonide.studio.layout
 
 import android.app.Application
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Environment
-import android.provider.DocumentsContract
-import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.neonide.studio.R
 import com.neonide.studio.utils.FileUtil
+import com.termux.shared.logger.Logger
 import java.io.File
 import java.net.URI
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +20,8 @@ import kotlinx.coroutines.withContext
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.ProgressMonitor
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+
+private const val TAG = "GitViewModel"
 
 class GitViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application
@@ -210,13 +209,16 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
             configureCloneCommand(cmd, state)
             try {
                 cmd.call().close()
-            } catch (closeEx: Exception) {
+            } catch (closeEx: java.io.IOException) {
+                Logger.logError(TAG, "Closing git resource failed: ${closeEx.message}")
             }
 
             handleCloneResult(targetDir, onSuccess)
         } catch (e: org.eclipse.jgit.api.errors.GitAPIException) {
             handleCloneError(targetDir, e)
-        } catch (e: Exception) {
+        } catch (e: java.io.IOException) {
+            handleCloneError(targetDir, e)
+        } catch (e: java.lang.IllegalStateException) {
             handleCloneError(targetDir, e)
         }
     }
@@ -310,7 +312,7 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
                     isCloning = false,
                     statusText = app.getString(R.string.failed),
                     destinationError =
-                        e.localizedMessage ?: e.message ?: app.getString(R.string.unknown_error)
+                    e.localizedMessage ?: e.message ?: app.getString(R.string.unknown_error)
                 )
             }
         }

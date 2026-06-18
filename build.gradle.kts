@@ -7,8 +7,12 @@ plugins {
     alias(libs.plugins.jetbrains.compose) apply false
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.ktlint) apply false
     // Kotlin 2.2.x is required for sora-editor 0.24.x (compiled with Kotlin metadata 2.2.0)
     id("org.jetbrains.kotlin.plugin.compose") version "2.4.0" apply false
+}
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 }
 
 tasks.register<Delete>("clean") {

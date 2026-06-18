@@ -41,7 +41,8 @@ object HexColorScanner {
         while (index < source.length && highlightCount < MAX_HIGHLIGHTS) {
             val currentChar = source[index]
 
-            if (currentChar == '0' && index + 1 < source.length &&
+            if (currentChar == '0' &&
+                index + 1 < source.length &&
                 (source[index + 1] == 'x' || source[index + 1] == 'X')
             ) {
                 val startLine = line

@@ -139,7 +139,6 @@ class GradleService : Service() {
 
                 val handle = withContext(Dispatchers.IO) {
                     GradleRunner.start(
-                        context = this@GradleService,
                         projectDir = projectDir,
                         args = args,
                         envOverrides = baseEnv

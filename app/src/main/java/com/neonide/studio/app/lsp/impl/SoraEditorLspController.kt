@@ -89,7 +89,14 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
 
         val lspEditor = try {
             p.getOrCreateEditor(file.absolutePath)
-        } catch (t: Throwable) {
+        } catch (t: IllegalStateException) {
+            Logger.logStackTraceWithMessage(
+                TAG,
+                "Failed to create LSP editor for ${file.absolutePath}",
+                t
+            )
+            return false
+        } catch (t: IllegalArgumentException) {
             Logger.logStackTraceWithMessage(
                 TAG,
                 "Failed to create LSP editor for ${file.absolutePath}",
@@ -125,19 +132,43 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                             }
                     }
                 }
-            } catch (t: Throwable) {
-                if (t !is kotlinx.coroutines.CancellationException) {
-                    Logger.logStackTraceWithMessage(
-                        TAG,
-                        "LSP connect failed for ${file.absolutePath}",
-                        t
-                    )
-                    if (current == lspEditor) {
-                        detach()
-                    } else {
-                        runCatching { lspEditor.dispose() }
-                    }
-                }
+            } catch (t: kotlinx.coroutines.CancellationException) {
+                throw t
+            } catch (t: IllegalStateException) {
+                Logger.logStackTraceWithMessage(
+                    TAG,
+                    "LSP connect failed for ${file.absolutePath}",
+                    t
+                )
+                cleanupFailedEditor(lspEditor, current)
+            } catch (t: java.io.IOException) {
+                Logger.logStackTraceWithMessage(
+                    TAG,
+                    "LSP connect failed (io) for ${file.absolutePath}",
+                    t
+                )
+                cleanupFailedEditor(lspEditor, current)
+            } catch (t: java.util.concurrent.ExecutionException) {
+                Logger.logStackTraceWithMessage(
+                    TAG,
+                    "LSP connect failed for ${file.absolutePath}",
+                    t
+                )
+                cleanupFailedEditor(lspEditor, current)
+            } catch (t: InterruptedException) {
+                Thread.currentThread().interrupt()
+                Logger.logStackTraceWithMessage(
+                    TAG,
+                    "LSP connect interrupted for ${file.absolutePath}",
+                    t
+                )
+            } catch (t: IllegalArgumentException) {
+                Logger.logStackTraceWithMessage(
+                    TAG,
+                    "LSP connect failed for ${file.absolutePath}",
+                    t
+                )
+                cleanupFailedEditor(lspEditor, current)
             }
         }
 
@@ -168,6 +199,15 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
         }
     }
 
+    private fun cleanupFailedEditor(failed: LspEditor?, active: LspEditor?) {
+        if (failed == null) return
+        if (failed == active) {
+            detach()
+        } else {
+            runCatching { failed.dispose() }
+        }
+    }
+
     override fun currentEditor(): LspEditor? = current
 
     override fun prefetchClassPath(projectPath: File) {
@@ -190,7 +230,7 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
     }
 
     private fun ensureServerDefinitions(project: LspProject) {
-        fun addIfAbsent(ext: String, name: String, factory: () -> LanguageServerDefinition) {
+        fun addIfAbsent(factory: () -> LanguageServerDefinition) {
             runCatching {
                 project.addServerDefinition(factory())
             }.onFailure { e ->
@@ -200,27 +240,25 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
             }
         }
 
-        addIfAbsent("java", "java") { ServerDefinitions.java(getServerDir("java-language-server")) }
-        addIfAbsent("kt", "kotlin") {
-            ServerDefinitions.`kotlin`(getServerDir("kotlin-language-server"))
-        }
-        addIfAbsent("xml", "xml") {
+        addIfAbsent { ServerDefinitions.java(getServerDir("java-language-server")) }
+        addIfAbsent { ServerDefinitions.kotlin(getServerDir("kotlin-language-server")) }
+        addIfAbsent {
             ServerDefinitions.xml(File(getServerDir("xml-language-server"), "lemminx-uber.jar"))
         }
-        addIfAbsent("json", "json") { ServerDefinitions.json(getServerDir("json-language-server")) }
+        addIfAbsent { ServerDefinitions.json(getServerDir("json-language-server")) }
         val jsDef = { ServerDefinitions.javascript(getServerDir("typescript-language-server")) }
-        addIfAbsent("js", "javascript", jsDef)
-        addIfAbsent("ts", "javascript", jsDef)
-        addIfAbsent("jsx", "javascript", jsDef)
-        addIfAbsent("tsx", "javascript", jsDef)
+        addIfAbsent(jsDef)
+        addIfAbsent(jsDef)
+        addIfAbsent(jsDef)
+        addIfAbsent(jsDef)
         val bashDef = { ServerDefinitions.bash(getServerDir("bash-language-server")) }
-        addIfAbsent("bash", "bash", bashDef)
-        addIfAbsent("sh", "bash", bashDef)
-        addIfAbsent("zsh", "bash", bashDef)
+        addIfAbsent(bashDef)
+        addIfAbsent(bashDef)
+        addIfAbsent(bashDef)
         val yamlDef = { ServerDefinitions.yaml(getServerDir("yaml-language-server")) }
-        addIfAbsent("yaml", "yaml", yamlDef)
-        addIfAbsent("yml", "yaml", yamlDef)
-        addIfAbsent("dart", "dart") { ServerDefinitions.dart() }
+        addIfAbsent(yamlDef)
+        addIfAbsent(yamlDef)
+        addIfAbsent { ServerDefinitions.dart() }
     }
 
     private fun getServerDir(id: String): File = File(context.filesDir, id)

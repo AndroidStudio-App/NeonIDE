@@ -42,22 +42,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
-import com.neonide.studio.app.EditorGradleManager
+import com.neonide.studio.app.EditorGradleController
 import com.neonide.studio.app.bottomsheet.BottomSheetTab
 import com.neonide.studio.app.bottomsheet.BottomSheetTabRow
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.utils.GradleBuildStatus
-import com.neonide.studio.utils.HexColorScanner
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
 import com.termux.shared.logger.Logger
 import com.termux.shared.termux.TermuxConstants
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
-import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
-import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
 import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
@@ -78,7 +75,7 @@ fun EditorScreen(
     activeFileState: MutableState<OpenFile?>,
     editorState: MutableState<CodeEditor?>,
     symbolInputView: SymbolInputView,
-    gradleManager: EditorGradleManager,
+    gradleController: EditorGradleController,
     languageProvider: SoraLanguageProvider,
     lspController: com.neonide.studio.app.lsp.EditorLspController,
     onOpenDrawer: () -> Unit
@@ -158,7 +155,12 @@ fun EditorScreen(
             }
             val ext = file.extension.lowercase()
             if (ext in
-                listOf("java", "kt", "kts", "xml", "yaml", "yml", "sh", "bash", "zsh", "json", "js", "ts", "jsx", "tsx", "dart")
+                listOf(
+                    "java", "kt", "kts", "dart",
+                    "xml", "json", "yaml", "yml",
+                    "js", "ts", "jsx", "tsx",
+                    "sh", "bash", "zsh"
+                )
             ) {
                 runCatching {
                     lspController.attach(editor, file, language, projectPath)
@@ -222,7 +224,6 @@ fun EditorScreen(
                 editor = editorState.value,
                 searchPanelVisible = searchState?.isVisible == true,
                 onSearchPanelToggle = { searchState?.toggle() },
-                onSearchActionMode = { searchState?.tryCommitSearch() },
                 onNavigationClick = onOpenDrawer,
                 onUndoClick = { editorState.value?.undo() },
                 onRedoClick = { editorState.value?.redo() },
@@ -239,10 +240,10 @@ fun EditorScreen(
                 buildVariant = buildVariant.value,
                 onBuildVariantChange = { buildVariant.value = it },
                 onBuildClick = {
-                    gradleManager.onQuickRunOrCancel(projectPath, buildVariant.value)
+                    gradleController.onQuickRunOrCancel(projectPath, buildVariant.value)
                     scope.launch { scaffoldState.bottomSheetState.expand() }
                 },
-                onSyncClick = { gradleManager.onSyncProject(projectPath) },
+                onSyncClick = { gradleController.onSyncProject(projectPath) },
                 onTerminalClick = {
                     runCatching {
                         context.startActivity(Intent(context, TermuxActivity::class.java))
@@ -274,7 +275,6 @@ fun EditorScreen(
 
             SoraEditor(
                 modifier = Modifier.weight(1f),
-                filePath = activeFileState.value?.path,
                 onEditorCreated = { editor ->
                     editorState.value = editor
                     symbolInputView.bindEditor(editor)
@@ -301,7 +301,9 @@ fun EditorScreen(
                             if (tooltip.isShowing) {
                                 tooltip.dismiss()
                             }
-                        } catch (e: Exception) { }
+                        } catch (e: IllegalStateException) {
+                            Logger.logDebug(TAG, "dismiss tooltip: ${e.message}")
+                        }
                     }
                     updatePositionText(editor, positionTextState)
                 }

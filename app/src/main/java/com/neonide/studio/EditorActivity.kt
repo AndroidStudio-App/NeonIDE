@@ -13,10 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
-import com.neonide.studio.app.EditorGradleManager
+import com.neonide.studio.app.EditorGradleController
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
 import com.neonide.studio.app.editor.SoraLanguageProvider
@@ -35,10 +34,30 @@ import kotlinx.coroutines.launch
 class EditorActivity : ComponentActivity() {
     companion object {
         const val EXTRA_PROJECT_DIR = "extra_project_dir"
-        private val SYMBOLS =
-            arrayOf("->", "{", "}", "(", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/", "<", ">", "[", "]", ":")
-        private val SYMBOL_INSERT_TEXT =
-            arrayOf("\t", "{}", "}", "()", ")", ",", ".", ";", "\"", "?", "+", "-", "*", "/", "<>", ">", "[]", "]", ":")
+        private val symbolMap = mapOf(
+            "->" to "\t",
+            "{" to "{}",
+            "}" to "}",
+            "(" to "()",
+            ")" to ")",
+            "," to ",",
+            "." to ".",
+            ";" to ";",
+            "\"" to "\"",
+            "?" to "?",
+            "+" to "+",
+            "-" to "-",
+            "*" to "*",
+            "/" to "/",
+            "<" to "<>",
+            ">" to ">",
+            "[" to "[]",
+            "]" to "]",
+            ":" to ":",
+            "::" to "::"
+        )
+        private val SYMBOLS = symbolMap.keys.toTypedArray()
+        private val SYMBOL_INSERT_TEXT = symbolMap.values.toTypedArray()
     }
 
     private val openFilesState = mutableStateOf<List<OpenFile>>(emptyList())
@@ -50,8 +69,8 @@ class EditorActivity : ComponentActivity() {
 
     private val languageProvider: SoraLanguageProvider by lazy { SoraLanguageProvider(this) }
     private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }
-    private val gradleManager: EditorGradleManager by lazy {
-        EditorGradleManager(this, bottomSheetVm)
+    private val gradleController: EditorGradleController by lazy {
+        EditorGradleController(this, bottomSheetVm)
     }
 
     private val symbolInputView by lazy {
@@ -123,7 +142,7 @@ class EditorActivity : ComponentActivity() {
                     activeFileState = activeFileState,
                     editorState = editorState,
                     symbolInputView = symbolInputView,
-                    gradleManager = gradleManager,
+                    gradleController = gradleController,
                     languageProvider = languageProvider,
                     lspController = lspController,
                     onOpenDrawer = { drawerLayout.openDrawer(Gravity.START) }
@@ -182,6 +201,5 @@ class EditorActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         runCatching { lspController.dispose() }
-        gradleManager.onDestroy()
     }
 }

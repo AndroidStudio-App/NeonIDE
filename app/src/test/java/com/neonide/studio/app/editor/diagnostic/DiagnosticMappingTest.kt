@@ -1,10 +1,7 @@
 package com.neonide.studio.app.editor.diagnostic
 
 import io.github.rosemoe.sora.lang.diagnostic.DiagnosticRegion
-import org.eclipse.lsp4j.Diagnostic
 import org.eclipse.lsp4j.DiagnosticSeverity
-import org.eclipse.lsp4j.Position
-import org.eclipse.lsp4j.Range
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

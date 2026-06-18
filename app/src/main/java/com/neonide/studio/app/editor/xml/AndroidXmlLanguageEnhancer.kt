@@ -364,7 +364,11 @@ class AndroidXmlLanguageEnhancer(private val base: Language, private val file: F
                                         id++,
                                         DiagnosticDetail(
                                             "XML",
-                                            if (node.isMissing()) "Missing token" else "Syntax error",
+                                            if (node.isMissing()) {
+                                                "Missing token"
+                                            } else {
+                                                "Syntax error"
+                                            },
                                             null,
                                             null
                                         )
@@ -698,7 +702,10 @@ private class XmlCompletionContext(
             while (i > 0) {
                 val c = line[i - 1]
                 val ok =
-                    MyCharacter.isJavaIdentifierPart(c) || c == ':' || c == '-' || c == '.' ||
+                    MyCharacter.isJavaIdentifierPart(c) ||
+                        c == ':' ||
+                        c == '-' ||
+                        c == '.' ||
                         c == '/' ||
                         c == '@'
                 if (!ok) break

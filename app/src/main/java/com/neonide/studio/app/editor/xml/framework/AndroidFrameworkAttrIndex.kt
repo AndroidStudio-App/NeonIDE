@@ -1,6 +1,5 @@
 package com.neonide.studio.app.editor.xml.framework
 
-import android.content.Context
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
@@ -14,7 +13,7 @@ object AndroidFrameworkAttrIndex {
 
     @Volatile private var cached: Set<String>? = null
 
-    fun ensureLoaded(context: Context): Boolean {
+    fun ensureLoaded(): Boolean {
         if (cached != null) return true
 
         synchronized(this) {

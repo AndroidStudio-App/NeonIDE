@@ -7,7 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -415,10 +414,16 @@ private fun createProject(
         }
         context.startActivity(intent)
         onSuccess()
-    } catch (t: Throwable) {
+    } catch (e: android.content.ActivityNotFoundException) {
         Toast.makeText(
             context,
-            t.message ?: context.getString(R.string.failed),
+            e.message ?: context.getString(R.string.failed),
+            Toast.LENGTH_LONG
+        ).show()
+    } catch (e: java.io.IOException) {
+        Toast.makeText(
+            context,
+            e.message ?: context.getString(R.string.failed),
             Toast.LENGTH_LONG
         ).show()
     }

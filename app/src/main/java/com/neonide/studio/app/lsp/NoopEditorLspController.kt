@@ -1,6 +1,7 @@
 package com.neonide.studio.app.lsp
 
 import io.github.rosemoe.sora.lang.Language
+import io.github.rosemoe.sora.lsp.editor.LspEditor
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.io.File
 
@@ -11,7 +12,7 @@ object NoopEditorLspController : EditorLspController {
         wrapperLanguage: Language,
         projectRoot: File?
     ): Boolean = false
-    override fun detach() {}
-    override fun dispose() {}
-    override fun currentEditor(): io.github.rosemoe.sora.lsp.editor.LspEditor? = null
+    override fun detach() = Unit
+    override fun dispose() = Unit
+    override fun currentEditor(): LspEditor? = null
 }

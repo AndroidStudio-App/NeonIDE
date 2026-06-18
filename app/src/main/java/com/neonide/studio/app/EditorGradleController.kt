@@ -1,7 +1,6 @@
 package com.neonide.studio.app
 
 import android.app.Activity
-import android.widget.Toast
 import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
@@ -17,85 +16,39 @@ class EditorGradleController(
     private val activity: Activity,
     private val bottomSheetVm: BottomSheetViewModel
 ) {
-    @Volatile var gradleRunning: Boolean = false
-        private set
-
-    private val gradleStatusListener: (Boolean) -> Unit = { isRunning ->
-        gradleRunning = isRunning
-    }
-
-    init {
-        GradleBuildStatus.addListener(gradleStatusListener)
-        gradleRunning = GradleBuildStatus.isRunning
-    }
-
-    fun onDestroy() {
-        GradleBuildStatus.removeListener(gradleStatusListener)
-    }
-
     fun onSyncProject(projectRoot: File) {
-        if (gradleRunning) {
+        if (GradleBuildStatus.isRunning) {
             GradleService.stopBuild(activity)
             return
         }
-
-        Toast.makeText(
-            activity,
-            activity.getString(R.string.sync_started),
-            Toast.LENGTH_SHORT
-        ).show()
         val plan = GradleProjectActions.createSyncPlan()
-        runGradle(
+        BuildOutputBuffer.clear()
+        bottomSheetVm.setDiagnostics(emptyList())
+        GradleService.startBuild(
+            context = activity,
             projectDir = projectRoot,
             args = plan.args,
             actionLabel = activity.getString(R.string.sync_project),
-            installApkOnSuccess = false
+            installOnSuccess = false,
+            logFilePath = File(activity.filesDir, "gradle-build.log").absolutePath
         )
     }
 
     fun onQuickRunOrCancel(projectRoot: File, variant: String = "debug") {
-        if (gradleRunning) {
+        if (GradleBuildStatus.isRunning) {
             GradleService.stopBuild(activity)
-            gradleRunning = false
             return
         }
-
-        Toast.makeText(
-            activity,
-            activity.getString(R.string.build_started),
-            Toast.LENGTH_SHORT
-        ).show()
-
         val plan = GradleProjectActions.createQuickRunPlan(projectRoot, variant)
-        runGradle(
-            projectDir = projectRoot,
-            args = plan.args,
-            actionLabel = activity.getString(R.string.quick_run),
-            installApkOnSuccess = true,
-            variant = variant
-        )
-    }
-
-    private fun runGradle(
-        projectDir: File,
-        args: List<String>,
-        actionLabel: String,
-        installApkOnSuccess: Boolean,
-        variant: String = "debug"
-    ) {
-        gradleRunning = true
-
-        bottomSheetVm.setStatus("$actionLabel: ${activity.getString(R.string.status_building)}")
-
+        val actionLabel = activity.getString(R.string.quick_run)
         BuildOutputBuffer.clear()
         bottomSheetVm.setDiagnostics(emptyList())
-
         GradleService.startBuild(
             context = activity,
-            projectDir = projectDir,
-            args = args,
+            projectDir = projectRoot,
+            args = plan.args,
             actionLabel = actionLabel,
-            installOnSuccess = installApkOnSuccess,
+            installOnSuccess = true,
             variant = variant,
             logFilePath = File(activity.filesDir, "gradle-build.log").absolutePath
         )

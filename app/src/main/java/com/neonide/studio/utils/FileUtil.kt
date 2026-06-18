@@ -3,8 +3,11 @@ package com.neonide.studio.utils
 import android.net.Uri
 import android.os.Environment
 import android.provider.DocumentsContract
+import com.termux.shared.logger.Logger
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
+
+private const val TAG = "FileUtil"
 
 object FileUtil {
     const val INTERNAL_AUTHORITY = "com.neonide.studio.documents"
@@ -40,6 +43,7 @@ object FileUtil {
             }
         } catch (e: IllegalArgumentException) {
             // Not a tree URI
+            Logger.logDebug(TAG, "resolveUriToFile failed: ${e.message}")
         }
         return result
     }

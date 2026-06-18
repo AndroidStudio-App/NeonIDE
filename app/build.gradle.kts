@@ -1,9 +1,10 @@
-import java.math.BigInteger
-import java.security.MessageDigest
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin.serialization)
 }
 
@@ -109,12 +110,34 @@ android {
     }
     androidComponents {
         onVariants(selector().all()) { variant ->
-            val appname = "NeonIDE-v${variant.outputs.first().versionName.get()}-${variant.buildType}.apk"
+            val version = variant.outputs.first().versionName.get()
+            val buildType = variant.buildType
+            val appname = "NeonIDE-v$version-$buildType.apk"
             variant.outputs.forEach { output ->
                 output.outputFileName.set(appname)
             }
         }
     }
+}
+ktlint {
+    android.set(true)
+    ignoreFailures.set(false)
+    reporters {
+        reporter(ReporterType.PLAIN)
+        reporter(ReporterType.HTML)
+    }
+}
+
+detekt {
+    config.setFrom(files("config/detekt/detekt.yml"))
+    allRules = true
+    autoCorrect = true
+}
+
+tasks.named("preBuild") {
+    dependsOn(":app:ktlintFormat")
+    dependsOn(":app:ktlintCheck")
+    dependsOn(":app:detekt")
 }
 
 dependencies {

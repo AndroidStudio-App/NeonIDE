@@ -41,7 +41,6 @@ fun EditorTopBar(
     editor: CodeEditor?,
     searchPanelVisible: Boolean,
     onSearchPanelToggle: () -> Unit,
-    onSearchActionMode: () -> Unit,
     onNavigationClick: () -> Unit,
     onUndoClick: () -> Unit,
     onRedoClick: () -> Unit,

@@ -37,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -47,7 +46,6 @@ import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
 import com.neonide.studio.extensions.ExtensionsScreen
 import com.neonide.studio.layout.GitLayout
-import com.neonide.studio.layout.GitLayoutState
 import com.neonide.studio.layout.GitViewModel
 import com.neonide.studio.layout.mainLayout
 import com.neonide.studio.logger.IDEFileLogger

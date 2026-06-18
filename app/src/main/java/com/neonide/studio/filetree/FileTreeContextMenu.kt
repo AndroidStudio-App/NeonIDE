@@ -167,7 +167,11 @@ private fun ContextMenuItem(
     enabled: Boolean = true,
     onClick: () -> Unit
 ) {
-    val textColor = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline
+    val textColor = if (enabled) {
+        MaterialTheme.colorScheme.onSurface
+    } else {
+        MaterialTheme.colorScheme.outline
+    }
 
     AppRow(
         modifier = Modifier

@@ -111,7 +111,9 @@ fun ExtensionsScreen(context: Context, onBack: () -> Unit) {
                 installedExtensions = parsed.extensions.filter {
                     manager.isExtensionInstalled(it)
                 }.map { it.id }.toSet()
-            } catch (e: Exception) {
+            } catch (e: java.io.IOException) {
+                error = "Failed to load: ${e.message}"
+            } catch (e: kotlinx.serialization.SerializationException) {
                 error = "Failed to load: ${e.message}"
             } finally {
                 isLoading = false
@@ -210,7 +212,8 @@ fun ExtensionsScreen(context: Context, onBack: () -> Unit) {
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        text = "Installation error: $installationError,Make sure you're connected to internet",
+                                        text = "Installation error: $installationError, " +
+                                            "Make sure you're connected to internet",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onErrorContainer
                                     )

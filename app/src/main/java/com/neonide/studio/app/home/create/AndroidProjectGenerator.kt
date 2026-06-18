@@ -145,7 +145,7 @@ object AndroidProjectGenerator {
         // Manifest
         writeText(
             File(srcMain, "AndroidManifest.xml"),
-            appManifest(applicationId, template.kind, writeThemes, name)
+            appManifest(applicationId, template.kind, writeThemes)
         )
 
         // Sources + resources per template
@@ -564,7 +564,11 @@ include(":app")
         val buildFeatures = if (enableCompose) {
             if (useKts) "buildFeatures { compose = true }" else "buildFeatures { compose true }"
         } else {
-            if (useKts) "buildFeatures { viewBinding = true }" else "buildFeatures { viewBinding true }"
+            if (useKts) {
+                "buildFeatures { viewBinding = true }"
+            } else {
+                "buildFeatures { viewBinding true }"
+            }
         }
 
         val ndkVersionStr = if (enableNdkBuild) {
@@ -663,8 +667,7 @@ dependencies {
     private fun appManifest(
         appId: String,
         kind: ProjectTemplate.Kind,
-        writeThemes: Boolean,
-        projectName: String
+        writeThemes: Boolean
     ): String {
         val themeAttr = if (writeThemes) "@style/AppTheme" else "@android:style/Theme.DeviceDefault"
 

@@ -1,6 +1,7 @@
 package com.neonide.studio.extensions
 
 import android.content.Context
+import com.termux.shared.logger.Logger
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
 import java.net.HttpURLConnection
@@ -18,6 +19,7 @@ class ExtensionsManager(private val context: Context) {
     companion object {
         private const val PREFS_NAME = "extensions_sha_prefs"
         private const val KEY_SHA_PREFIX = "sha_"
+        private const val TAG = "ExtensionsManager"
     }
 
     private val prefs by lazy {
@@ -63,7 +65,8 @@ class ExtensionsManager(private val context: Context) {
      */
     fun isUpdateAvailable(extension: ExtensionEntry): Boolean {
         val installedSha = getInstalledSha256(extension.id)
-        return isExtensionInstalled(extension) && installedSha.isNotEmpty() &&
+        return isExtensionInstalled(extension) &&
+            installedSha.isNotEmpty() &&
             !installedSha.equals(extension.sha256, ignoreCase = true)
     }
 
@@ -140,7 +143,12 @@ class ExtensionsManager(private val context: Context) {
                 setInstalledSha256(extension.id, actualSha256)
 
                 Result.success(extensionDir.absolutePath)
-            } catch (e: Exception) {
+            } catch (e: java.io.IOException) {
+                Result.failure(e)
+            } catch (e: InterruptedException) {
+                Thread.currentThread().interrupt()
+                Result.failure(e)
+            } catch (e: java.util.concurrent.TimeoutException) {
                 Result.failure(e)
             }
         }
@@ -167,7 +175,11 @@ class ExtensionsManager(private val context: Context) {
                 }
                 prefs.edit().remove(KEY_SHA_PREFIX + extension.id).apply()
                 Result.success(Unit)
-            } catch (e: Exception) {
+            } catch (e: java.io.IOException) {
+                Result.failure(e)
+            } catch (e: java.io.FileNotFoundException) {
+                Result.failure(e)
+            } catch (e: IllegalArgumentException) {
                 Result.failure(e)
             }
         }
@@ -199,8 +211,13 @@ class ExtensionsManager(private val context: Context) {
                 return
             }
             process.destroyForcibly()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (e: java.io.IOException) {
+            Logger.logError(TAG, "unzip via unzip binary failed: ${e.message}")
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            Logger.logError(TAG, "unzip via unzip binary interrupted: ${e.message}")
+        } catch (e: java.util.concurrent.TimeoutException) {
+            Logger.logError(TAG, "unzip via unzip binary timed out: ${e.message}")
         }
         val canonicalTargetDir = targetDir.canonicalPath
         java.util.zip.ZipInputStream(zipFile.inputStream()).use { zip ->

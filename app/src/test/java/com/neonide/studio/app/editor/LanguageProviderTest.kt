@@ -1,7 +1,6 @@
 package com.neonide.studio.app.editor
 
 import io.github.rosemoe.sora.lang.EmptyLanguage
-import io.github.rosemoe.sora.lang.Language
 import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Test

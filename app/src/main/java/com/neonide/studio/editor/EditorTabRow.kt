@@ -68,7 +68,11 @@ fun EditorTabRow(
                                 }
                             },
                             text = {
-                                val displayText = if (file.isModified) "${file.name}*" else file.name
+                                val displayText = if (file.isModified) {
+                                    "${file.name}*"
+                                } else {
+                                    file.name
+                                }
                                 Text(displayText)
                             }
                         )

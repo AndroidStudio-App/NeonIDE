@@ -120,7 +120,9 @@ private fun TreeScope.CompactFileSystemNode(
                                 }
                             }
                             val color = when {
-                                index == 0 || index == segments.lastIndex -> MaterialTheme.colorScheme.onSurface
+                                index == 0 || index == segments.lastIndex ->
+                                    MaterialTheme.colorScheme.onSurface
+
                                 else -> MaterialTheme.colorScheme.onSurfaceVariant
                             }
                             withStyle(SpanStyle(color = color)) { append(segment) }

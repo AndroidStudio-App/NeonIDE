@@ -32,7 +32,7 @@ class SoraLanguageProvider(private val context: Context) {
             AndroidFrameworkAttrIndex.allAttrs().toList()
         }
         Thread {
-            AndroidFrameworkAttrIndex.ensureLoaded(context)
+            AndroidFrameworkAttrIndex.ensureLoaded()
         }.start()
     }
 
@@ -399,13 +399,12 @@ class SoraLanguageProvider(private val context: Context) {
 
         return TsLanguage(spec, tab = true) {
             // We don't have a dedicated logcat color scheme here; map priorities to existing colors.
-            TextStyle.makeStyle(EditorColorScheme.LITERAL) applyTo arrayOf(
-                "err.date", "err.time", "err.pid", "err.tid", "err.priority", "err.tag", "err.msg",
-                "warn.date", "warn.time", "warn.pid", "warn.tid", "warn.priority", "warn.tag", "warn.msg",
-                "info.date", "info.time", "info.pid", "info.tid", "info.priority", "info.tag", "info.msg",
-                "debug.date", "debug.time", "debug.pid", "debug.tid", "debug.priority", "debug.tag", "debug.msg",
-                "verbose.date", "verbose.time", "verbose.pid", "verbose.tid", "verbose.priority", "verbose.tag", "verbose.msg"
-            )
+            val logLevels = listOf("err", "warn", "info", "debug", "verbose")
+            val logFields = listOf("date", "time", "pid", "tid", "priority", "tag", "msg")
+            val logTokens = logLevels.flatMap { level ->
+                logFields.map { field -> "$level.$field" }
+            }.toTypedArray()
+            TextStyle.makeStyle(EditorColorScheme.LITERAL) applyTo logTokens
             TextStyle.makeStyle(EditorColorScheme.KEYWORD) applyTo arrayOf("header")
             TextStyle.makeStyle(EditorColorScheme.TEXT_NORMAL) applyTo ""
         }

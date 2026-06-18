@@ -2,9 +2,6 @@ package com.neonide.studio.utils
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import com.termux.shared.net.uri.UriUtils
-import com.termux.shared.termux.TermuxConstants
 import java.io.File
 
 object ApkInstallUtils {
