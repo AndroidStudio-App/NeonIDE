@@ -36,10 +36,10 @@ import cafe.adriel.bonsai.core.Bonsai
 import cafe.adriel.bonsai.core.BonsaiStyle
 import cafe.adriel.bonsai.core.node.BranchNode
 import com.neonide.studio.R
-import com.neonide.studio.app.utils.SafeFileDeleter
 import com.neonide.studio.utils.ApkInstallUtils
 import com.neonide.studio.utils.Divider.horizontalDivider
 import com.neonide.studio.utils.PersistedBoolean
+import com.neonide.studio.utils.SafeFileDeleter
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -267,13 +267,13 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
             tree.clearSelection()
         },
         onNewFile = {
-            val parentPath = if (it.isDirectory) it.path else (it.path.parent ?: it.path)
+            val parentPath = if (it.isDirectory) it.path else it.path.parent ?: it.path
             inlineMode = InlineMode.NewFile(parentPath)
             inlineText = ""
             inlineError = null
         },
         onNewDirectory = {
-            val parentPath = if (it.isDirectory) it.path else (it.path.parent ?: it.path)
+            val parentPath = if (it.isDirectory) it.path else it.path.parent ?: it.path
             inlineMode = InlineMode.NewDirectory(parentPath)
             inlineText = ""
             inlineError = null
@@ -286,7 +286,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
         },
         onPaste = {
             val clip = clipboard ?: return@FileTreeContextMenu
-            val targetDir = if (it.isDirectory) it.path else (it.path.parent ?: it.path)
+            val targetDir = if (it.isDirectory) it.path else it.path.parent ?: it.path
             performPaste(clip, targetDir)
             clipboard = null
             refreshTrigger++

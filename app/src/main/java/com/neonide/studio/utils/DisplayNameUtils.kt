@@ -1,4 +1,4 @@
-package com.neonide.studio.app.utils
+package com.neonide.studio.utils
 
 /**
  * Utilities for safely displaying arbitrary file names/paths in UI.

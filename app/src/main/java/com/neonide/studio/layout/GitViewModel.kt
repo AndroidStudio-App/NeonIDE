@@ -251,7 +251,7 @@ class GitViewModel(application: Application) : AndroidViewModel(application) {
                         progressPercent = if (totalWork >
                             0
                         ) {
-                            (completedWork * 100) / totalWork
+                            completedWork * 100 / totalWork
                         } else {
                             0
                         },

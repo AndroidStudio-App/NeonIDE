@@ -2545,29 +2545,5 @@ val Typography = Typography(
         letterSpacing = 0.5.sp)
 )
 """
-
-    // ----------------- misc -----------------
-
-    private fun gitignore() = """
-        .gradle/
-        build/
-        local.properties
-        *.iml
-        .idea/
-        .DS_Store
-    """.trimIndent() + "\n"
-
-    private fun gradlewSh() = """
-        #!/usr/bin/env sh
-        DIR="${'$'}(cd "${'$'}(dirname "${'$'}0")" && pwd)"
-        exec java -jar "${'$'}DIR/gradle/wrapper/gradle-wrapper.jar" "${'$'}@"
-    """.trimIndent() + "\n"
-
-    private fun gradlewBat() = """
-        @echo off
-        set DIR=%~dp0
-        java -jar "%DIR%\\gradle\\wrapper\\gradle-wrapper.jar" %*
-    """.trimIndent() + "\n"
-
     private fun sanitizeName(name: String) = name.ifBlank { "App" }
 }

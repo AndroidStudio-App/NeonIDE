@@ -31,7 +31,7 @@ object GradleRunner {
         val cmd = listOf(
             File(TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH, "bash").absolutePath,
             "-c",
-            "source $bashrcPath && ${gradlew.absolutePath} ${(args).joinToString(" ")}"
+            "source $bashrcPath && ${gradlew.absolutePath} ${args.joinToString(" ")}"
         )
 
         val pb = ProcessBuilder(cmd)

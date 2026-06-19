@@ -1,4 +1,4 @@
-package com.neonide.studio.app.utils
+package com.neonide.studio.utils
 
 import java.io.File
 

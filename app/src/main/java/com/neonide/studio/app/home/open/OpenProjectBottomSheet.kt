@@ -39,8 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
-import com.neonide.studio.app.utils.DisplayNameUtils
-import com.neonide.studio.app.utils.SafeDirLister
 import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppIconButton
@@ -50,6 +48,8 @@ import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppLazyColumn
 import com.neonide.studio.ui.layout.AppRow
+import com.neonide.studio.utils.DisplayNameUtils
+import com.neonide.studio.utils.SafeDirLister
 import com.neonide.studio.utils.rememberDirectoryLauncher
 import com.termux.shared.termux.TermuxConstants
 import java.io.File

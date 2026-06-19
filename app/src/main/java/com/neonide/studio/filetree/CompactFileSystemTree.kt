@@ -119,11 +119,10 @@ private fun TreeScope.CompactFileSystemNode(
                                     append(".")
                                 }
                             }
-                            val color = when {
-                                index == 0 || index == segments.lastIndex ->
-                                    MaterialTheme.colorScheme.onSurface
-
-                                else -> MaterialTheme.colorScheme.onSurfaceVariant
+                            val color = if (index == 0 || index == segments.lastIndex) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
                             }
                             withStyle(SpanStyle(color = color)) { append(segment) }
                         }

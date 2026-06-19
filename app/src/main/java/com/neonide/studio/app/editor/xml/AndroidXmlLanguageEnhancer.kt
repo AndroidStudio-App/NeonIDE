@@ -520,7 +520,7 @@ private object AndroidXmlCompletions {
 
     fun attributeNames(prefix: String): List<String> {
         val raw = prefix.trim()
-        if (raw.isBlank()) return (XMLNS_ATTRS + COMMON_ATTRS)
+        if (raw.isBlank()) return XMLNS_ATTRS + COMMON_ATTRS
 
         val p = raw.lowercase()
 
@@ -660,7 +660,7 @@ private class XmlCompletionContext(
                 }
             }
 
-            val insideTag = (lastLtIndex != -1) && (lastGtIndex == -1 || lastLtIndex > lastGtIndex)
+            val insideTag = lastLtIndex != -1 && (lastGtIndex == -1 || lastLtIndex > lastGtIndex)
 
             if (insideTag) {
                 // Text from '<' (excluded) to cursor. We build it from the content to support multi-line tags.

@@ -31,7 +31,7 @@ fun SoraEditor(modifier: Modifier = Modifier, onEditorCreated: (CodeEditor) -> U
                 typefaceText = Typeface.MONOSPACE
                 props.stickyScroll = true
                 props.overScrollEnabled = true
-                props.cancelCompletionNs = 150 * 1000000L // 150ms
+                props.cancelCompletionNs = 150 * 1_000_000L // 150ms
                 isCursorAnimationEnabled = true
                 nonPrintablePaintingFlags =
                     CodeEditor.FLAG_DRAW_WHITESPACE_LEADING or

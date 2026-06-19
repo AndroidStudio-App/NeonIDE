@@ -95,10 +95,7 @@ object EditorDialogs {
         val themeName = if (savedTheme in themeKeys.indices) {
             themeKeys[savedTheme]
         } else {
-            val isDark = (
-                context.resources.configuration.uiMode and
-                    Configuration.UI_MODE_NIGHT_MASK
-                ) == Configuration.UI_MODE_NIGHT_YES
+            val isDark = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
             if (isDark) "darcula" else "quietlight"
         }
         ThemeRegistry.getInstance().setTheme(themeName)

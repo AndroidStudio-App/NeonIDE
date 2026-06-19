@@ -104,8 +104,8 @@ class ExtensionsManager(private val context: Context) {
 
                 URL(extension.url).openConnection().let { connection ->
                     val httpConnection = connection as HttpURLConnection
-                    httpConnection.connectTimeout = 10000
-                    httpConnection.readTimeout = 10000
+                    httpConnection.connectTimeout = 10_000
+                    httpConnection.readTimeout = 10_000
                     httpConnection.setRequestProperty("User-Agent", "NeonIDE-Extensions/1.0")
                     httpConnection.connect()
                     httpConnection.inputStream.use { input ->

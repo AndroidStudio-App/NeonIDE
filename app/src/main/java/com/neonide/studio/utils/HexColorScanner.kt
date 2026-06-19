@@ -133,7 +133,7 @@ object HexColorScanner {
      */
     private fun scanHexDigits(source: String, start: Int): Int {
         var end = start
-        while (end < source.length && isHexDigit(source[end]) && (end - start) < MAX_HEX_DIGITS) {
+        while (end < source.length && isHexDigit(source[end]) && end - start < MAX_HEX_DIGITS) {
             end++
         }
         return end
