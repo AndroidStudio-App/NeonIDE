@@ -110,6 +110,7 @@
     <string name="create_project_error_dir_exists">Directory already exists</string>
     <string name="create_project_success">Project created successfully</string>
     <string name="err_invalid_picked_dir">Invalid directory selected</string>
+    <string name="compose_requires_kotlin">Jetpack Compose requires Kotlin</string>
 
     <!-- Template names & descriptions -->
     <string name="tpl_no_activity_name">No Activity</string>

@@ -169,6 +169,13 @@ class SoraEditorLspController(private val context: Context) : EditorLspControlle
                     t
                 )
                 cleanupFailedEditor(lspEditor, current)
+            } catch (t: java.util.concurrent.TimeoutException) {
+                Logger.logStackTraceWithMessage(
+                    TAG,
+                    "LSP connect timed out for ${file.absolutePath}",
+                    t
+                )
+                cleanupFailedEditor(lspEditor, current)
             }
         }
 

@@ -23,6 +23,8 @@ fun DropdownField(
     options: List<String>,
     selectedOption: String,
     onOptionSelected: (String) -> Unit,
+    isError: Boolean = false,
+    supportingText: String? = null,
     leadingIcon: Painter? = null,
     modifier: Modifier = Modifier.fillMaxWidth()
 ) {
@@ -39,6 +41,8 @@ fun DropdownField(
             readOnly = true,
             label = label,
             leadingIcon = leadingIcon,
+            isError = isError,
+            supportingText = supportingText,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable, true)

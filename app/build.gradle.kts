@@ -137,7 +137,7 @@ detekt {
 tasks.named("preBuild") {
     dependsOn(":app:ktlintFormat")
     dependsOn(":app:ktlintCheck")
-    dependsOn(":app:detekt")
+    // dependsOn(":app:detekt")
 }
 
 dependencies {

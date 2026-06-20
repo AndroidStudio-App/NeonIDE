@@ -75,6 +75,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
     var projectNameError by remember { mutableStateOf<String?>(null) }
     var packageNameError by remember { mutableStateOf<String?>(null) }
     var saveLocationError by remember { mutableStateOf<String?>(null) }
+    var languageError by remember { mutableStateOf<String?>(null) }
 
     val templates = remember { ProjectTemplateRegistry.all() }
 
@@ -120,6 +121,14 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
             valid = false
         } else {
             saveLocationError = null
+        }
+        if (selectedTemplate?.kind == ProjectTemplate.Kind.COMPOSE_ACTIVITY &&
+            !language.equals("Kotlin", ignoreCase = true)
+        ) {
+            languageError = context.getString(R.string.compose_requires_kotlin)
+            valid = false
+        } else {
+            languageError = null
         }
 
         return valid
@@ -266,12 +275,17 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         label = stringResource(id = R.string.language),
                         options = listOf("Kotlin", "Java"),
                         selectedOption = language,
-                        onOptionSelected = { language = it },
+                        onOptionSelected = {
+                            language = it
+                            useKts = it.equals("Kotlin")
+                        },
                         leadingIcon = if (language == "Java") {
                             painterResource(id = R.drawable.ic_filetype_java)
                         } else {
                             painterResource(id = R.drawable.ic_filetype_kotlin)
                         },
+                        isError = languageError != null,
+                        supportingText = languageError,
                         modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                     )
 
@@ -392,7 +406,7 @@ private fun createProject(
     val projectDir = File(base, name)
 
     try {
-        AndroidProjectGenerator.generate(
+        CreateTemplate(
             context = context,
             template = tpl,
             projectDir = projectDir,
