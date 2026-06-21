@@ -125,7 +125,7 @@
     <string name="tpl_nav_drawer_activity_desc">Activity with a navigation drawer</string>
     <string name="tpl_bottom_nav_activity_name">Bottom Navigation</string>
     <string name="tpl_bottom_nav_activity_desc">Activity with bottom navigation</string>
-    <string name="tpl_tabbed_activity_name">Tabbed Activity</string>
+    <string name="tpl_tabbed_activity_name">Tab Activity</string>
     <string name="tpl_tabbed_activity_desc">Activity with tabs</string>
     <string name="tpl_no_androidx_activity_name">No AndroidX Activity</string>
     <string name="tpl_no_androidx_activity_desc">Activity without AndroidX dependencies</string>

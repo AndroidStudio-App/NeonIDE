@@ -410,7 +410,7 @@ private fun createProject(
             context = context,
             template = tpl,
             projectDir = projectDir,
-            applicationId = pkg,
+            appId = pkg,
             minSdk = minSdk.toIntOrNull() ?: 21,
             language = lang,
             useKts = useKts

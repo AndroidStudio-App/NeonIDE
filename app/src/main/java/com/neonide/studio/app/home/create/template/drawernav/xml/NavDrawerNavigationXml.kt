@@ -1,11 +1,11 @@
 package com.neonide.studio.app.home.create.template.drawernav.xml
 
-fun NavDrawerNavigationXml(pkg: String, navGraphName: String) = """
+fun NavDrawerNavigationXml(pkg: String) = """
     <?xml version="1.0" encoding="utf-8"?>
     <navigation xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/$navGraphName"
+        android:id="@+id/mobile_navigation"
         app:startDestination="@+id/nav_home">
 
         <fragment
