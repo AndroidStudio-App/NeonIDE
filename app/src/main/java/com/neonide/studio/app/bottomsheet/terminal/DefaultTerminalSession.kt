@@ -1,14 +1,26 @@
-package com.neonide.studio.app.bottomsheet
+package com.neonide.studio.app.bottomsheet.terminal
 
+import android.content.Context
+import com.termux.shared.interact.ShareUtils
 import com.termux.terminal.TerminalSession
 import com.termux.terminal.TerminalSessionClient
 
-internal object DefaultTerminalSession : TerminalSessionClient {
+internal class DefaultTerminalSession(private val context: Context) : TerminalSessionClient {
     override fun onTextChanged(session: TerminalSession) {}
     override fun onTitleChanged(session: TerminalSession) {}
     override fun onSessionFinished(session: TerminalSession) {}
-    override fun onCopyTextToClipboard(session: TerminalSession, text: String) {}
-    override fun onPasteTextFromClipboard(session: TerminalSession?) {}
+
+    override fun onCopyTextToClipboard(session: TerminalSession, text: String) {
+        ShareUtils.copyTextToClipboard(context, text)
+    }
+
+    override fun onPasteTextFromClipboard(session: TerminalSession?) {
+        val text = ShareUtils.getTextStringFromClipboardIfSet(context, true)
+        if (text != null && session != null) {
+            session.emulator.paste(text)
+        }
+    }
+
     override fun onBell(session: TerminalSession) {}
     override fun onColorsChanged(session: TerminalSession) {}
     override fun onTerminalCursorStateChange(state: Boolean) {}

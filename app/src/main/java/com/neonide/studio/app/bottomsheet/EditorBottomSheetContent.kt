@@ -4,42 +4,55 @@ import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.neonide.studio.R
+import com.neonide.studio.app.bottomsheet.terminal.TerminalTab
+import com.neonide.studio.ui.components.AppIcon
+import com.neonide.studio.ui.layout.AppBox
+import com.neonide.studio.ui.layout.AppColumn
+import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.GradleBuildStatus
 import com.termux.shared.logger.Logger
+import com.termux.terminal.TerminalSession
 import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 enum class BottomSheetTab(val title: String) {
     BUILD_OUTPUT("Build Output"),
@@ -127,30 +140,79 @@ object BuildOutputBuffer {
 
 @Composable
 fun BottomSheetTabRow(
-    pagerState: PagerState,
+    selectedTab: Int,
     tabs: List<BottomSheetTab>,
+    onTabSelected: (Int) -> Unit,
+    onOpenTerminal: () -> Unit,
+    onCloseTerminal: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
+    var showMenu by remember { mutableStateOf(false) }
+    var showCloseMenu by remember { mutableStateOf(false) }
 
-    TabRow(
-        selectedTabIndex = pagerState.currentPage,
-        containerColor = Color.Transparent,
-        divider = {},
-        modifier = modifier
+    AppRow(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        tabs.forEachIndexed { index, tab ->
-            Tab(
-                selected = pagerState.currentPage == index,
-                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                text = {
-                    Text(
-                        text = tab.title,
-                        fontSize = 12.sp,
-                        maxLines = 1
-                    )
+        TabRow(
+            selectedTabIndex = selectedTab,
+            containerColor = Color.Transparent,
+            divider = {},
+            modifier = Modifier.weight(1f)
+        ) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = selectedTab == index,
+                    onClick = { onTabSelected(index) },
+                    text = {
+                        AppRow(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = tab.title,
+                                fontSize = 12.sp,
+                                maxLines = 1
+                            )
+                            if (tab == BottomSheetTab.TERMINAL) {
+                                IconButton(
+                                    onClick = { showCloseMenu = true },
+                                    modifier = Modifier.size(18.dp).padding(start = 4.dp)
+                                ) {
+                                    Text("×")
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = showCloseMenu,
+            onDismissRequest = { showCloseMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.close)) },
+                onClick = {
+                    onCloseTerminal()
+                    showCloseMenu = false
                 }
             )
+        }
+        IconButton(onClick = { showMenu = true }) {
+            AppIcon(
+                painter = painterResource(R.drawable.ic_menu_kebab),
+                tint = LocalContentColor.current
+            )
+            DropdownMenu(
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.open_terminal)) },
+                    onClick = {
+                        onOpenTerminal()
+                        showMenu = false
+                    }
+                )
+            }
         }
     }
 }
@@ -169,42 +231,92 @@ private fun rememberGradleRunning(): Boolean {
 @Composable
 fun EditorBottomSheetContent(
     viewModel: BottomSheetViewModel,
-    pagerState: PagerState,
     projectPath: String,
     modifier: Modifier = Modifier
 ) {
-    val tabs = BottomSheetTab.entries
+    val tabs = remember { mutableStateListOf(BottomSheetTab.BUILD_OUTPUT) }
     val selectedTab by viewModel.selectedTab.observeAsState(0)
 
-    LaunchedEffect(selectedTab) {
-        if (pagerState.currentPage != selectedTab) {
-            pagerState.animateScrollToPage(selectedTab)
+    val coroutineScope = rememberCoroutineScope()
+
+    val buildOutputPage = remember {
+        movableContentOf {
+            LogViewerPage(
+                viewModel.buildOutput.observeAsState("").value
+            )
         }
     }
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .distinctUntilChanged()
-            .collect { page -> viewModel.setSelectedTab(page) }
+    val activeTerminalSession = remember { mutableStateOf<TerminalSession?>(null) }
+    var terminalSessionId by remember { mutableStateOf(0) }
+
+    val terminalPage = remember {
+        movableContentOf {
+            TerminalTab(
+                projectPath = projectPath,
+                sessionId = terminalSessionId,
+                sessionHolder = activeTerminalSession,
+                onSessionExit = {
+                    tabs.remove(BottomSheetTab.TERMINAL)
+                    viewModel.setSelectedTab(0)
+                }
+            )
+        }
     }
 
-    Column(modifier = modifier.fillMaxSize().navigationBarsPadding()) {
+    AppColumn(modifier = modifier.fillMaxSize().navigationBarsPadding()) {
         val gradleRunning = rememberGradleRunning()
         if (gradleRunning) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize(),
-            userScrollEnabled = false
-        ) { page ->
-            when (tabs[page]) {
-                BottomSheetTab.BUILD_OUTPUT -> LogViewerPage(
-                    viewModel.buildOutput.observeAsState("").value
-                )
+        BottomSheetTabRow(
+            selectedTab = selectedTab,
+            tabs = tabs,
+            onTabSelected = { viewModel.setSelectedTab(it) },
+            onOpenTerminal = {
+                if (!tabs.contains(BottomSheetTab.TERMINAL)) {
+                    terminalSessionId++
+                    tabs.add(BottomSheetTab.TERMINAL)
+                    viewModel.setSelectedTab(tabs.size - 1)
+                }
+            },
+            onCloseTerminal = {
+                activeTerminalSession.value?.let { session ->
+                    // Attempt to bypass "[Process completed - press Enter]"
+                    try {
+                        session.emulator.paste("\r")
+                    } catch (e: Exception) {
+                        // Ignore
+                    }
+                    session.finishIfRunning()
+                }
+                activeTerminalSession.value = null
+                tabs.remove(BottomSheetTab.TERMINAL)
+                viewModel.setSelectedTab(0)
+            }
+        )
 
-                BottomSheetTab.TERMINAL -> TerminalTab(projectPath)
+        val isTerminalSelected = tabs.getOrNull(selectedTab) == BottomSheetTab.TERMINAL
+
+        AppBox(modifier = Modifier.fillMaxSize()) {
+            AppBox(
+                modifier = Modifier.fillMaxSize().graphicsLayer {
+                    alpha =
+                        if (isTerminalSelected) 0f else 1f
+                }
+            ) {
+                buildOutputPage()
+            }
+            if (tabs.contains(BottomSheetTab.TERMINAL)) {
+                AppBox(
+                    modifier = Modifier.fillMaxSize().graphicsLayer {
+                        alpha =
+                            if (isTerminalSelected) 1f else 0f
+                    }
+                ) {
+                    terminalPage()
+                }
             }
         }
     }

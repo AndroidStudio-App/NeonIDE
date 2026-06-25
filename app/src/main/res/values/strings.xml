@@ -232,4 +232,8 @@
     <string name="enable_global_properties">Enable global properties</string>
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
+    
+    <!-- Editor bottom -->
+    <string name="open_terminal">Open Terminal</string>
+    <string name="close">Close</string>
 </resources>

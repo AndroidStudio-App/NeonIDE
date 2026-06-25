@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.MaterialTheme
@@ -44,7 +43,6 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.app.EditorGradleController
 import com.neonide.studio.app.bottomsheet.BottomSheetTab
-import com.neonide.studio.app.bottomsheet.BottomSheetTabRow
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.app.editor.SoraLanguageProvider
@@ -84,7 +82,6 @@ fun EditorScreen(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val tabs = BottomSheetTab.entries
-    val pagerState = rememberPagerState { tabs.size }
 
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val peekHeight = 15.dp + navBarHeight
@@ -211,13 +208,11 @@ fun EditorScreen(
                 Box(modifier = Modifier.padding(bottom = 0.dp).offset(y = (-15).dp)) {
                     BottomSheetDefaults.DragHandle()
                 }
-                BottomSheetTabRow(pagerState = pagerState, tabs = tabs)
             }
         },
         sheetContent = {
             EditorBottomSheetContent(
                 viewModel = bottomSheetVm,
-                pagerState = pagerState,
                 projectPath = projectPath.absolutePath
             )
         },
