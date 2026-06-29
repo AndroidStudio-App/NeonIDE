@@ -5,7 +5,9 @@ import io.github.rosemoe.sora.lang.Language
 import java.io.File
 
 class LanguageProvider(
+    // Tree Sitter
     private val tsFactory: (String) -> Language?,
+    // TextMate Grammar
     private val tmFactory: (String) -> Language?
 ) {
     fun getLanguage(file: File): Language {
