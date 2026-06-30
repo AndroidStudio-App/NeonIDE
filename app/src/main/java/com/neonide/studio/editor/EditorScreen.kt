@@ -6,9 +6,7 @@ import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -36,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -188,21 +187,16 @@ fun EditorScreen(
         sheetSwipeEnabled = false,
         sheetDragHandle = {
             Column(
-                modifier = Modifier.draggable(
-                    state = rememberDraggableState { delta ->
-                        if (delta > 0 &&
-                            scaffoldState.bottomSheetState.currentValue == SheetValue.Expanded
-                        ) {
-                            scope.launch { scaffoldState.bottomSheetState.partialExpand() }
-                        } else if (delta < 0 &&
-                            scaffoldState.bottomSheetState.currentValue ==
-                            SheetValue.PartiallyExpanded
-                        ) {
+                modifier = Modifier.fillMaxWidth().pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        change.consume()
+                        if (dragAmount.y < -0) {
                             scope.launch { scaffoldState.bottomSheetState.expand() }
+                        } else if (dragAmount.y > 0) {
+                            scope.launch { scaffoldState.bottomSheetState.partialExpand() }
                         }
-                    },
-                    orientation = Orientation.Vertical
-                ),
+                    }
+                },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(modifier = Modifier.padding(bottom = 0.dp).offset(y = (-15).dp)) {
