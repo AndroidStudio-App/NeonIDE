@@ -43,7 +43,6 @@ class GradleService : Service() {
         const val EXTRA_ARGS = "extra_args"
         const val EXTRA_ACTION_LABEL = "extra_action_label"
         const val EXTRA_INSTALL_ON_SUCCESS = "extra_install_on_success"
-        const val EXTRA_LOG_FILE_PATH = "extra_log_file_path"
         const val EXTRA_VARIANT = "extra_variant"
 
         fun startBuild(
@@ -52,8 +51,7 @@ class GradleService : Service() {
             args: List<String>,
             actionLabel: String,
             installOnSuccess: Boolean,
-            variant: String = "debug",
-            logFilePath: String? = null
+            variant: String = "debug"
         ) {
             val intent = Intent(context, GradleService::class.java).apply {
                 action = ACTION_START_BUILD
@@ -62,7 +60,6 @@ class GradleService : Service() {
                 putExtra(EXTRA_ACTION_LABEL, actionLabel)
                 putExtra(EXTRA_INSTALL_ON_SUCCESS, installOnSuccess)
                 putExtra(EXTRA_VARIANT, variant)
-                putExtra(EXTRA_LOG_FILE_PATH, logFilePath)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -92,7 +89,6 @@ class GradleService : Service() {
                 val actionLabel = intent.getStringExtra(EXTRA_ACTION_LABEL) ?: "Build"
                 val installOnSuccess = intent.getBooleanExtra(EXTRA_INSTALL_ON_SUCCESS, false)
                 val variant = intent.getStringExtra(EXTRA_VARIANT) ?: "debug"
-                val logFilePath = intent.getStringExtra(EXTRA_LOG_FILE_PATH)
 
                 if (projectDir != null && args != null) {
                     GradleBuildStatus.isRunning = true
@@ -102,8 +98,7 @@ class GradleService : Service() {
                         args,
                         actionLabel,
                         installOnSuccess,
-                        variant,
-                        logFilePath
+                        variant
                     )
                 } else {
                     stopSelf()
@@ -127,14 +122,11 @@ class GradleService : Service() {
         args: List<String>,
         actionLabel: String,
         installOnSuccess: Boolean,
-        variant: String,
-        logFilePath: String?
+        variant: String
     ) {
         currentJob?.cancel()
         currentJob = serviceScope.launch {
             try {
-                val logFile = logFilePath?.let { File(it) }
-
                 val baseEnv = getGradleEnvironment(this@GradleService)
 
                 val handle = withContext(Dispatchers.IO) {
@@ -143,7 +135,6 @@ class GradleService : Service() {
                         args = args,
                         envOverrides = baseEnv
                     ) { line ->
-                        logFile?.appendText(line + "\n")
                         BuildOutputBuffer.appendLine(line)
                     }
                 }

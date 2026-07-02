@@ -28,8 +28,7 @@ class EditorGradleController(
             projectDir = projectRoot,
             args = plan.args,
             actionLabel = activity.getString(R.string.sync_project),
-            installOnSuccess = false,
-            logFilePath = File(activity.filesDir, "gradle-build.log").absolutePath
+            installOnSuccess = false
         )
     }
 
@@ -47,8 +46,7 @@ class EditorGradleController(
             args = plan.args,
             actionLabel = actionLabel,
             installOnSuccess = true,
-            variant = variant,
-            logFilePath = File(activity.filesDir, "gradle-build.log").absolutePath
+            variant = variant
         )
     }
 }
