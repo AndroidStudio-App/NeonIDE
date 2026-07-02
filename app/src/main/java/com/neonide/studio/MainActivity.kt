@@ -42,13 +42,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.neonide.studio.app.home.create.CreateProjectBottomSheet
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
 import com.neonide.studio.extensions.ExtensionsScreen
 import com.neonide.studio.layout.GitLayout
 import com.neonide.studio.layout.GitViewModel
 import com.neonide.studio.layout.mainLayout
 import com.neonide.studio.logger.IDEFileLogger
+import com.neonide.studio.projectwizard.CreateProjectBottomSheet
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppIcon

@@ -1,7 +1,0 @@
-package com.neonide.studio.app.home.create.template.cppactivity.jni
-
-fun ApplicationMkFile(): String = """
-    APP_ABI := armeabi-v7a arm64-v8a x86 x86_64
-    APP_PLATFORM := android-21
-    APP_STL := c++_shared
-""".trimIndent()
