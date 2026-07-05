@@ -112,6 +112,18 @@
       "scopeName": "source.properties",
       "grammar": "textmate/properties/syntaxes/properties.tmLanguage.json",
       "languageConfiguration": "textmate/properties/language-configuration.json"
+    },
+    {
+      "name": "c",
+      "scopeName": "source.c",
+      "grammar": "textmate/c/syntaxes/c.tmLanguage.json",
+      "languageConfiguration": "textmate/c/language-configuration.json"
+    },
+    {
+      "name": "cpp",
+      "scopeName": "source.cpp",
+      "grammar": "textmate/cpp/syntaxes/cpp.tmLanguage.json",
+      "languageConfiguration": "textmate/cpp/language-configuration.json"
     }
   ]
 }

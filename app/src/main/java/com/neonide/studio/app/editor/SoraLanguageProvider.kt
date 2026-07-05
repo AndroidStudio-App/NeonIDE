@@ -91,6 +91,8 @@ class SoraLanguageProvider(private val context: Context) {
             "sh", "bash", "zsh" -> TextMateLanguage.create("source.shell", true)
             "dart" -> TextMateLanguage.create("source.dart", true)
             "properties" -> TextMateLanguage.create("source.properties", true)
+            "c" -> TextMateLanguage.create("source.c", true)
+            "cpp" -> TextMateLanguage.create("source.cpp", true)
             else -> null
         }
     }.getOrNull()
