@@ -2,8 +2,6 @@ package com.neonide.studio.app.bottomsheet
 
 import android.os.Handler
 import android.os.Looper
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -35,20 +33,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.neonide.studio.R
+import com.neonide.studio.app.bottomsheet.buildoutput.BuildTab
 import com.neonide.studio.app.bottomsheet.terminal.TerminalTab
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.GradleBuildStatus
-import com.termux.shared.logger.Logger
 import com.termux.terminal.TerminalSession
-import io.github.rosemoe.sora.widget.CodeEditor
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -241,7 +237,7 @@ fun EditorBottomSheetContent(
 
     val buildOutputPage = remember {
         movableContentOf {
-            LogViewerPage(
+            BuildTab(
                 viewModel.buildOutput.observeAsState("").value
             )
         }
@@ -320,75 +316,4 @@ fun EditorBottomSheetContent(
             }
         }
     }
-}
-
-private class LogState {
-    var lastLen = 0
-}
-
-@Composable
-private fun LogViewerPage(contentStream: String) {
-    val state = remember { LogState() }
-
-    AndroidView(
-        factory = { context ->
-            CodeEditor(context).apply {
-                layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-                setEditable(false)
-                setTextSize(12f)
-                setScalable(true)
-                setText("", true, null)
-                props.stickyScroll = true
-                props.overScrollEnabled = true
-                setInterceptParentHorizontalScrollIfNeeded(false)
-            }
-        },
-        update = { ed ->
-            val snapshot = contentStream
-
-            if (snapshot.isEmpty()) {
-                ed.setText("", true, null)
-                state.lastLen = 0
-                return@AndroidView
-            }
-
-            val delta = if (snapshot.length >= state.lastLen) {
-                snapshot.substring(state.lastLen)
-            } else {
-                state.lastLen = 0
-                ed.setText("", true, null)
-                snapshot
-            }
-
-            if (delta.isEmpty()) {
-                state.lastLen = snapshot.length
-                return@AndroidView
-            }
-
-            val toInsert = delta.replace("\r\n", "\n")
-
-            try {
-                val content = ed.text
-                val lastLine = content.lineCount - 1
-                val lastCol = content.getColumnCount(lastLine)
-
-                content.insert(lastLine, lastCol, toInsert)
-
-                val newLine = content.lineCount - 1
-                val newCol = content.getColumnCount(newLine)
-                ed.setSelection(newLine, newCol)
-            } catch (e: IllegalStateException) {
-                Logger.logDebug(BOTTOM_SHEET_TAG, "insert failed: ${e.message}")
-                runCatching {
-                    ed.setText(snapshot)
-                    val content = ed.text
-                    val lastLine = content.lineCount - 1
-                    ed.setSelection(lastLine, content.getColumnCount(lastLine))
-                }
-            }
-
-            state.lastLen = snapshot.length
-        },
-        modifier = Modifier.fillMaxSize()
-    )
 }

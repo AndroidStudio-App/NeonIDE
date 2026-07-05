@@ -24,6 +24,7 @@ import com.neonide.studio.editor.EditorScreen
 import com.neonide.studio.editor.EditorSettingsState
 import com.neonide.studio.filetree.FileTreeDrawer
 import com.neonide.studio.ui.theme.AppTheme
+import com.neonide.studio.utils.GradleService
 import com.neonide.studio.utils.OpenFile
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SymbolInputView
@@ -81,6 +82,7 @@ class EditorActivity : ComponentActivity() {
         val projectPath = File(intent.getStringExtra(EXTRA_PROJECT_DIR) ?: return)
 
         super.onCreate(savedInstanceState)
+        BuildOutputBuffer.clear()
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_editor)
@@ -201,5 +203,6 @@ class EditorActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         runCatching { lspController.dispose() }
+        runCatching { GradleService.stopBuild(this) }
     }
 }
