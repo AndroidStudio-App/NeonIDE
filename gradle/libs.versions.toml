@@ -37,7 +37,6 @@ monarch-json = "1.0.2"
 monarch-lang = "1.0.2"
 regex-oniguruma = "1.0.3"
 regex-re2j = "1.0.2"
-treesitter = "4.3.2"
 hiddenapibypass = "6.1"
 termux-am = "v2.0.0"
 jhighlight = "2.0.0"
@@ -114,18 +113,6 @@ monarch-language-pack = { group = "io.github.dingyi222666.monarch", name = "mona
 regex-oniguruma = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-oniguruma", version.ref = "regex-oniguruma" }
 regex-re2j = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-re2j", version.ref = "regex-re2j" }
 
-treesitter-core = { group = "com.itsaky.androidide.treesitter", name = "android-tree-sitter", version.ref = "treesitter" }
-treesitter-java = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-java", version.ref = "treesitter" }
-treesitter-kotlin = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-kotlin", version.ref = "treesitter" }
-treesitter-xml = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-xml", version.ref = "treesitter" }
-treesitter-aidl = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-aidl", version.ref = "treesitter" }
-treesitter-python = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-python", version.ref = "treesitter" }
-treesitter-c = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-c", version.ref = "treesitter" }
-treesitter-cpp = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-cpp", version.ref = "treesitter" }
-treesitter-json = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-json", version.ref = "treesitter" }
-treesitter-log = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-log", version.ref = "treesitter" }
-treesitter-properties = { group = "com.itsaky.androidide.treesitter", name = "tree-sitter-properties", version.ref = "treesitter" }
-treesitter-annotations = { group = "com.itsaky.androidide.treesitter", name = "annotations", version.ref = "treesitter" }
 
 lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }
 jgit = { group = "org.eclipse.jgit", name = "org.eclipse.jgit", version.ref = "jgit" }
@@ -136,7 +123,6 @@ rosemoe-editor-lsp = { group = "io.github.rosemoe", name = "editor-lsp", version
 rosemoe-language-java = { group = "io.github.rosemoe", name = "language-java", version.ref = "rosemoe-editor" }
 rosemoe-language-monarch = { group = "io.github.rosemoe", name = "language-monarch", version.ref = "rosemoe-editor" }
 rosemoe-language-textmate = { group = "io.github.rosemoe", name = "language-textmate", version.ref = "rosemoe-editor" }
-rosemoe-language-treesitter = { group = "io.github.rosemoe", name = "language-treesitter", version.ref = "rosemoe-editor" }
 rosemoe-oniguruma-native = { group = "io.github.rosemoe", name = "oniguruma-native", version.ref = "rosemoe-editor" }
 
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
@@ -151,8 +137,7 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 markwon = ["markwon-core", "markwon-strikethrough", "markwon-linkify", "markwon-recycler"]
 monarch = ["monarch-core", "monarch-json-loader", "monarch-language-pack"]
 regex = ["regex-oniguruma", "regex-re2j"]
-treesitter = ["treesitter-core", "treesitter-java", "treesitter-kotlin", "treesitter-xml", "treesitter-aidl", "treesitter-python", "treesitter-c", "treesitter-cpp", "treesitter-json", "treesitter-log", "treesitter-properties", "treesitter-annotations"]
-rosemoe = ["rosemoe-editor", "rosemoe-editor-lsp", "rosemoe-language-java", "rosemoe-language-monarch", "rosemoe-language-textmate", "rosemoe-language-treesitter", "rosemoe-oniguruma-native"]
+rosemoe = ["rosemoe-editor", "rosemoe-editor-lsp", "rosemoe-language-java", "rosemoe-language-monarch", "rosemoe-language-textmate", "rosemoe-oniguruma-native"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -5,26 +5,24 @@ import io.github.rosemoe.sora.lang.Language
 import java.io.File
 
 class LanguageProvider(
-    // Tree Sitter
-    private val tsFactory: (String) -> Language?,
     // TextMate Grammar
     private val tmFactory: (String) -> Language?
 ) {
     fun getLanguage(file: File): Language {
         val ext = file.extension.lowercase()
         return when (ext) {
-            "java" -> tsFactory("java") ?: tmFactory("java") ?: EmptyLanguage()
-            "kt", "kts" -> tsFactory("kotlin") ?: tmFactory("kotlin") ?: EmptyLanguage()
-            "xml" -> tsFactory("xml") ?: tmFactory("xml") ?: EmptyLanguage()
-            "json" -> tmFactory("json") ?: tsFactory("json") ?: EmptyLanguage()
-            "py" -> tsFactory("python") ?: tmFactory("python") ?: EmptyLanguage()
-            "c" -> tmFactory("c") ?: tsFactory("c") ?: EmptyLanguage()
-            "h" -> tmFactory("c") ?: tsFactory("c") ?: EmptyLanguage()
-            "cpp", "cc", "cxx" -> tmFactory("cpp") ?: tsFactory("cpp") ?: EmptyLanguage()
-            "hpp", "hh", "hxx" -> tmFactory("cpp") ?: tsFactory("cpp") ?: EmptyLanguage()
-            "properties" -> tmFactory("properties") ?: tsFactory("properties") ?: EmptyLanguage()
-            "log" -> tsFactory("log") ?: EmptyLanguage()
-            "aidl" -> tmFactory("aidl") ?: tsFactory("aidl") ?: EmptyLanguage()
+            "java" -> tmFactory("java") ?: EmptyLanguage()
+            "kt", "kts" -> tmFactory("kotlin") ?: EmptyLanguage()
+            "xml" -> tmFactory("xml") ?: EmptyLanguage()
+            "json" -> tmFactory("json") ?: EmptyLanguage()
+            "py" -> tmFactory("python") ?: EmptyLanguage()
+            "c" -> tmFactory("c") ?: EmptyLanguage()
+            "h" -> tmFactory("c") ?: EmptyLanguage()
+            "cpp", "cc", "cxx" -> tmFactory("cpp") ?: EmptyLanguage()
+            "hpp", "hh", "hxx" -> tmFactory("cpp") ?: EmptyLanguage()
+            "properties" -> tmFactory("properties") ?: EmptyLanguage()
+            "log" -> EmptyLanguage()
+            "aidl" -> tmFactory("aidl") ?: EmptyLanguage()
             "js" -> tmFactory("javascript") ?: EmptyLanguage()
             "jsx" -> tmFactory("javascriptreact") ?: EmptyLanguage()
             "html", "htm" -> tmFactory("html") ?: EmptyLanguage()

@@ -183,7 +183,6 @@ dependencies {
     implementation(libs.bundles.markwon)
     implementation(libs.bundles.monarch)
     implementation(libs.bundles.regex)
-    implementation(libs.bundles.treesitter)
     implementation(libs.bundles.rosemoe)
 
     implementation(libs.hiddenapibypass)
