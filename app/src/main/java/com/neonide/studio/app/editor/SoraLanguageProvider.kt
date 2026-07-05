@@ -93,6 +93,7 @@ class SoraLanguageProvider(private val context: Context) {
             "properties" -> TextMateLanguage.create("source.properties", true)
             "c" -> TextMateLanguage.create("source.c", true)
             "cpp" -> TextMateLanguage.create("source.cpp", true)
+            "aidl" -> TextMateLanguage.create("source.aidl", true)
             else -> null
         }
     }.getOrNull()

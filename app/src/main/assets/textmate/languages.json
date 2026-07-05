@@ -114,6 +114,12 @@
       "languageConfiguration": "textmate/properties/language-configuration.json"
     },
     {
+      "name": "aidl",
+      "scopeName": "source.aidl",
+      "grammar": "textmate/aidl/syntaxes/aidl.tmLanguage.json",
+      "languageConfiguration": "textmate/aidl/language-configuration.json"
+    },
+    {
       "name": "c",
       "scopeName": "source.c",
       "grammar": "textmate/c/syntaxes/c.tmLanguage.json",

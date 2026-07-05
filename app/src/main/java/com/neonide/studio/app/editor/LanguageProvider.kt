@@ -24,7 +24,7 @@ class LanguageProvider(
             "hpp", "hh", "hxx" -> tmFactory("cpp") ?: tsFactory("cpp") ?: EmptyLanguage()
             "properties" -> tmFactory("properties") ?: tsFactory("properties") ?: EmptyLanguage()
             "log" -> tsFactory("log") ?: EmptyLanguage()
-            "aidl" -> tsFactory("aidl") ?: EmptyLanguage()
+            "aidl" -> tmFactory("aidl") ?: tsFactory("aidl") ?: EmptyLanguage()
             "js" -> tmFactory("javascript") ?: EmptyLanguage()
             "jsx" -> tmFactory("javascriptreact") ?: EmptyLanguage()
             "html", "htm" -> tmFactory("html") ?: EmptyLanguage()
