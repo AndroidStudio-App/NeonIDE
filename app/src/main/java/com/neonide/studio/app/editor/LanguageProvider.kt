@@ -22,7 +22,7 @@ class LanguageProvider(
             "h" -> tsFactory("c") ?: EmptyLanguage()
             "cpp", "cc", "cxx" -> tsFactory("cpp") ?: EmptyLanguage()
             "hpp", "hh", "hxx" -> tsFactory("cpp") ?: EmptyLanguage()
-            "properties" -> tsFactory("properties") ?: EmptyLanguage()
+            "properties" -> tmFactory("properties") ?: tsFactory("properties") ?: EmptyLanguage()
             "log" -> tsFactory("log") ?: EmptyLanguage()
             "aidl" -> tsFactory("aidl") ?: EmptyLanguage()
             "js" -> tmFactory("javascript") ?: EmptyLanguage()

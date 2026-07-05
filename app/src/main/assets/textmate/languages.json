@@ -106,6 +106,12 @@
       "scopeName": "source.dart",
       "grammar": "textmate/dart/syntaxes/dart.tmLanguage.json",
       "languageConfiguration": "textmate/dart/language-configuration.json"
+    },
+    {
+      "name": "properties",
+      "scopeName": "source.properties",
+      "grammar": "textmate/properties/syntaxes/properties.tmLanguage.json",
+      "languageConfiguration": "textmate/properties/language-configuration.json"
     }
   ]
 }
