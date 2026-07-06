@@ -16,8 +16,8 @@ apt install -y dart
 ## Adding TextMate Grammar
 1. Add the configuration and language grammar from [textmate-grammar](https://github.com/shikijs/textmate-grammars-themes/tree/main/packages/tm-grammars) in to the [texmate/assets](https://github.com/AndroidStudio-App/NeonIDE/tree/main/app/src/main/assets/textmate) folder 
 2. Set it up in [languages.json](https://github.com/AndroidStudio-App/NeonIDE/blob/main/app/src/main/assets/textmate/languages.json)
-3. Declare the new grammar in [LanguageProvider.kt](https://github.com/AndroidStudio-App/NeonIDE/blob/main/app/src/main/java/com/neonide/studio/app/editor/LanguageProvider.kt) and [SoraLanguageProvider.kt](https://github.com/AndroidStudio-App/NeonIDE/blob/main/app/src/main/java/com/neonide/studio/app/editor/SoraLanguageProvider.kt#L77-L95)
-4. After that we can implement a new language server
+3. Declare the new grammar in [SoraLanguageProvider.kt](https://github.com/AndroidStudio-App/NeonIDE/blob/main/app/src/main/java/com/neonide/studio/app/editor/SoraLanguageProvider.kt#L35-L54)
+5. After that we can implement a new language server
 ____
 ## Flutter Setup
 ### Install from source
