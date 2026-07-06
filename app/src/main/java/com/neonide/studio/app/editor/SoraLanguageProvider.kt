@@ -3,63 +3,54 @@ package com.neonide.studio.app.editor
 import android.content.Context
 import com.neonide.studio.app.editor.xml.AndroidXmlLanguageEnhancer
 import com.neonide.studio.app.editor.xml.framework.AndroidFrameworkAttrIndex
+import io.github.rosemoe.sora.lang.EmptyLanguage
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import java.io.File
 
-class SoraLanguageProvider(private val context: Context) {
+class SoraLanguageProvider(val context: Context) {
 
     init {
         AndroidXmlLanguageEnhancer.setAndroidFrameworkAttrsProvider {
             AndroidFrameworkAttrIndex.allAttrs().toList()
         }
-        Thread {
-            AndroidFrameworkAttrIndex.ensureLoaded()
-        }.start()
+        Thread { AndroidFrameworkAttrIndex.ensureLoaded() }.start()
     }
-
-    private val baseProvider = LanguageProvider(
-        tmFactory = { type -> createTextMateLanguage(type) }
-    )
 
     fun getLanguage(file: File): Language {
-        val base = baseProvider.getLanguage(file)
-
-        return if (isAndroidResourceXml(file)) {
-            AndroidXmlLanguageEnhancer(base, file)
-        } else {
-            base
-        }
+        val scope = extensions[file.extension.lowercase()] ?: return EmptyLanguage()
+        val base = runCatching {
+            TextMateLanguage.create(scope, true)
+        }.getOrDefault(EmptyLanguage())
+        return if (isAndroidResourceXml(file)) AndroidXmlLanguageEnhancer(base, file) else base
     }
 
-    private fun isAndroidResourceXml(file: File): Boolean {
-        if (!file.extension.equals("xml", ignoreCase = true)) return false
+    fun isAndroidResourceXml(file: File): Boolean {
         val path = file.path
-        return path.contains("/res/") ||
-            path.endsWith("AndroidManifest.xml")
+        return file.extension.equals("xml", ignoreCase = true) &&
+            (path.contains("/res/") || path.endsWith("AndroidManifest.xml"))
     }
 
-    private fun createTextMateLanguage(type: String): Language? = runCatching {
-        when (type) {
-            "java" -> TextMateLanguage.create("source.java", true)
-            "kotlin" -> TextMateLanguage.create("source.kotlin", true)
-            "python" -> TextMateLanguage.create("source.python", true)
-            "html" -> TextMateLanguage.create("text.html.basic", true)
-            "javascript" -> TextMateLanguage.create("source.js", true)
-            "javascriptreact" -> TextMateLanguage.create("source.js.jsx", true)
-            "markdown" -> TextMateLanguage.create("text.html.markdown", true)
-            "typescript" -> TextMateLanguage.create("source.ts", true)
-            "typescriptreact" -> TextMateLanguage.create("source.tsx", true)
-            "xml" -> TextMateLanguage.create("text.xml", true)
-            "json" -> TextMateLanguage.create("source.json", true)
-            "yaml" -> TextMateLanguage.create("source.yaml", true)
-            "sh", "bash", "zsh" -> TextMateLanguage.create("source.shell", true)
-            "dart" -> TextMateLanguage.create("source.dart", true)
-            "properties" -> TextMateLanguage.create("source.properties", true)
-            "c" -> TextMateLanguage.create("source.c", true)
-            "cpp" -> TextMateLanguage.create("source.cpp", true)
-            "aidl" -> TextMateLanguage.create("source.aidl", true)
-            else -> null
-        }
-    }.getOrNull()
+    companion object {
+        val extensions: Map<String, String> = mapOf(
+            "aidl" to "source.aidl",
+            "c" to "source.c", "h" to "source.c",
+            "cpp" to "source.cpp", "cc" to "source.cpp", "cxx" to "source.cpp",
+            "dart" to "source.dart",
+            "hpp" to "source.cpp", "hh" to "source.cpp", "hxx" to "source.cpp",
+            "html" to "text.html.basic", "htm" to "text.html.basic",
+            "java" to "source.java",
+            "js" to "source.js", "jsx" to "source.js.jsx",
+            "json" to "source.json",
+            "kt" to "source.kotlin", "kts" to "source.kotlin",
+            "lua" to "source.lua",
+            "md" to "text.html.markdown", "markdown" to "text.html.markdown",
+            "properties" to "source.properties",
+            "py" to "source.python",
+            "sh" to "source.shell", "bash" to "source.shell", "zsh" to "source.shell",
+            "ts" to "source.ts", "tsx" to "source.tsx",
+            "xml" to "text.xml",
+            "yaml" to "source.yaml", "yml" to "source.yaml"
+        )
+    }
 }
