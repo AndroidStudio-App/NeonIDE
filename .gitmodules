@@ -4,3 +4,6 @@
 [submodule "bonsai"]
 	path = bonsai
 	url = https://github.com/AndroidStudio-App/bonsai.git
+[submodule "compose-richtext"]
+	path = compose-richtext
+	url = https://github.com/AndroidStudio-App/compose-richtext.git

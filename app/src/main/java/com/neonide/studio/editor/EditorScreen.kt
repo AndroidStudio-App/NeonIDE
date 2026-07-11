@@ -81,6 +81,7 @@ fun EditorScreen(
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
     val tabs = BottomSheetTab.entries
+    val markdownContent = remember { mutableStateOf("") }
 
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val peekHeight = 15.dp + navBarHeight
@@ -149,6 +150,9 @@ fun EditorScreen(
             } else {
                 editor.setHighlightTexts(null)
             }
+            if (file.extension.lowercase() == "md") {
+                markdownContent.value = activeFile.content
+            }
             val ext = file.extension.lowercase()
             if (ext in
                 listOf(
@@ -207,7 +211,9 @@ fun EditorScreen(
         sheetContent = {
             EditorBottomSheetContent(
                 viewModel = bottomSheetVm,
-                projectPath = projectPath.absolutePath
+                projectPath = projectPath.absolutePath,
+                activeFilePath = activeFileState.value?.path,
+                markdownContent = markdownContent.value
             )
         },
         sheetPeekHeight = peekHeight,
@@ -286,6 +292,10 @@ fun EditorScreen(
                             }
                         }
                         editor.setHighlightTexts(null)
+                        val path = activeFileState.value?.path
+                        if (path?.endsWith(".md", ignoreCase = true) == true) {
+                            markdownContent.value = editor.text.toString()
+                        }
                         // Only dismiss if showing to avoid unnecessary layout triggers
                         try {
                             val tooltip = editor.getComponent(

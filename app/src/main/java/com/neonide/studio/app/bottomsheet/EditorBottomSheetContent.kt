@@ -1,7 +1,5 @@
 package com.neonide.studio.app.bottomsheet
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -17,6 +15,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.movableContentOf
@@ -33,11 +32,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.buildoutput.BuildTab
+import com.neonide.studio.app.bottomsheet.preview.PreviewTab
 import com.neonide.studio.app.bottomsheet.terminal.TerminalTab
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppBox
@@ -45,94 +42,14 @@ import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.utils.GradleBuildStatus
 import com.termux.terminal.TerminalSession
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 enum class BottomSheetTab(val title: String) {
     BUILD_OUTPUT("Build Output"),
-    TERMINAL("Terminal")
+    TERMINAL("Terminal"),
+    PREVIEW("Preview")
 }
 
 private const val BOTTOM_SHEET_TAG = "EditorBottomSheet"
-
-class BottomSheetViewModel : ViewModel() {
-
-    private val _buildOutput = MutableLiveData("")
-    val buildOutput: LiveData<String> = _buildOutput
-
-    private val _status = MutableLiveData<String?>(null)
-    val status: LiveData<String?> = _status
-
-    private val _isBuilding = MutableLiveData(false)
-    val isBuilding: LiveData<Boolean> = _isBuilding
-
-    private val _selectedTab = MutableLiveData(0)
-    val selectedTab: LiveData<Int> = _selectedTab
-
-    fun setBuildOutput(text: String) = _buildOutput.postValue(text)
-    fun setStatus(text: String?) = _status.postValue(text)
-    fun setIsBuilding(value: Boolean) = _isBuilding.postValue(value)
-    fun setSelectedTab(index: Int) = _selectedTab.postValue(index)
-}
-
-object BuildOutputBuffer {
-
-    private const val FLUSH_DELAY_MS = 150L
-    private const val MAX_CHARS = 700_000
-    private const val TRIM_TO_CHARS = 550_000
-
-    private val handler = Handler(Looper.getMainLooper())
-    private val pending = StringBuilder(8_192)
-    private val flushScheduled = AtomicBoolean(false)
-
-    private val _output = MutableStateFlow("")
-    val output: StateFlow<String> = _output.asStateFlow()
-
-    fun getSnapshot(): String = _output.value
-
-    fun clear() {
-        synchronized(pending) { pending.clear() }
-        _output.value = ""
-    }
-
-    fun appendLine(line: String) {
-        val msg = if (line.endsWith("\n")) line else "$line\n"
-        synchronized(pending) { pending.append(msg) }
-        scheduleFlush()
-    }
-
-    fun appendRaw(text: String) {
-        synchronized(pending) { pending.append(text) }
-        scheduleFlush()
-    }
-
-    private fun scheduleFlush() {
-        if (!flushScheduled.compareAndSet(false, true)) return
-        handler.postDelayed({
-            flushScheduled.set(false)
-            flush()
-        }, FLUSH_DELAY_MS)
-    }
-
-    private fun flush() {
-        val chunk: String = synchronized(pending) {
-            if (pending.isEmpty()) return
-            val out = pending.toString()
-            pending.clear()
-            out
-        }
-
-        var newValue = _output.value + chunk
-        if (newValue.length > MAX_CHARS) {
-            val trimmed = newValue.length - TRIM_TO_CHARS
-            newValue = "... [trimmed $trimmed chars] ...\n\n" +
-                newValue.takeLast(TRIM_TO_CHARS)
-        }
-        _output.value = newValue
-    }
-}
 
 @Composable
 fun BottomSheetTabRow(
@@ -228,6 +145,8 @@ private fun rememberGradleRunning(): Boolean {
 fun EditorBottomSheetContent(
     viewModel: BottomSheetViewModel,
     projectPath: String,
+    activeFilePath: String?,
+    markdownContent: String,
     modifier: Modifier = Modifier
 ) {
     val tabs = remember { mutableStateListOf(BottomSheetTab.BUILD_OUTPUT) }
@@ -257,6 +176,18 @@ fun EditorBottomSheetContent(
                     viewModel.setSelectedTab(0)
                 }
             )
+        }
+    }
+
+    LaunchedEffect(activeFilePath) {
+        val isMd = activeFilePath?.endsWith(".md", ignoreCase = true) == true
+        if (isMd && !tabs.contains(BottomSheetTab.PREVIEW)) {
+            tabs.add(BottomSheetTab.PREVIEW)
+        } else if (!isMd && tabs.contains(BottomSheetTab.PREVIEW)) {
+            tabs.remove(BottomSheetTab.PREVIEW)
+            if (tabs.getOrNull(selectedTab) == null) {
+                viewModel.setSelectedTab(0)
+            }
         }
     }
 
@@ -299,7 +230,7 @@ fun EditorBottomSheetContent(
             AppBox(
                 modifier = Modifier.fillMaxSize().graphicsLayer {
                     alpha =
-                        if (isTerminalSelected) 0f else 1f
+                        if (tabs.getOrNull(selectedTab) == BottomSheetTab.BUILD_OUTPUT) 1f else 0f
                 }
             ) {
                 buildOutputPage()
@@ -312,6 +243,14 @@ fun EditorBottomSheetContent(
                     }
                 ) {
                     terminalPage()
+                }
+            }
+            if (tabs.contains(BottomSheetTab.PREVIEW)) {
+                val isPreviewSelected = tabs.getOrNull(selectedTab) == BottomSheetTab.PREVIEW
+                if (isPreviewSelected) {
+                    AppBox(modifier = Modifier.fillMaxSize()) {
+                        PreviewTab(markdownContent, activeFilePath)
+                    }
                 }
             }
         }

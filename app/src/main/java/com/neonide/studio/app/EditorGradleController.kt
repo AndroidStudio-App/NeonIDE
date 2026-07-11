@@ -3,7 +3,7 @@ package com.neonide.studio.app
 import android.app.Activity
 import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
-import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
+import com.neonide.studio.app.bottomsheet.buildoutput.BuildOutputBuffer
 import com.neonide.studio.utils.GradleBuildStatus
 import com.neonide.studio.utils.GradleProjectActions
 import com.neonide.studio.utils.GradleService

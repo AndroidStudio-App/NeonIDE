@@ -140,6 +140,10 @@ tasks.named("preBuild") {
     // dependsOn(":app:detekt")
 }
 
+configurations.all {
+    exclude(group = "com.atlassian.commonmark")
+}
+
 dependencies {
     implementation(project(":termux-app"))
     implementation(project(":termux-shared"))
@@ -194,6 +198,14 @@ dependencies {
     implementation(libs.jdt.annotation)
     implementation(libs.lsp4j)
     implementation(libs.jgit)
+
+    implementation("com.halilibo.compose-richtext:richtext-ui:1.0.0-alpha05")
+    implementation("com.halilibo.compose-richtext:richtext-markdown:1.0.0-alpha05")
+    implementation("com.halilibo.compose-richtext:richtext-ui-material3:1.0.0-alpha05")
+    implementation("com.halilibo.compose-richtext:richtext-commonmark:1.0.0-alpha05")
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
+    implementation(libs.coil.svg)
 
     annotationProcessor(files("libs/annotation-processors.jar", "libs/annotations.jar"))
     annotationProcessor(libs.javapoet)

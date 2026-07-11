@@ -10,7 +10,7 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.neonide.studio.R
-import com.neonide.studio.app.bottomsheet.BuildOutputBuffer
+import com.neonide.studio.app.bottomsheet.buildoutput.BuildOutputBuffer
 import com.neonide.studio.utils.GradleProjectActions.getGradleEnvironment
 import java.io.File
 import java.io.IOException

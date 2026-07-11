@@ -48,6 +48,7 @@ lsp4j = "1.0.0"
 jgit = "7.7.0.202606012155-r"
 desugar = "2.1.5"
 rosemoe-editor = "0.24.6"
+coil = "3.5.0"
 
 junit = "4.13.2"
 robolectric = "4.16.1"
@@ -116,6 +117,9 @@ regex-re2j = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-re2
 
 lsp4j = { group = "org.eclipse.lsp4j", name = "org.eclipse.lsp4j", version.ref = "lsp4j" }
 jgit = { group = "org.eclipse.jgit", name = "org.eclipse.jgit", version.ref = "jgit" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg", version.ref = "coil" }
 
 rosemoe-editor = { group = "io.github.rosemoe", name = "editor", version.ref = "rosemoe-editor" }
 rosemoe-editor-bom = { group = "io.github.rosemoe", name = "editor-bom", version.ref = "rosemoe-editor" }
