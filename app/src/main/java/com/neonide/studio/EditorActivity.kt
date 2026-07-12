@@ -6,13 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.neonide.studio.app.EditorGradleController
@@ -84,7 +81,6 @@ class EditorActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         BuildOutputBuffer.clear()
         enableEdgeToEdge()
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_editor)
 
         savedInstanceState?.let { bundle ->
@@ -129,7 +125,16 @@ class EditorActivity : ComponentActivity() {
 
         ViewCompat.setOnApplyWindowInsetsListener(drawerLayout) { _, insets ->
             ViewCompat.dispatchApplyWindowInsets(mainContent, insets)
-            ViewCompat.dispatchApplyWindowInsets(drawerView, insets)
+
+            val drawerLayoutParams = drawerView.layoutParams as DrawerLayout.LayoutParams
+            val statusBarHeight = insets
+                .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars())
+                .top
+            if (drawerLayoutParams.topMargin != statusBarHeight) {
+                drawerLayoutParams.topMargin = statusBarHeight
+                drawerView.layoutParams = drawerLayoutParams
+            }
+
             insets
         }
 
@@ -154,41 +159,39 @@ class EditorActivity : ComponentActivity() {
 
         drawerView.setContent {
             AppTheme {
-                Box(modifier = Modifier.systemBarsPadding()) {
-                    FileTreeDrawer(
-                        rootPath = projectPath.path,
-                        onFileClick = { path ->
-                            if (!path.endsWith(".apk", ignoreCase = true)) {
-                                val file = File(path)
-                                val existingFile = openFilesState.value.find { it.path == path }
+                FileTreeDrawer(
+                    rootPath = projectPath.path,
+                    onFileClick = { path ->
+                        if (!path.endsWith(".apk", ignoreCase = true)) {
+                            val file = File(path)
+                            val existingFile = openFilesState.value.find { it.path == path }
 
-                                // Save current text before switching
-                                activeFileState.value?.let { active ->
-                                    editorState.value?.text?.toString()?.let { currentText ->
-                                        val updated = active.copy(content = currentText)
-                                        openFilesState.value = openFilesState.value.map {
-                                            if (it.path == updated.path) updated else it
-                                        }
-                                    }
-                                }
-
-                                if (existingFile != null) {
-                                    activeFileState.value = existingFile
-                                } else {
-                                    if (file.exists() && file.isFile) {
-                                        val content = runCatching {
-                                            file.readText()
-                                        }.getOrDefault("")
-                                        val newOpenFile = OpenFile(path, file.name, content)
-                                        openFilesState.value = openFilesState.value + newOpenFile
-                                        activeFileState.value = newOpenFile
+                            // Save current text before switching
+                            activeFileState.value?.let { active ->
+                                editorState.value?.text?.toString()?.let { currentText ->
+                                    val updated = active.copy(content = currentText)
+                                    openFilesState.value = openFilesState.value.map {
+                                        if (it.path == updated.path) updated else it
                                     }
                                 }
                             }
-                            drawerLayout.closeDrawer(Gravity.START)
+
+                            if (existingFile != null) {
+                                activeFileState.value = existingFile
+                            } else {
+                                if (file.exists() && file.isFile) {
+                                    val content = runCatching {
+                                        file.readText()
+                                    }.getOrDefault("")
+                                    val newOpenFile = OpenFile(path, file.name, content)
+                                    openFilesState.value = openFilesState.value + newOpenFile
+                                    activeFileState.value = newOpenFile
+                                }
+                            }
                         }
-                    )
-                }
+                        drawerLayout.closeDrawer(Gravity.START)
+                    }
+                )
             }
         }
     }

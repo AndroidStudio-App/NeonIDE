@@ -9,11 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,7 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.halilibo.richtext.commonmark.Markdown
+import com.halilibo.richtext.commonmark.CommonMarkdownParseOptions
+import com.halilibo.richtext.commonmark.CommonmarkAstNodeParser
 import com.halilibo.richtext.markdown.AstBlockNodeComposer
 import com.halilibo.richtext.markdown.node.AstBlockNodeType
 import com.halilibo.richtext.markdown.node.AstHtmlBlock
@@ -41,11 +45,25 @@ import com.halilibo.richtext.ui.TaskListStyle
 import com.halilibo.richtext.ui.material3.RichText
 import com.halilibo.richtext.ui.string.RichTextStringStyle
 import java.io.File
+import kotlinx.coroutines.delay
 
 @Composable
 fun PreviewTab(content: String, activeFilePath: String? = null) {
     val baseDir = activeFilePath?.let { File(it).parent } ?: ""
     HtmlImageComposer.baseDir = baseDir
+
+    var debouncedContent by remember { mutableStateOf(content) }
+    LaunchedEffect(content) {
+        delay(400)
+        debouncedContent = content
+    }
+
+    val parser = remember {
+        CommonmarkAstNodeParser(CommonMarkdownParseOptions.Default)
+    }
+    val astNode = remember(debouncedContent, parser) {
+        parser.parse(debouncedContent)
+    }
 
     val isDark = LocalConfiguration.current.uiMode and
         Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
@@ -114,10 +132,9 @@ fun PreviewTab(content: String, activeFilePath: String? = null) {
                 .fillMaxSize()
                 .border(1.dp, borderColor)
                 .background(previewBg)
-                .verticalScroll(rememberScrollState())
                 .padding(35.dp)
         ) {
-            Markdown(content, astBlockNodeComposer = HtmlImageComposer)
+            LazyMarkdown(astNode, astBlockNodeComposer = HtmlImageComposer)
         }
     }
 }

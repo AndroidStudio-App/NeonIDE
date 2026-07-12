@@ -4,11 +4,10 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -26,12 +25,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import cafe.adriel.bonsai.core.Bonsai
 import cafe.adriel.bonsai.core.BonsaiStyle
 import cafe.adriel.bonsai.core.node.BranchNode
@@ -51,6 +54,14 @@ import okio.Path.Companion.toPath
 @Composable
 fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
     val context = LocalContext.current
+    val density = LocalDensity.current
+    val view = LocalView.current
+    val navigationBarPadding = with(density) {
+        ViewCompat.getRootWindowInsets(view)
+            ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())
+            ?.bottom
+            ?.toDp() ?: 0.dp
+    }
     val rootPathOkio = remember(rootPath) { rootPath.toPath() }
     var refreshTrigger by remember { mutableStateOf(0) }
     var uiScale by remember { mutableStateOf(1.5f) }
@@ -146,7 +157,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
     }
     ModalDrawerSheet(
         drawerShape = RectangleShape,
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+        windowInsets = WindowInsets(0, 0, 0, 0)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             horizontalDivider()
@@ -213,6 +224,7 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
                     Bonsai(
                         tree = tree,
                         style = scaledStyle,
+                        contentPadding = PaddingValues(bottom = navigationBarPadding),
                         modifier = Modifier.fillMaxSize(),
                         onClick = { node ->
                             val file = File(node.content.toString())
