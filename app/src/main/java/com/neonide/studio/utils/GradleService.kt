@@ -13,7 +13,6 @@ import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.buildoutput.BuildOutputBuffer
 import com.neonide.studio.utils.GradleProjectActions.getGradleEnvironment
 import java.io.File
-import java.io.IOException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -111,19 +110,12 @@ class GradleService : Service() {
                         variant,
                         executable
                     )
-                } else {
-                    stopSelf()
                 }
             }
 
             ACTION_STOP_BUILD -> {
-                currentHandle?.cancel()
-                currentJob?.cancel()
-                GradleBuildStatus.isRunning = false
-                stopSelf()
+                clearNotification()
             }
-
-            else -> stopSelf()
         }
         return START_NOT_STICKY
     }
@@ -167,29 +159,34 @@ class GradleService : Service() {
                         ApkInstallUtils.installApk(this@GradleService, apk)
                     }
                 }
-                if (result.isSuccessful) {
-                    updateNotification(
-                        getString(R.string.build_project),
-                        "$variant ${getString(R.string.build_success)}"
-                    )
+
+                val content = if (result.isSuccessful) {
+                    "$variant ${getString(R.string.build_success)}"
                 } else {
-                    updateNotification(
-                        getString(R.string.build_project),
-                        "$variant ${getString(R.string.build_failed)}"
-                    )
+                    "$variant ${getString(R.string.build_failed)}"
                 }
-            } catch (e: IOException) {
-                BuildOutputBuffer.appendLine("ERROR: ${e.message}")
+                startForeground(
+                    NOTIFICATION_ID,
+                    createNotification(getString(R.string.build_project), content)
+                )
             } finally {
                 GradleBuildStatus.isRunning = false
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    stopForeground(Service.STOP_FOREGROUND_DETACH)
-                } else {
-                    stopForeground(STOP_FOREGROUND_DETACH)
-                }
-                stopSelf()
             }
         }
+    }
+
+    private fun clearNotification() {
+        currentHandle?.cancel()
+        currentJob?.cancel()
+        GradleBuildStatus.isRunning = false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            stopForeground(Service.STOP_FOREGROUND_REMOVE)
+        } else {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+        }
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(NOTIFICATION_ID)
+        stopSelf()
     }
 
     private fun createNotification(title: String, content: String): Notification =
@@ -214,19 +211,11 @@ class GradleService : Service() {
         }
     }
 
-    private fun updateNotification(title: String, content: String) {
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, createNotification(title, content))
-    }
-
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        currentHandle?.cancel()
-        currentJob?.cancel()
-        GradleBuildStatus.isRunning = false
-        stopSelf()
+        clearNotification()
     }
 
     override fun onDestroy() {
