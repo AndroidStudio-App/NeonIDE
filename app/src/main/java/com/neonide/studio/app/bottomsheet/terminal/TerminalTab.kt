@@ -28,9 +28,39 @@ import com.termux.shared.termux.extrakeys.ExtraKeysInfo
 import com.termux.shared.termux.extrakeys.ExtraKeysView
 import com.termux.shared.termux.settings.properties.TermuxPropertyConstants
 import com.termux.shared.termux.terminal.io.TerminalExtraKeys
+import com.termux.terminal.TerminalColors
 import com.termux.terminal.TerminalSession
 import com.termux.terminal.TerminalSessionClient
+import com.termux.terminal.TextStyle
 import com.termux.view.TerminalView
+import java.util.Properties
+
+private const val TERMINAL_BG = 0xFF000000.toInt()
+private const val KEYS_TEXT = 0xFFFFFFFF.toInt()
+private const val KEYS_ACTIVE_TEXT = 0xFF80DEEA.toInt()
+private const val KEYS_BG = 0xFF000000.toInt()
+private const val KEYS_ACTIVE_BG = 0xFF7F7F7F.toInt()
+
+private fun applyDarkTerminalColors(session: TerminalSession, terminalView: TerminalView) {
+    val props = Properties().apply {
+        setProperty("foreground", "#ffffff")
+        setProperty("background", "#000000")
+        setProperty("cursor", "#ffffff")
+    }
+    TerminalColors.COLOR_SCHEME.updateWith(props)
+    session.emulator?.mColors?.reset()
+    terminalView.setBackgroundColor(TERMINAL_BG)
+}
+
+private fun applyDarkExtraKeysColors(extraKeysView: ExtraKeysView) {
+    extraKeysView.setButtonColors(
+        KEYS_TEXT,
+        KEYS_ACTIVE_TEXT,
+        KEYS_BG,
+        KEYS_ACTIVE_BG
+    )
+    extraKeysView.setBackgroundColor(KEYS_BG)
+}
 
 @Composable
 fun TerminalTab(
@@ -92,6 +122,7 @@ fun TerminalTab(
 
                 val layout = LinearLayout(context).apply {
                     orientation = LinearLayout.VERTICAL
+                    setBackgroundColor(TERMINAL_BG)
                 }
 
                 var extraKeysView: ExtraKeysView? = null
@@ -116,6 +147,17 @@ fun TerminalTab(
                                 post { onScreenUpdated() }
                             }
 
+                            override fun onColorsChanged(session: TerminalSession) {
+                                post {
+                                    val emulator = session.emulator ?: return@post
+                                    val colors = emulator.mColors.mCurrentColors
+                                    val background =
+                                        colors[TextStyle.COLOR_INDEX_BACKGROUND]
+                                    setBackgroundColor(background)
+                                    onScreenUpdated()
+                                }
+                            }
+
                             override fun onSessionFinished(session: TerminalSession) {
                                 // Notify TermuxService that the session has exited
                                 // so it can clean up the session and the notification.
@@ -132,6 +174,7 @@ fun TerminalTab(
                     )
 
                     attachSession(terminalSession)
+                    applyDarkTerminalColors(terminalSession, this)
                 }
 
                 terminalViewRef.value = terminalView
@@ -146,6 +189,7 @@ fun TerminalTab(
 
                 val extraKeys = TerminalExtraKeys(terminalView)
                 extraKeysView.setExtraKeysViewClient(extraKeys)
+                applyDarkExtraKeysColors(extraKeysView)
 
                 val extraKeysInfo = ExtraKeysInfo(
                     TermuxPropertyConstants.DEFAULT_IVALUE_EXTRA_KEYS,

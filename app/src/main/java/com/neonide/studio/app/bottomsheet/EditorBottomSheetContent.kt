@@ -164,6 +164,13 @@ fun EditorBottomSheetContent(
     val activeTerminalSession = remember { mutableStateOf<TerminalSession?>(null) }
     var terminalSessionId by remember { mutableStateOf(0) }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            activeTerminalSession.value?.finishIfRunning()
+            activeTerminalSession.value = null
+        }
+    }
+
     val terminalPage = remember {
         movableContentOf {
             TerminalTab(
