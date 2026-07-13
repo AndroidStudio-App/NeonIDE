@@ -22,27 +22,48 @@ object GradleRunner {
         projectDir: File,
         args: List<String>,
         envOverrides: Map<String, String> = emptyMap(),
-        onOutputLine: (String) -> Unit
+        onOutputLine: (String) -> Unit,
+        executable: String? = null
     ): Handle {
-        val gradlew = File(projectDir, "gradlew")
-
-        // Explicitly source .bashrc to load ANDROID_HOME and other env vars
         val bashrcPath = File(TermuxConstants.TERMUX_HOME_DIR_PATH, ".bashrc").absolutePath
+        val binDir = TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH
+        val runner = when (executable) {
+            null -> File(projectDir, "gradlew").absolutePath
+            else -> File(binDir, executable).absolutePath
+        }
+        // Force line-buffered stdio so flutter/dart output appears while building
+        // (ProcessBuilder uses pipes, which are fully buffered by default).
+        val stdbuf = File(binDir, "stdbuf")
+        val stdbufPrefix = if (stdbuf.canExecute()) {
+            "${stdbuf.absolutePath} -oL -eL "
+        } else {
+            ""
+        }
         val cmd = listOf(
-            File(TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH, "bash").absolutePath,
+            File(binDir, "bash").absolutePath,
             "-c",
-            "source $bashrcPath && ${gradlew.absolutePath} ${args.joinToString(" ")}"
+            "source $bashrcPath && ${stdbufPrefix}$runner ${args.joinToString(" ")}"
         )
 
         val pb = ProcessBuilder(cmd)
         pb.directory(projectDir)
         pb.redirectErrorStream(true)
 
-        // bash -lc already loads .bashrc, just apply custom overrides
+        val env = pb.environment()
         if (envOverrides.isNotEmpty()) {
-            val env = pb.environment()
             env.putAll(envOverrides)
         }
+
+        // termux-exec rewrites shebangs like #!/usr/bin/env used by Flutter scripts
+        val termuxExec = File(
+            TermuxConstants.TERMUX_LIB_PREFIX_DIR_PATH,
+            "libtermux-exec-ld-preload.so"
+        )
+        if (termuxExec.exists()) {
+            env["LD_PRELOAD"] = termuxExec.absolutePath
+        }
+        env.putIfAbsent("PYTHONUNBUFFERED", "1")
+        env.putIfAbsent("TERM", "dumb")
 
         val process = pb.start()
         return Handle(process, onOutputLine)

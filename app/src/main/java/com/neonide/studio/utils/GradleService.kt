@@ -44,6 +44,7 @@ class GradleService : Service() {
         const val EXTRA_ACTION_LABEL = "extra_action_label"
         const val EXTRA_INSTALL_ON_SUCCESS = "extra_install_on_success"
         const val EXTRA_VARIANT = "extra_variant"
+        const val EXTRA_EXECUTABLE = "extra_executable"
 
         fun startBuild(
             context: Context,
@@ -51,7 +52,8 @@ class GradleService : Service() {
             args: List<String>,
             actionLabel: String,
             installOnSuccess: Boolean,
-            variant: String = "debug"
+            variant: String = "debug",
+            executable: String? = null
         ) {
             val intent = Intent(context, GradleService::class.java).apply {
                 action = ACTION_START_BUILD
@@ -60,6 +62,7 @@ class GradleService : Service() {
                 putExtra(EXTRA_ACTION_LABEL, actionLabel)
                 putExtra(EXTRA_INSTALL_ON_SUCCESS, installOnSuccess)
                 putExtra(EXTRA_VARIANT, variant)
+                putExtra(EXTRA_EXECUTABLE, executable)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
@@ -89,16 +92,24 @@ class GradleService : Service() {
                 val actionLabel = intent.getStringExtra(EXTRA_ACTION_LABEL) ?: "Build"
                 val installOnSuccess = intent.getBooleanExtra(EXTRA_INSTALL_ON_SUCCESS, false)
                 val variant = intent.getStringExtra(EXTRA_VARIANT) ?: "debug"
+                val executable = intent.getStringExtra(EXTRA_EXECUTABLE)
 
                 if (projectDir != null && args != null) {
                     GradleBuildStatus.isRunning = true
-                    startForeground(NOTIFICATION_ID, createNotification(actionLabel, "Starting..."))
+                    startForeground(
+                        NOTIFICATION_ID,
+                        createNotification(
+                            getString(R.string.build_project),
+                            "$variant ${getString(R.string.build_running)}"
+                        )
+                    )
                     executeBuild(
                         projectDir,
                         args,
                         actionLabel,
                         installOnSuccess,
-                        variant
+                        variant,
+                        executable
                     )
                 } else {
                     stopSelf()
@@ -122,44 +133,60 @@ class GradleService : Service() {
         args: List<String>,
         actionLabel: String,
         installOnSuccess: Boolean,
-        variant: String
+        variant: String,
+        executable: String? = null
     ) {
         currentJob?.cancel()
         currentJob = serviceScope.launch {
             try {
                 val baseEnv = getGradleEnvironment(this@GradleService)
+                BuildOutputBuffer.appendLine("$actionLabel")
 
                 val handle = withContext(Dispatchers.IO) {
                     GradleRunner.start(
                         projectDir = projectDir,
                         args = args,
-                        envOverrides = baseEnv
-                    ) { line ->
-                        BuildOutputBuffer.appendLine(line)
-                    }
+                        envOverrides = baseEnv,
+                        onOutputLine = { line -> BuildOutputBuffer.appendLine(line) },
+                        executable = executable
+                    )
                 }
                 currentHandle = handle
-
-                updateNotification(actionLabel, "Running...")
 
                 val result = withContext(Dispatchers.IO) { handle.waitFor() }
 
                 if (result.isSuccessful && installOnSuccess) {
-                    updateNotification(actionLabel, "Build successful, installing...")
-
-                    val apkDir = File(projectDir, "app/build/outputs/apk/$variant")
-                    val apk = apkDir.walkTopDown().filter {
-                        it.isFile && it.extension == "apk"
-                    }.firstOrNull()
-
+                    val apkDirs = listOfNotNull(
+                        File(projectDir, "app/build/outputs/apk/$variant"),
+                        File(projectDir, "build/app/outputs/flutter-apk")
+                    )
+                    val apk = apkDirs.firstNotNullOfOrNull { dir ->
+                        dir.walkTopDown().firstOrNull { it.isFile && it.extension == "apk" }
+                    }
                     if (apk != null) {
                         ApkInstallUtils.installApk(this@GradleService, apk)
                     }
+                }
+                if (result.isSuccessful) {
+                    updateNotification(
+                        getString(R.string.build_project),
+                        "$variant ${getString(R.string.build_success)}"
+                    )
+                } else {
+                    updateNotification(
+                        getString(R.string.build_project),
+                        "$variant ${getString(R.string.build_failed)}"
+                    )
                 }
             } catch (e: IOException) {
                 BuildOutputBuffer.appendLine("ERROR: ${e.message}")
             } finally {
                 GradleBuildStatus.isRunning = false
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    stopForeground(Service.STOP_FOREGROUND_DETACH)
+                } else {
+                    stopForeground(STOP_FOREGROUND_DETACH)
+                }
                 stopSelf()
             }
         }
@@ -172,12 +199,8 @@ class GradleService : Service() {
             .setSmallIcon(R.drawable.ic_service_notification)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
-
-    private fun updateNotification(title: String, content: String) {
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, createNotification(title, content))
-    }
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -189,6 +212,11 @@ class GradleService : Service() {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
+    }
+
+    private fun updateNotification(title: String, content: String) {
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, createNotification(title, content))
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

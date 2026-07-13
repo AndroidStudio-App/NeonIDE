@@ -26,8 +26,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -154,11 +154,10 @@ fun EditorBottomSheetContent(
 
     val coroutineScope = rememberCoroutineScope()
 
+    val buildOutput by viewModel.buildOutput.observeAsState("")
     val buildOutputPage = remember {
-        movableContentOf {
-            BuildTab(
-                viewModel.buildOutput.observeAsState("").value
-            )
+        movableContentOf { content: String ->
+            BuildTab(content)
         }
     }
 
@@ -224,33 +223,36 @@ fun EditorBottomSheetContent(
             }
         )
 
-        val isTerminalSelected = tabs.getOrNull(selectedTab) == BottomSheetTab.TERMINAL
+        val current = tabs.getOrNull(selectedTab)
+        val terminalExists = tabs.contains(BottomSheetTab.TERMINAL)
+        val previewExists = tabs.contains(BottomSheetTab.PREVIEW)
 
         AppBox(modifier = Modifier.fillMaxSize()) {
             AppBox(
-                modifier = Modifier.fillMaxSize().graphicsLayer {
-                    alpha =
-                        if (tabs.getOrNull(selectedTab) == BottomSheetTab.BUILD_OUTPUT) 1f else 0f
+                modifier = if (current == BottomSheetTab.BUILD_OUTPUT) {
+                    Modifier.fillMaxSize()
+                } else {
+                    Modifier.clipToBounds().size(0.dp)
                 }
             ) {
-                buildOutputPage()
+                buildOutputPage(buildOutput)
             }
-            if (tabs.contains(BottomSheetTab.TERMINAL)) {
+
+            if (terminalExists) {
                 AppBox(
-                    modifier = Modifier.fillMaxSize().graphicsLayer {
-                        alpha =
-                            if (isTerminalSelected) 1f else 0f
+                    modifier = if (current == BottomSheetTab.TERMINAL) {
+                        Modifier.fillMaxSize()
+                    } else {
+                        Modifier.clipToBounds().size(0.dp)
                     }
                 ) {
                     terminalPage()
                 }
             }
-            if (tabs.contains(BottomSheetTab.PREVIEW)) {
-                val isPreviewSelected = tabs.getOrNull(selectedTab) == BottomSheetTab.PREVIEW
-                if (isPreviewSelected) {
-                    AppBox(modifier = Modifier.fillMaxSize()) {
-                        PreviewTab(markdownContent, activeFilePath)
-                    }
+
+            if (previewExists && current == BottomSheetTab.PREVIEW) {
+                AppBox(modifier = Modifier.fillMaxSize()) {
+                    PreviewTab(markdownContent, activeFilePath)
                 }
             }
         }

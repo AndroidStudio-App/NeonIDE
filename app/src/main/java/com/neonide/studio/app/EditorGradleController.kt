@@ -27,7 +27,7 @@ class EditorGradleController(
             context = activity,
             projectDir = projectRoot,
             args = plan.args,
-            actionLabel = activity.getString(R.string.sync_project),
+            actionLabel = activity.getString(R.string.sync_started),
             installOnSuccess = false
         )
     }
@@ -37,8 +37,16 @@ class EditorGradleController(
             GradleService.stopBuild(activity)
             return
         }
-        val plan = GradleProjectActions.createQuickRunPlan(projectRoot, variant)
-        val actionLabel = activity.getString(R.string.quick_run)
+
+        val isFlutter = GradleProjectActions.isFlutterProject(projectRoot)
+        val plan = if (isFlutter) {
+            GradleProjectActions.createFlutterBuildPlan(projectRoot, variant)
+        } else {
+            GradleProjectActions.createQuickRunPlan(projectRoot, variant)
+        }
+        val actionLabel = activity.getString(R.string.build_started)
+        val executable = if (isFlutter) "flutter" else null
+
         BuildOutputBuffer.clear()
         GradleService.startBuild(
             context = activity,
@@ -46,7 +54,8 @@ class EditorGradleController(
             args = plan.args,
             actionLabel = actionLabel,
             installOnSuccess = true,
-            variant = variant
+            variant = variant,
+            executable = executable
         )
     }
 }

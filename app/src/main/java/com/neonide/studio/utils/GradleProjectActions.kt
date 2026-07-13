@@ -39,6 +39,25 @@ object GradleProjectActions {
         "--console=plain"
     )
 
+    fun isFlutterProject(projectDir: File): Boolean = File(projectDir, "pubspec.yaml").exists() &&
+        File(projectDir, "lib/main.dart").exists()
+
+    fun createFlutterBuildPlan(projectDir: File, variant: String = "debug"): QuickRunPlan {
+        val args = listOf(
+            "build",
+            "apk",
+            "--$variant",
+            "--target-platform",
+            "android-arm64"
+        )
+        val apkSearchDir = File(projectDir, "build/app/outputs/flutter-apk")
+        return QuickRunPlan(
+            args = args,
+            description = "Flutter build $variant",
+            expectedApkSearchDir = apkSearchDir
+        )
+    }
+
     fun getGradleEnvironment(context: Context): Map<String, String> =
         TermuxShellEnvironment().getEnvironment(context, false)
 }
