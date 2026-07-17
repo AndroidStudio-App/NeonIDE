@@ -1,4 +1,4 @@
-package com.neonide.studio.layout
+package com.neonide.studio.gitclone
 
 import android.content.Intent
 import androidx.compose.animation.animateContentSize
@@ -41,7 +41,7 @@ import com.neonide.studio.utils.Divider.horizontalDivider
 import com.neonide.studio.utils.rememberDirectoryLauncher
 
 @Composable
-fun GitLayout(
+fun GitCloneScreen(
     onBack: () -> Unit,
     state: GitLayoutState,
     viewModel: GitViewModel,

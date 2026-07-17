@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview.core
+package com.neonide.studio.editor.bottomsheet.preview.core
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

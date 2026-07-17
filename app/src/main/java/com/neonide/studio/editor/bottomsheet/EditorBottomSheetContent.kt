@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet
+package com.neonide.studio.editor.bottomsheet
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,11 +34,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.neonide.studio.R
-import com.neonide.studio.app.bottomsheet.buildoutput.BuildTab
-import com.neonide.studio.app.bottomsheet.preview.PreviewTab
-import com.neonide.studio.app.bottomsheet.preview.XmlLayoutPreviewTab
-import com.neonide.studio.app.bottomsheet.preview.core.LayoutPreviewEngine
-import com.neonide.studio.app.bottomsheet.terminal.TerminalTab
+import com.neonide.studio.editor.bottomsheet.buildoutput.BuildTab
+import com.neonide.studio.editor.bottomsheet.preview.PreviewTab
+import com.neonide.studio.editor.bottomsheet.preview.XmlLayoutPreviewTab
+import com.neonide.studio.editor.bottomsheet.preview.core.LayoutPreviewEngine
+import com.neonide.studio.editor.bottomsheet.terminal.TerminalTab
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn

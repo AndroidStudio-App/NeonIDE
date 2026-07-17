@@ -1,4 +1,4 @@
-package com.neonide.studio.layout
+package com.neonide.studio
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +27,7 @@ import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 
 @Composable
-fun mainLayout(
+fun mainScreen(
     onSetupDevKit: () -> Unit,
     onCreateProject: () -> Unit,
     onOpenProject: () -> Unit,

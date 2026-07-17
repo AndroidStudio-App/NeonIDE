@@ -44,9 +44,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
 import com.neonide.studio.extensions.ExtensionsScreen
-import com.neonide.studio.layout.GitLayout
-import com.neonide.studio.layout.GitViewModel
-import com.neonide.studio.layout.mainLayout
+import com.neonide.studio.gitclone.GitCloneScreen
+import com.neonide.studio.gitclone.GitViewModel
 import com.neonide.studio.logger.IDEFileLogger
 import com.neonide.studio.projectwizard.CreateProjectBottomSheet
 import com.neonide.studio.ui.components.AppButton
@@ -69,7 +68,7 @@ import kotlinx.serialization.Serializable
 // route for navhost
 @Serializable object PermissionRoute
 
-@Serializable object MainLayoutRoute
+@Serializable object MainScreenRoute
 
 @Serializable object IdeConfigRoute
 
@@ -110,13 +109,13 @@ class MainActivity : ComponentActivity() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = if (isSetupComplete) MainLayoutRoute else PermissionRoute,
+                startDestination = if (isSetupComplete) MainScreenRoute else PermissionRoute,
                 modifier = Modifier.fillMaxSize()
             ) {
                 composable<PermissionRoute> {
                     permissionScreen()
                 }
-                composable<MainLayoutRoute> {
+                composable<MainScreenRoute> {
                     val showOpenProject = remember { mutableStateOf(false) }
                     val showCreateProject = remember { mutableStateOf(false) }
 
@@ -132,7 +131,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    mainLayout(
+                    mainScreen(
                         onSetupDevKit = { DevKitSetup(this@MainActivity) },
                         onCreateProject = { showCreateProject.value = true },
                         onOpenProject = { showOpenProject.value = true },
@@ -145,7 +144,7 @@ class MainActivity : ComponentActivity() {
                         onOpenAbout = {
                             Toast.makeText(
                                 this@MainActivity,
-                                "NeonIDE v1.0",
+                                "NeonIDE Beta",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -157,7 +156,7 @@ class MainActivity : ComponentActivity() {
                 composable<GitLayoutRoute> {
                     val viewModel: GitViewModel = viewModel()
                     val state by viewModel.uiState.collectAsState()
-                    GitLayout(
+                    GitCloneScreen(
                         onBack = { navController.popBackStack() },
                         state = state,
                         viewModel = viewModel,

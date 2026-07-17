@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.terminal
+package com.neonide.studio.editor.bottomsheet.terminal
 
 import android.app.Activity
 import android.content.ComponentName

@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview
+package com.neonide.studio.editor.bottomsheet.preview
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview
+package com.neonide.studio.editor.bottomsheet.preview
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

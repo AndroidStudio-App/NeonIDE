@@ -1,4 +1,4 @@
-package com.neonide.studio.layout
+package com.neonide.studio.gitclone
 
 import androidx.compose.runtime.Immutable
 

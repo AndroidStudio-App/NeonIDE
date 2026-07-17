@@ -13,12 +13,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.neonide.studio.app.EditorGradleController
-import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
-import com.neonide.studio.app.bottomsheet.buildoutput.BuildOutputBuffer
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.lsp.EditorLspControllerFactory
 import com.neonide.studio.editor.EditorScreen
 import com.neonide.studio.editor.EditorSettingsState
+import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
+import com.neonide.studio.editor.bottomsheet.buildoutput.BuildOutputBuffer
 import com.neonide.studio.filetree.FileTreeDrawer
 import com.neonide.studio.ui.theme.AppTheme
 import com.neonide.studio.utils.GradleService

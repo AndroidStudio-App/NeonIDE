@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.buildoutput
+package com.neonide.studio.editor.bottomsheet.buildoutput
 
 import android.view.ViewGroup.LayoutParams
 import androidx.compose.foundation.layout.fillMaxSize

@@ -1,4 +1,4 @@
-package com.neonide.studio.layout
+package com.neonide.studio.gitclone
 
 import android.app.Application
 import android.content.Context

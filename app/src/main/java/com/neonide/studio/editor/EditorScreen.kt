@@ -41,12 +41,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.app.EditorGradleController
-import com.neonide.studio.app.bottomsheet.BottomSheetTab
-import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
-import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
-import com.neonide.studio.app.bottomsheet.preview.core.LayoutPreviewEngine
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.lsp.EditorLspController
+import com.neonide.studio.editor.bottomsheet.BottomSheetTab
+import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
+import com.neonide.studio.editor.bottomsheet.EditorBottomSheetContent
+import com.neonide.studio.editor.bottomsheet.preview.core.LayoutPreviewEngine
 import com.neonide.studio.utils.GradleBuildStatus
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity

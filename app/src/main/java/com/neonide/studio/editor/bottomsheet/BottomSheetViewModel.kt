@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet
+package com.neonide.studio.editor.bottomsheet
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue

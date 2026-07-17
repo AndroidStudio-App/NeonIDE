@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview
+package com.neonide.studio.editor.bottomsheet.preview
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,9 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.neonide.studio.app.bottomsheet.preview.core.LayoutPreviewEngine
-import com.neonide.studio.app.bottomsheet.preview.core.PreviewError
-import com.neonide.studio.app.bottomsheet.preview.core.PreviewState
+import com.neonide.studio.editor.bottomsheet.preview.core.LayoutPreviewEngine
+import com.neonide.studio.editor.bottomsheet.preview.core.PreviewError
+import com.neonide.studio.editor.bottomsheet.preview.core.PreviewState
 import com.neonide.studio.ui.layout.AppBox
 
 @Composable

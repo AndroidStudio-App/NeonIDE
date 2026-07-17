@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview.core
+package com.neonide.studio.editor.bottomsheet.preview.core
 
 sealed class PreviewError {
     data class InflateFailed(val detail: String) : PreviewError()

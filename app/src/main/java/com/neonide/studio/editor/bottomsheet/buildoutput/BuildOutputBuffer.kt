@@ -1,10 +1,10 @@
-package com.neonide.studio.app.bottomsheet.buildoutput
+package com.neonide.studio.editor.bottomsheet.buildoutput
 
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import com.neonide.studio.app.bottomsheet.buildoutput.BuildTab
+import com.neonide.studio.editor.bottomsheet.buildoutput.BuildTab
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

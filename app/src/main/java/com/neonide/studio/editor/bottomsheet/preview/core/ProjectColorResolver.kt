@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview.core
+package com.neonide.studio.editor.bottomsheet.preview.core
 
 import android.graphics.Color
 import android.util.Xml

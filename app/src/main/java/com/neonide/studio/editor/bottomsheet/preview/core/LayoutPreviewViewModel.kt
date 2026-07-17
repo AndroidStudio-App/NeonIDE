@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.preview.core
+package com.neonide.studio.editor.bottomsheet.preview.core
 
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.coroutines.flow.MutableStateFlow

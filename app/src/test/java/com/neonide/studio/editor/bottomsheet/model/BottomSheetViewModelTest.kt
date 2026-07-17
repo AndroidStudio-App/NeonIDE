@@ -1,4 +1,4 @@
-package com.neonide.studio.app.bottomsheet.model
+package com.neonide.studio.editor.bottomsheet.model
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import org.junit.Assert.assertEquals
