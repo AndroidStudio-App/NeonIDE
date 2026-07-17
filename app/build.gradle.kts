@@ -2,7 +2,7 @@ import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.jetbrains.kotlin)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin.serialization)
@@ -112,7 +112,7 @@ android {
         onVariants(selector().all()) { variant ->
             val version = variant.outputs.first().versionName.get()
             val buildType = variant.buildType
-            val appname = "NeonIDE-v$version-$buildType.apk"
+            val appname = "NeonIDE-v$version-$buildType-arm64-v8a.apk"
             variant.outputs.forEach { output ->
                 output.outputFileName.set(appname)
             }
@@ -163,6 +163,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.collection)
     implementation(libs.androidx.documentfile)

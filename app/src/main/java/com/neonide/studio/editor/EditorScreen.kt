@@ -44,7 +44,9 @@ import com.neonide.studio.app.EditorGradleController
 import com.neonide.studio.app.bottomsheet.BottomSheetTab
 import com.neonide.studio.app.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.app.bottomsheet.EditorBottomSheetContent
+import com.neonide.studio.app.bottomsheet.preview.core.LayoutPreviewEngine
 import com.neonide.studio.app.editor.SoraLanguageProvider
+import com.neonide.studio.app.lsp.EditorLspController
 import com.neonide.studio.utils.GradleBuildStatus
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
@@ -57,6 +59,7 @@ import io.github.rosemoe.sora.widget.SymbolInputView
 import io.github.rosemoe.sora.widget.component.EditorDiagnosticTooltipWindow
 import java.io.File
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -74,7 +77,7 @@ fun EditorScreen(
     symbolInputView: SymbolInputView,
     gradleController: EditorGradleController,
     languageProvider: SoraLanguageProvider,
-    lspController: com.neonide.studio.app.lsp.EditorLspController,
+    lspController: EditorLspController,
     onOpenDrawer: () -> Unit
 ) {
     val context = LocalContext.current as ComponentActivity
@@ -82,6 +85,32 @@ fun EditorScreen(
     val scaffoldState = rememberBottomSheetScaffoldState()
     val tabs = BottomSheetTab.entries
     val markdownContent = remember { mutableStateOf("") }
+    val xmlContentTrigger = remember { mutableStateOf("") }
+
+    val layoutPreviewEngine = remember {
+        LayoutPreviewEngine(
+            appContext = context.applicationContext,
+            projectDir = projectPath,
+            cacheDir = File(context.cacheDir, "layout-preview")
+        )
+    }
+
+    DisposableEffect(layoutPreviewEngine) {
+        onDispose { layoutPreviewEngine.dispose() }
+    }
+
+    LaunchedEffect(xmlContentTrigger.value) {
+        if (xmlContentTrigger.value.isNotEmpty()) {
+            val path = activeFileState.value?.path
+            if (path != null && path.endsWith(".xml", ignoreCase = true)) {
+                delay(400)
+                layoutPreviewEngine.onXmlEdited(
+                    xmlContent = xmlContentTrigger.value,
+                    filePath = path
+                )
+            }
+        }
+    }
 
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val peekHeight = 15.dp + navBarHeight
@@ -153,6 +182,9 @@ fun EditorScreen(
             if (file.extension.lowercase() == "md") {
                 markdownContent.value = activeFile.content
             }
+            if (file.extension.lowercase() == "xml") {
+                xmlContentTrigger.value = activeFile.content
+            }
             val ext = file.extension.lowercase()
             if (ext in
                 listOf(
@@ -213,7 +245,8 @@ fun EditorScreen(
                 viewModel = bottomSheetVm,
                 projectPath = projectPath.absolutePath,
                 activeFilePath = activeFileState.value?.path,
-                markdownContent = markdownContent.value
+                markdownContent = markdownContent.value,
+                layoutPreviewEngine = layoutPreviewEngine
             )
         },
         sheetPeekHeight = peekHeight,
@@ -295,6 +328,9 @@ fun EditorScreen(
                         val path = activeFileState.value?.path
                         if (path?.endsWith(".md", ignoreCase = true) == true) {
                             markdownContent.value = editor.text.toString()
+                        }
+                        if (path?.endsWith(".xml", ignoreCase = true) == true) {
+                            xmlContentTrigger.value = editor.text.toString()
                         }
                         // Only dismiss if showing to avoid unnecessary layout triggers
                         try {

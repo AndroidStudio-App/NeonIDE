@@ -1,5 +1,6 @@
 package com.neonide.studio.app.bottomsheet
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.sp
 import com.neonide.studio.R
 import com.neonide.studio.app.bottomsheet.buildoutput.BuildTab
 import com.neonide.studio.app.bottomsheet.preview.PreviewTab
+import com.neonide.studio.app.bottomsheet.preview.XmlLayoutPreviewTab
+import com.neonide.studio.app.bottomsheet.preview.core.LayoutPreviewEngine
 import com.neonide.studio.app.bottomsheet.terminal.TerminalTab
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.layout.AppBox
@@ -147,6 +150,7 @@ fun EditorBottomSheetContent(
     projectPath: String,
     activeFilePath: String?,
     markdownContent: String,
+    layoutPreviewEngine: LayoutPreviewEngine,
     modifier: Modifier = Modifier
 ) {
     val tabs = remember { mutableStateListOf(BottomSheetTab.BUILD_OUTPUT) }
@@ -156,8 +160,8 @@ fun EditorBottomSheetContent(
 
     val buildOutput by viewModel.buildOutput.observeAsState("")
     val buildOutputPage = remember {
-        movableContentOf { content: String ->
-            BuildTab(content)
+        movableContentOf { content: String, isDark: Boolean ->
+            BuildTab(content, isDark)
         }
     }
 
@@ -186,10 +190,14 @@ fun EditorBottomSheetContent(
     }
 
     LaunchedEffect(activeFilePath) {
-        val isMd = activeFilePath?.endsWith(".md", ignoreCase = true) == true
-        if (isMd && !tabs.contains(BottomSheetTab.PREVIEW)) {
+        val showPreview = when {
+            activeFilePath?.endsWith(".md", ignoreCase = true) == true -> true
+            activeFilePath?.endsWith(".xml", ignoreCase = true) == true -> true
+            else -> false
+        }
+        if (showPreview && !tabs.contains(BottomSheetTab.PREVIEW)) {
             tabs.add(BottomSheetTab.PREVIEW)
-        } else if (!isMd && tabs.contains(BottomSheetTab.PREVIEW)) {
+        } else if (!showPreview && tabs.contains(BottomSheetTab.PREVIEW)) {
             tabs.remove(BottomSheetTab.PREVIEW)
             if (tabs.getOrNull(selectedTab) == null) {
                 viewModel.setSelectedTab(0)
@@ -242,7 +250,7 @@ fun EditorBottomSheetContent(
                     Modifier.clipToBounds().size(0.dp)
                 }
             ) {
-                buildOutputPage(buildOutput)
+                buildOutputPage(buildOutput, isSystemInDarkTheme())
             }
 
             if (terminalExists) {
@@ -259,7 +267,11 @@ fun EditorBottomSheetContent(
 
             if (previewExists && current == BottomSheetTab.PREVIEW) {
                 AppBox(modifier = Modifier.fillMaxSize()) {
-                    PreviewTab(markdownContent, activeFilePath)
+                    if (activeFilePath?.endsWith(".xml", ignoreCase = true) == true) {
+                        XmlLayoutPreviewTab(layoutPreviewEngine)
+                    } else {
+                        PreviewTab(markdownContent, activeFilePath)
+                    }
                 }
             }
         }
