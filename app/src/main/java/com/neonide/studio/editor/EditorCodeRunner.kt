@@ -1,4 +1,4 @@
-package com.neonide.studio.app
+package com.neonide.studio.editor
 
 import android.app.Activity
 import com.neonide.studio.R
@@ -9,13 +9,54 @@ import com.neonide.studio.utils.GradleProjectActions
 import com.neonide.studio.utils.GradleService
 import java.io.File
 
-/**
- * Controller for handling Gradle build and sync operations.
- */
-class EditorGradleController(
+class EditorCodeRunner(
     private val activity: Activity,
     private val bottomSheetVm: BottomSheetViewModel
 ) {
+    private fun runCommandForFile(filePath: String): String? {
+        val file = File(filePath)
+        val quoted = "\"$file\""
+        return when (file.extension.lowercase()) {
+            "java" -> "java $quoted"
+            "kt", "kts" -> "kotlin $quoted"
+            "py" -> "python $quoted"
+            "js" -> "node $quoted"
+            "ts" -> "ts-node $quoted"
+            "sh", "bash" -> "bash $quoted"
+            "rb" -> "ruby $quoted"
+            "php" -> "php $quoted"
+            "go" -> "go run $quoted"
+            "rs" -> "cargo run"
+            else -> null
+        }.let { cmd -> if (cmd == null) null else "$cmd" }
+    }
+
+    /**
+     * Runs the currently opened file in the terminal (when it is a runnable
+     * script), or falls back to the normal Gradle build otherwise
+     */
+    fun onRunOpenedFileOrCancel(projectRoot: File, activeFilePath: String?) {
+        if (GradleBuildStatus.isRunning) {
+            GradleService.stopBuild(activity)
+            return
+        }
+        // validate gradle project ,skip running java file inside root
+        val isGradleProject = File(projectRoot, "build.gradle.kts").exists() ||
+            File(projectRoot, "settings.gradle.kts").exists() ||
+            File(projectRoot, "build.gradle").exists()
+        val command = if (!isGradleProject) {
+            activeFilePath?.let { runCommandForFile(it) }
+        } else {
+            null
+        }
+        if (command != null) {
+            val workingDir = File(activeFilePath).parent ?: projectRoot.absolutePath
+            bottomSheetVm.setPendingRunCommand(command, workingDir)
+            bottomSheetVm.requestOpenTerminal()
+        } else {
+            onQuickRunOrCancel(projectRoot)
+        }
+    }
     fun onSyncProject(projectRoot: File) {
         if (GradleBuildStatus.isRunning) {
             GradleService.stopBuild(activity)

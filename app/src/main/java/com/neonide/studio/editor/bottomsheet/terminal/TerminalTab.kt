@@ -8,6 +8,7 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Text
@@ -15,12 +16,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
 import com.termux.app.TermuxService
 import com.termux.shared.termux.TermuxConstants
 import com.termux.shared.termux.extrakeys.ExtraKeysConstants
@@ -34,6 +38,7 @@ import com.termux.terminal.TerminalSessionClient
 import com.termux.terminal.TextStyle
 import com.termux.view.TerminalView
 import java.util.Properties
+import kotlinx.coroutines.delay
 
 private const val TERMINAL_BG = 0xFF000000.toInt()
 private const val KEYS_TEXT = 0xFFFFFFFF.toInt()
@@ -67,7 +72,8 @@ fun TerminalTab(
     projectPath: String,
     sessionId: Int,
     sessionHolder: MutableState<TerminalSession?>,
-    onSessionExit: () -> Unit
+    onSessionExit: () -> Unit,
+    bottomSheetVm: BottomSheetViewModel? = null
 ) {
     val context = LocalContext.current
     val serviceRef = remember { mutableStateOf<TermuxService?>(null) }
@@ -96,7 +102,7 @@ fun TerminalTab(
         if (service != null && sessionHolder.value == null) {
             val session = service.createTermuxSession(
                 "${TermuxConstants.TERMUX_PREFIX_DIR_PATH}/bin/login",
-                arrayOf(),
+                arrayOf("-l"),
                 null,
                 projectPath,
                 false,
@@ -106,14 +112,29 @@ fun TerminalTab(
         }
     }
 
+    val terminalViewRef = remember { mutableStateOf<TerminalView?>(null) }
+
+    val vm = bottomSheetVm
+    val pendingState = vm?.pendingRunCommand?.observeAsState(null)
+    val nonceState = vm?.runCommandNonce?.observeAsState(0L)
+    LaunchedEffect(nonceState?.value, sessionHolder.value, terminalViewRef.value) {
+        val command = pendingState?.value
+        if (command != null && sessionHolder.value != null && terminalViewRef.value != null) {
+            delay(300)
+            vm?.clearPendingRunCommand()
+            val session = sessionHolder.value ?: return@LaunchedEffect
+            session.emulator?.paste(command.first)
+            session.write("\r")
+        }
+    }
+
     val terminalSession = sessionHolder.value
 
     if (service == null || terminalSession == null) {
-        androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Text(text = "Initializing terminal...", modifier = Modifier.align(Alignment.Center))
         }
     } else {
-        val terminalViewRef = remember { mutableStateOf<TerminalView?>(null) }
         AndroidView(
             factory = { context ->
                 val activity = context as? Activity

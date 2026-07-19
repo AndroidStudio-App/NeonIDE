@@ -12,9 +12,9 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
-import com.neonide.studio.app.EditorGradleController
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.lsp.EditorLspControllerFactory
+import com.neonide.studio.editor.EditorCodeRunner
 import com.neonide.studio.editor.EditorScreen
 import com.neonide.studio.editor.EditorSettingsState
 import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
@@ -67,8 +67,8 @@ class EditorActivity : ComponentActivity() {
 
     private val languageProvider: SoraLanguageProvider by lazy { SoraLanguageProvider(this) }
     private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }
-    private val gradleController: EditorGradleController by lazy {
-        EditorGradleController(this, bottomSheetVm)
+    private val editorRunner: EditorCodeRunner by lazy {
+        EditorCodeRunner(this, bottomSheetVm)
     }
 
     private val symbolInputView by lazy {
@@ -149,7 +149,7 @@ class EditorActivity : ComponentActivity() {
                     activeFileState = activeFileState,
                     editorState = editorState,
                     symbolInputView = symbolInputView,
-                    gradleController = gradleController,
+                    editorRunner = editorRunner,
                     languageProvider = languageProvider,
                     lspController = lspController,
                     onOpenDrawer = { drawerLayout.openDrawer(Gravity.START) }

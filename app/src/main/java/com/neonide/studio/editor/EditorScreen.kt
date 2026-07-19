@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
-import com.neonide.studio.app.EditorGradleController
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.lsp.EditorLspController
 import com.neonide.studio.editor.bottomsheet.BottomSheetTab
@@ -75,7 +74,7 @@ fun EditorScreen(
     activeFileState: MutableState<OpenFile?>,
     editorState: MutableState<CodeEditor?>,
     symbolInputView: SymbolInputView,
-    gradleController: EditorGradleController,
+    editorRunner: EditorCodeRunner,
     languageProvider: SoraLanguageProvider,
     lspController: EditorLspController,
     onOpenDrawer: () -> Unit
@@ -272,10 +271,13 @@ fun EditorScreen(
                 buildVariant = buildVariant.value,
                 onBuildVariantChange = { buildVariant.value = it },
                 onBuildClick = {
-                    gradleController.onQuickRunOrCancel(projectPath, buildVariant.value)
+                    editorRunner.onRunOpenedFileOrCancel(
+                        projectPath,
+                        activeFileState.value?.path
+                    )
                     scope.launch { scaffoldState.bottomSheetState.expand() }
                 },
-                onSyncClick = { gradleController.onSyncProject(projectPath) },
+                onSyncClick = { editorRunner.onSyncProject(projectPath) },
                 onTerminalClick = {
                     runCatching {
                         context.startActivity(Intent(context, TermuxActivity::class.java))

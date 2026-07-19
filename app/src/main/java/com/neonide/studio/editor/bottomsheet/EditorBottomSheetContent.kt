@@ -156,6 +156,25 @@ fun EditorBottomSheetContent(
     val tabs = remember { mutableStateListOf(BottomSheetTab.BUILD_OUTPUT) }
     val selectedTab by viewModel.selectedTab.observeAsState(0)
 
+    val activeTerminalSession = remember { mutableStateOf<TerminalSession?>(null) }
+    var terminalSessionId by remember { mutableStateOf(0) }
+
+    fun ensureTerminalTabOpen() {
+        if (!tabs.contains(BottomSheetTab.TERMINAL)) {
+            terminalSessionId++
+            tabs.add(BottomSheetTab.TERMINAL)
+        }
+        viewModel.setSelectedTab(tabs.indexOf(BottomSheetTab.TERMINAL))
+    }
+
+    val openTerminalRequest by viewModel.openTerminalRequest.observeAsState(false)
+    LaunchedEffect(openTerminalRequest) {
+        if (openTerminalRequest) {
+            ensureTerminalTabOpen()
+            viewModel.consumeOpenTerminalRequest()
+        }
+    }
+
     val coroutineScope = rememberCoroutineScope()
 
     val buildOutput by viewModel.buildOutput.observeAsState("")
@@ -164,9 +183,6 @@ fun EditorBottomSheetContent(
             BuildTab(content, isDark)
         }
     }
-
-    val activeTerminalSession = remember { mutableStateOf<TerminalSession?>(null) }
-    var terminalSessionId by remember { mutableStateOf(0) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -184,7 +200,8 @@ fun EditorBottomSheetContent(
                 onSessionExit = {
                     tabs.remove(BottomSheetTab.TERMINAL)
                     viewModel.setSelectedTab(0)
-                }
+                },
+                bottomSheetVm = viewModel
             )
         }
     }
