@@ -15,17 +15,15 @@ class EditorCodeRunner(
 ) {
     private fun runCommandForFile(filePath: String): String? {
         val file = File(filePath)
-        val quoted = "\"$file\""
         return when (file.extension.lowercase()) {
-            "java" -> "java $quoted"
-            "kt", "kts" -> "kotlin $quoted"
-            "py" -> "python $quoted"
-            "js" -> "node $quoted"
-            "ts" -> "ts-node $quoted"
-            "sh", "bash" -> "bash $quoted"
-            "rb" -> "ruby $quoted"
-            "php" -> "php $quoted"
-            "go" -> "go run $quoted"
+            "java" -> "java $file"
+            "kt", "kts" -> "kotlin $file"
+            "py" -> "python $file"
+            "js" -> "node $file"
+            "sh", "bash" -> "bash $file"
+            "rb" -> "ruby $file"
+            "php" -> "php $file"
+            "go" -> "go run $file"
             "rs" -> "cargo run"
             else -> null
         }.let { cmd -> if (cmd == null) null else "$cmd" }
