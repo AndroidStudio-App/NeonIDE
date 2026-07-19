@@ -31,7 +31,6 @@ import com.neonide.studio.EditorActivity
 import com.neonide.studio.R
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppIcon
-import com.neonide.studio.ui.components.AppScaffold
 import com.neonide.studio.ui.components.AppSwitch
 import com.neonide.studio.ui.components.AppTopBar
 import com.neonide.studio.ui.components.FormTextField
@@ -53,28 +52,26 @@ fun GitCloneScreen(
         viewModel.updateDestination(file.absolutePath)
     }
 
-    AppScaffold(
-        topBar = {
-            AppTopBar(
-                title = stringResource(R.string.clone_repository),
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        AppIcon(painterResource(R.drawable.ic_chevron_left))
-                    }
+    AppColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AppTopBar(
+            title = stringResource(R.string.clone_repository),
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    AppIcon(painterResource(R.drawable.ic_chevron_left))
                 }
-            )
-        }
-    ) { padding ->
+            }
+        )
+
         AppColumn(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .animateContentSize(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            horizontalDivider(color = Color.Gray)
             AppColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
                 // ---- URL ----
                 FormTextField(

@@ -31,7 +31,6 @@ import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppOutlinedButton
-import com.neonide.studio.ui.components.AppScaffold
 import com.neonide.studio.ui.components.AppTopBar
 import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
@@ -149,95 +148,97 @@ fun ExtensionsScreen(context: Context, onBack: () -> Unit) {
         }
     }
 
-    AppScaffold(
-        topBar = {
-            AppTopBar(
-                title = stringResource(R.string.extensions),
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        AppIcon(painterResource(R.drawable.ic_chevron_left))
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        when {
-            isLoading -> {
-                AppBox(
-                    modifier = Modifier.fillMaxSize().padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
+    AppColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        AppTopBar(
+            title = stringResource(R.string.extensions),
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    AppIcon(painterResource(R.drawable.ic_chevron_left))
                 }
             }
+        )
 
-            error != null -> {
-                AppBox(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AppColumn(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Error: $error,Make sure you're connected to internet")
-                        Spacer(modifier = Modifier.height(16.dp))
-                        AppButton(
-                            text = stringResource(R.string.retry),
-                            onClick = {
-                                error = null
-                                isLoading = true
-                                loadExtensions()
-                            }
-                        )
+        AppColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when {
+                isLoading -> {
+                    AppBox(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
-            }
 
-            else -> {
-                AppLazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    item {
-                        if (installationError != null) {
-                            AppCard(
-                                modifier = Modifier.fillMaxWidth(),
-                                containerColor = MaterialTheme.colorScheme.errorContainer
-                            ) {
-                                AppRow(
-                                    modifier = Modifier.padding(12.dp),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "Installation error: $installationError, " +
-                                            "Make sure you're connected to internet",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onErrorContainer
-                                    )
+                error != null -> {
+                    AppBox(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AppColumn(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Error: $error,Make sure you're connected to internet")
+                            Spacer(modifier = Modifier.height(16.dp))
+                            AppButton(
+                                text = stringResource(R.string.retry),
+                                onClick = {
+                                    error = null
+                                    isLoading = true
+                                    loadExtensions()
                                 }
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
+                            )
                         }
                     }
+                }
 
-                    items(extensions) { extension ->
-                        val displaySize = if (extension.size > 0) {
-                            manager.formatSize(extension.size)
-                        } else {
-                            null
+                else -> {
+                    AppLazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item {
+                            if (installationError != null) {
+                                AppCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    containerColor = MaterialTheme.colorScheme.errorContainer
+                                ) {
+                                    AppRow(
+                                        modifier = Modifier.padding(12.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Text(
+                                            text = "Installation error: $installationError, " +
+                                                "Make sure you're connected to internet",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
-                        ExtensionCard(
-                            extension = extension,
-                            isInstalled = installedExtensions.contains(extension.id),
-                            isUpdateAvailable = manager.isUpdateAvailable(extension),
-                            isInstalling = installingExtensionId == extension.id,
-                            displaySize = displaySize,
-                            onInstall = { installExtension(extension) },
-                            onUninstall = { uninstallExtension(extension) }
-                        )
+
+                        items(extensions) { extension ->
+                            val displaySize = if (extension.size > 0) {
+                                manager.formatSize(extension.size)
+                            } else {
+                                null
+                            }
+                            ExtensionCard(
+                                extension = extension,
+                                isInstalled = installedExtensions.contains(extension.id),
+                                isUpdateAvailable = manager.isUpdateAvailable(extension),
+                                isInstalling = installingExtensionId == extension.id,
+                                displaySize = displaySize,
+                                onInstall = { installExtension(extension) },
+                                onUninstall = { uninstallExtension(extension) }
+                            )
+                        }
                     }
                 }
             }

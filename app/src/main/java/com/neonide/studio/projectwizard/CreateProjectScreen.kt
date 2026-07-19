@@ -7,9 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,10 +19,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +42,7 @@ import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppSwitch
+import com.neonide.studio.ui.components.AppTopBar
 import com.neonide.studio.ui.components.DropdownField
 import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.ui.layout.AppColumn
@@ -55,10 +53,9 @@ import java.io.File
 import kotlinx.coroutines.launch
 
 @Composable
-fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
+fun CreateProjectScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var selectedTemplate by remember { mutableStateOf<ProjectTemplate?>(null) }
     var projectName by remember { mutableStateOf("") }
@@ -136,13 +133,22 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
         return valid
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        contentWindowInsets = { WindowInsets(0.dp) }
+    AppColumn(
+        modifier = Modifier.fillMaxSize()
     ) {
+        AppTopBar(
+            title = stringResource(id = R.string.new_project),
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    AppIcon(painter = painterResource(id = R.drawable.ic_chevron_left))
+                }
+            }
+        )
+
         AppColumn(
-            modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (selectedTemplate == null) {
@@ -325,7 +331,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        TextButton(onClick = onDismiss) {
+                        TextButton(onClick = onBack) {
                             Text(stringResource(id = R.string.cancel))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
@@ -344,12 +350,7 @@ fun CreateProjectBottomSheet(onDismiss: () -> Unit) {
                                     minSdk = minSdk,
                                     lang = language,
                                     useKts = useKts,
-                                    onSuccess = {
-                                        scope.launch {
-                                            sheetState.hide()
-                                            onDismiss()
-                                        }
-                                    }
+                                    onSuccess = onBack
                                 )
                             }
                         }) {

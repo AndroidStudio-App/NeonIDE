@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,29 +45,26 @@ import com.neonide.studio.app.home.open.OpenProjectBottomSheet
 import com.neonide.studio.extensions.ExtensionsScreen
 import com.neonide.studio.gitclone.GitCloneScreen
 import com.neonide.studio.gitclone.GitViewModel
-import com.neonide.studio.logger.IDEFileLogger
-import com.neonide.studio.projectwizard.CreateProjectBottomSheet
+import com.neonide.studio.preference.IdeConfigScreen
+import com.neonide.studio.projectwizard.CreateProjectScreen
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppIcon
-import com.neonide.studio.ui.components.AppListItem
 import com.neonide.studio.ui.components.AppScaffold
-import com.neonide.studio.ui.components.AppSwitch
-import com.neonide.studio.ui.components.AppTopBar
 import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
-import com.neonide.studio.ui.layout.AppLazyColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.ui.theme.AppTheme
 import com.termux.app.TermuxActivity
 import com.termux.shared.termux.crash.TermuxCrashUtils
-import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences
 import kotlinx.serialization.Serializable
 
 // route for navhost
 @Serializable object PermissionRoute
 
 @Serializable object MainScreenRoute
+
+@Serializable object CreateProjectRoute
 
 @Serializable object IdeConfigRoute
 
@@ -117,7 +113,6 @@ class MainActivity : ComponentActivity() {
                 }
                 composable<MainScreenRoute> {
                     val showOpenProject = remember { mutableStateOf(false) }
-                    val showCreateProject = remember { mutableStateOf(false) }
 
                     if (showOpenProject.value) {
                         OpenProjectBottomSheet(
@@ -125,15 +120,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    if (showCreateProject.value) {
-                        CreateProjectBottomSheet(
-                            onDismiss = { showCreateProject.value = false }
-                        )
-                    }
-
                     mainScreen(
                         onSetupDevKit = { DevKitSetup(this@MainActivity) },
-                        onCreateProject = { showCreateProject.value = true },
+                        onCreateProject = { navController.navigate(CreateProjectRoute) },
                         onOpenProject = { showOpenProject.value = true },
                         onCloneRepo = { navController.navigate(GitLayoutRoute) },
                         onOpenTerminal = {
@@ -150,8 +139,11 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 }
+                composable<CreateProjectRoute> {
+                    CreateProjectScreen(onBack = { navController.popBackStack() })
+                }
                 composable<IdeConfigRoute> {
-                    ideConfigScreen(onBack = { navController.popBackStack() })
+                    IdeConfigScreen(onBack = { navController.popBackStack() })
                 }
                 composable<GitLayoutRoute> {
                     val viewModel: GitViewModel = viewModel()
@@ -167,60 +159,6 @@ class MainActivity : ComponentActivity() {
                     ExtensionsScreen(context = this@MainActivity, onBack = {
                         navController.popBackStack()
                     })
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun ideConfigScreen(onBack: () -> Unit) {
-        val context = LocalContext.current
-        val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
-        var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
-
-        AppColumn(modifier = Modifier.fillMaxSize()) {
-            AppTopBar(
-                title = "IDE Configurations",
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        AppIcon(painterResource(R.drawable.ic_chevron_left))
-                    }
-                }
-            )
-            AppLazyColumn(modifier = Modifier.fillMaxSize()) {
-                item {
-                    Text(
-                        text = "Logging",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-                item {
-                    AppListItem(
-                        headlineContent = { Text("Save IDE logs to Documents") },
-                        supportingContent = {
-                            Text(
-                                if (isLoggingEnabled) {
-                                    "Writes logs to ${IDEFileLogger.getLogFile()?.absolutePath ?: "/sdcard/Documents/NeonIDE/logs/ide.log"}"
-                                } else {
-                                    "Disabled"
-                                }
-                            )
-                        },
-                        trailingContent = {
-                            AppSwitch(
-                                checked = isLoggingEnabled,
-                                onCheckedChange = { enabled ->
-                                    isLoggingEnabled = enabled
-                                    prefs?.setIdeFileLoggingEnabled(enabled)
-                                    if (!enabled) {
-                                        IDEFileLogger.clearLogFile()
-                                    }
-                                }
-                            )
-                        }
-                    )
                 }
             }
         }
