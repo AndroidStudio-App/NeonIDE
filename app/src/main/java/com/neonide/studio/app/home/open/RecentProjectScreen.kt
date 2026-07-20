@@ -16,10 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,6 +67,21 @@ object WizardPreferences {
         val recents = getRecentProjects(context).toMutableList()
         recents.remove(projectPath)
         recents.add(0, projectPath)
+        saveRecentProjects(context, recents)
+    }
+
+    fun replaceRecentProject(context: Context, oldPath: String, newPath: String) {
+        val recents = getRecentProjects(context).toMutableList()
+        val oldIndex = recents.indexOf(oldPath)
+        if (oldIndex >= 0) {
+            recents[oldIndex] = newPath
+        } else {
+            recents.add(0, newPath)
+        }
+        saveRecentProjects(context, recents)
+    }
+
+    private fun saveRecentProjects(context: Context, recents: List<String>) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putString(KEY_RECENT_PROJECTS, recents.take(MAX_RECENT).joinToString(","))
@@ -95,6 +107,8 @@ fun RecentProjectScreen(onBack: () -> Unit) {
     var projects by remember { mutableStateOf(emptyList<File>()) }
     var searchQuery by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(true) }
+    var showProjectDialog by remember { mutableStateOf(false) }
+    var selectedProject by remember { mutableStateOf<File?>(null) }
 
     LaunchedEffect(Unit) {
         projects = withContext(Dispatchers.IO) { loadProjectsInternal(context) }
@@ -127,10 +141,7 @@ fun RecentProjectScreen(onBack: () -> Unit) {
             title = stringResource(id = R.string.open_project),
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back)
-                    )
+                    AppIcon(painter = painterResource(id = R.drawable.ic_chevron_left))
                 }
             },
             actions = {
@@ -186,13 +197,8 @@ fun RecentProjectScreen(onBack: () -> Unit) {
                             openProject(context, project)
                         },
                         onLongClick = {
-                            showProjectOptionsDialog(context, project) {
-                                scope.launch {
-                                    projects = withContext(Dispatchers.IO) {
-                                        loadProjectsInternal(context)
-                                    }
-                                }
-                            }
+                            selectedProject = project
+                            showProjectDialog = true
                         }
                     )
                 }
@@ -203,6 +209,24 @@ fun RecentProjectScreen(onBack: () -> Unit) {
             }
         }
     }
+
+    ProjectActionsDialog(
+        show = showProjectDialog,
+        project = selectedProject,
+        onDismiss = {
+            showProjectDialog = false
+            selectedProject = null
+        },
+        onActionComplete = {
+            showProjectDialog = false
+            selectedProject = null
+            scope.launch {
+                projects = withContext(Dispatchers.IO) {
+                    loadProjectsInternal(context)
+                }
+            }
+        }
+    )
 }
 
 @Composable

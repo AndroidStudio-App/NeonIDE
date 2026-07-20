@@ -158,11 +158,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.collection)
@@ -186,7 +184,6 @@ dependencies {
     implementation(libs.moshi)
 
     implementation(libs.bundles.markwon)
-    implementation(libs.bundles.monarch)
     implementation(libs.bundles.regex)
     implementation(libs.bundles.rosemoe)
 

@@ -12,7 +12,6 @@ okio = "3.17.0"
 
 core = "1.19.0"
 appcompat = "1.7.1"
-material = "1.14.0"
 constraintlayout = "2.2.1"
 annotation = "1.10.0"
 collection = "1.6.0"
@@ -32,9 +31,6 @@ gson = "2.14.0"
 moshi = "1.15.2"
 javapoet = "1.13.0"
 markwon = "4.6.2"
-monarch = "1.0.3"
-monarch-json = "1.0.2"
-monarch-lang = "1.0.2"
 regex-oniguruma = "1.0.3"
 regex-re2j = "1.0.2"
 hiddenapibypass = "6.1"
@@ -67,7 +63,6 @@ androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graph
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose-ui" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose-ui" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
-androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version = "1.7.8" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -84,8 +79,6 @@ androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", ve
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "window" }
-
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 
@@ -107,10 +100,6 @@ jcodings = { group = "org.jruby.jcodings", name = "jcodings", version.ref = "jco
 joni = { group = "org.jruby.joni", name = "joni", version.ref = "joni" }
 snakeyaml = { group = "org.snakeyaml", name = "snakeyaml-engine", version.ref = "snakeyaml" }
 jdt-annotation = { group = "org.eclipse.jdt", name = "org.eclipse.jdt.annotation", version.ref = "jdt-annotation" }
-
-monarch-core = { group = "io.github.dingyi222666.monarch", name = "monarch", version.ref = "monarch" }
-monarch-json-loader = { group = "io.github.dingyi222666.monarch", name = "monarch-json-loader", version.ref = "monarch-json" }
-monarch-language-pack = { group = "io.github.dingyi222666.monarch", name = "monarch-language-pack", version.ref = "monarch-lang" }
 
 regex-oniguruma = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-oniguruma", version.ref = "regex-oniguruma" }
 regex-re2j = { group = "io.github.dingyi222666.regex-lib", name = "regex-lib-re2j", version.ref = "regex-re2j" }
@@ -140,7 +129,6 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 
 [bundles]
 markwon = ["markwon-core", "markwon-strikethrough", "markwon-linkify", "markwon-recycler"]
-monarch = ["monarch-core", "monarch-json-loader", "monarch-language-pack"]
 regex = ["regex-oniguruma", "regex-re2j"]
 rosemoe = ["rosemoe-editor", "rosemoe-editor-lsp", "rosemoe-language-java", "rosemoe-language-monarch", "rosemoe-language-textmate", "rosemoe-oniguruma-native"]
 
