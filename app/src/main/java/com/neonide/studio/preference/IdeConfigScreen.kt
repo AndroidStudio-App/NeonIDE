@@ -13,6 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
 import com.neonide.studio.logger.IDEFileLogger
@@ -25,10 +26,11 @@ import com.neonide.studio.ui.layout.AppLazyColumn
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences
 
 @Composable
-fun IdeConfigScreen(onBack: () -> Unit) {
+fun IdeConfigScreen(onBack: () -> Unit, onNavigateToAppSettings: (String) -> Unit) {
     val context = LocalContext.current
     val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
     var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
+    val appSettingsTitle = stringResource(R.string.app_settings)
 
     AppColumn(modifier = Modifier.fillMaxSize()) {
         AppTopBar(
@@ -41,6 +43,12 @@ fun IdeConfigScreen(onBack: () -> Unit) {
         )
         AppLazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
+                AppListItem(
+                    headlineText = appSettingsTitle,
+                    onClick = { onNavigateToAppSettings(appSettingsTitle) }
+                )
+            }
+            item {
                 Text(
                     text = "Logging",
                     style = MaterialTheme.typography.labelLarge,
@@ -50,7 +58,7 @@ fun IdeConfigScreen(onBack: () -> Unit) {
             }
             item {
                 AppListItem(
-                    headlineContent = { Text("Save IDE logs to Documents") },
+                    headlineText = stringResource(R.string.save_ide_logs_to_documents),
                     supportingContent = {
                         Text(
                             if (isLoggingEnabled) {

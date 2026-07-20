@@ -236,4 +236,15 @@
     <!-- Editor bottom -->
     <string name="open_terminal">Open Terminal</string>
     <string name="close">Close</string>
+
+    <!-- App Settings -->
+    <string name="color_scheme">Color scheme</string>
+    <string name="change_color_scheme">Change Color scheme</string>
+    <string name="follow_system">Follow system</string>
+    <string name="dark_mode">Dark</string>
+    <string name="light_mode">Light</string>
+
+    <!-- IDE Config -->
+    <string name="app_settings">App Settings</string>
+    <string name="save_ide_logs_to_documents">Save IDE logs to Documents</string>
 </resources>

@@ -41,10 +41,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.neonide.studio.app.home.open.OpenProjectBottomSheet
 import com.neonide.studio.extensions.ExtensionsScreen
 import com.neonide.studio.gitclone.GitCloneScreen
 import com.neonide.studio.gitclone.GitViewModel
+import com.neonide.studio.preference.AppSettingsScreen
 import com.neonide.studio.preference.IdeConfigScreen
 import com.neonide.studio.projectwizard.CreateProjectScreen
 import com.neonide.studio.ui.components.AppButton
@@ -55,9 +57,14 @@ import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.ui.theme.AppTheme
+import com.neonide.studio.ui.theme.ColorSchemeMode
+import com.neonide.studio.utils.PersistedString
 import com.termux.app.TermuxActivity
 import com.termux.shared.termux.crash.TermuxCrashUtils
 import kotlinx.serialization.Serializable
+
+const val APP_SETTINGS_PREFS = "app_settings"
+const val KEY_COLOR_SCHEME_MODE = "color_scheme_mode"
 
 // route for navhost
 @Serializable object PermissionRoute
@@ -67,6 +74,8 @@ import kotlinx.serialization.Serializable
 @Serializable object CreateProjectRoute
 
 @Serializable object IdeConfigRoute
+
+@Serializable data class AppSettingsRoute(val title: String)
 
 @Serializable object GitLayoutRoute
 
@@ -90,7 +99,12 @@ class MainActivity : ComponentActivity() {
         isSetupComplete = isFilesGranted && isInstallGranted && isNotificationsGranted
 
         setContent {
-            AppTheme {
+            val prefs = getSharedPreferences(APP_SETTINGS_PREFS, MODE_PRIVATE)
+            val modeKey by remember {
+                PersistedString(prefs, KEY_COLOR_SCHEME_MODE, ColorSchemeMode.SYSTEM.key)
+            }
+            val colorSchemeMode = ColorSchemeMode.fromKey(modeKey)
+            AppTheme(colorSchemeMode = colorSchemeMode) {
                 mainNavigation()
             }
         }
@@ -143,7 +157,19 @@ class MainActivity : ComponentActivity() {
                     CreateProjectScreen(onBack = { navController.popBackStack() })
                 }
                 composable<IdeConfigRoute> {
-                    IdeConfigScreen(onBack = { navController.popBackStack() })
+                    IdeConfigScreen(
+                        onBack = { navController.popBackStack() },
+                        onNavigateToAppSettings = { title ->
+                            navController.navigate(AppSettingsRoute(title))
+                        }
+                    )
+                }
+                composable<AppSettingsRoute> { backStackEntry ->
+                    val route = backStackEntry.toRoute<AppSettingsRoute>()
+                    AppSettingsScreen(
+                        title = route.title,
+                        onBack = { navController.popBackStack() }
+                    )
                 }
                 composable<GitLayoutRoute> {
                     val viewModel: GitViewModel = viewModel()
