@@ -42,7 +42,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.neonide.studio.app.home.open.OpenProjectBottomSheet
+import com.neonide.studio.app.home.open.RecentProjectScreen
 import com.neonide.studio.extensions.ExtensionsScreen
 import com.neonide.studio.gitclone.GitCloneScreen
 import com.neonide.studio.gitclone.GitViewModel
@@ -80,6 +80,8 @@ const val KEY_COLOR_SCHEME_MODE = "color_scheme_mode"
 @Serializable object GitLayoutRoute
 
 @Serializable object ExtensionsRoute
+
+@Serializable object OpenProjectRoute
 
 class MainActivity : ComponentActivity() {
 
@@ -126,18 +128,10 @@ class MainActivity : ComponentActivity() {
                     permissionScreen()
                 }
                 composable<MainScreenRoute> {
-                    val showOpenProject = remember { mutableStateOf(false) }
-
-                    if (showOpenProject.value) {
-                        OpenProjectBottomSheet(
-                            onDismiss = { showOpenProject.value = false }
-                        )
-                    }
-
                     mainScreen(
                         onSetupDevKit = { DevKitSetup(this@MainActivity) },
                         onCreateProject = { navController.navigate(CreateProjectRoute) },
-                        onOpenProject = { showOpenProject.value = true },
+                        onOpenProject = { navController.navigate(OpenProjectRoute) },
                         onCloneRepo = { navController.navigate(GitLayoutRoute) },
                         onOpenTerminal = {
                             startActivity(Intent(this@MainActivity, TermuxActivity::class.java))
@@ -185,6 +179,9 @@ class MainActivity : ComponentActivity() {
                     ExtensionsScreen(context = this@MainActivity, onBack = {
                         navController.popBackStack()
                     })
+                }
+                composable<OpenProjectRoute> {
+                    RecentProjectScreen(onBack = { navController.popBackStack() })
                 }
             }
         }

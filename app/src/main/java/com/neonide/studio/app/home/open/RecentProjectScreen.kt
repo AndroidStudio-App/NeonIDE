@@ -8,7 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,12 +16,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import com.neonide.studio.ui.components.AppCard
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppIconButton
 import com.neonide.studio.ui.components.AppSurface
+import com.neonide.studio.ui.components.AppTopBar
 import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
@@ -86,10 +88,9 @@ object WizardPreferences {
 }
 
 @Composable
-fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
+fun RecentProjectScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var projects by remember { mutableStateOf(emptyList<File>()) }
     var searchQuery by remember { mutableStateOf("") }
@@ -102,10 +103,6 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
 
     val startForResult = rememberDirectoryLauncher { dir ->
         if (dir.exists() && dir.isDirectory) {
-            scope.launch {
-                sheetState.hide()
-                onDismiss()
-            }
             openProject(context, dir)
         } else {
             Toast.makeText(
@@ -125,96 +122,83 @@ fun OpenProjectBottomSheet(onDismiss: () -> Unit) {
         }
     }
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        contentWindowInsets = { WindowInsets(0.dp) }
-    ) {
-        AppColumn(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            AppRow(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.open_project)
-                )
-
+    AppColumn(modifier = Modifier.fillMaxSize()) {
+        AppTopBar(
+            title = stringResource(id = R.string.open_project),
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
+                }
+            },
+            actions = {
                 AppIconButton(
                     onClick = { startForResult.launch(null) }
                 ) {
                     AppIcon(painter = painterResource(id = R.drawable.ic_folder))
                 }
             }
-            FormTextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                placeholder = stringResource(id = R.string.search_projects_hint),
-                leadingIcon = painterResource(id = R.drawable.ic_search),
-                trailingIcon = {
-                    if (searchQuery.isNotEmpty()) {
-                        IconButton(onClick = { searchQuery = "" }) {
-                            AppIcon(painter = painterResource(id = R.drawable.ic_close))
-                        }
+        )
+        FormTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+            placeholder = stringResource(id = R.string.search_projects_hint),
+            leadingIcon = painterResource(id = R.drawable.ic_search),
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        AppIcon(painter = painterResource(id = R.drawable.ic_close))
                     }
                 }
-            )
+            }
+        )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            if (filteredProjects.isEmpty() && !isLoading) {
-                AppBox(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = if (searchQuery.isEmpty()) {
-                            stringResource(id = R.string.no_projects_found)
-                        } else {
-                            stringResource(id = R.string.no_projects_match_search)
+        if (filteredProjects.isEmpty() && !isLoading) {
+            AppBox(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (searchQuery.isEmpty()) {
+                        stringResource(id = R.string.no_projects_found)
+                    } else {
+                        stringResource(id = R.string.no_projects_match_search)
+                    },
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.secondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(24.dp)
+                )
+            }
+        } else {
+            AppLazyColumn(
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(filteredProjects) { project ->
+                    ProjectItem(
+                        project = project,
+                        onClick = {
+                            WizardPreferences.addRecentProject(context, project.absolutePath)
+                            openProject(context, project)
                         },
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(24.dp)
-                    )
-                }
-            } else {
-                AppLazyColumn(
-                    modifier = Modifier.fillMaxWidth().weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(filteredProjects) { project ->
-                        ProjectItem(
-                            project = project,
-                            onClick = {
-                                WizardPreferences.addRecentProject(context, project.absolutePath)
+                        onLongClick = {
+                            showProjectOptionsDialog(context, project) {
                                 scope.launch {
-                                    sheetState.hide()
-                                    onDismiss()
-                                }
-                                openProject(context, project)
-                            },
-                            onLongClick = {
-                                showProjectOptionsDialog(context, project) {
-                                    scope.launch {
-                                        projects =
-                                            withContext(Dispatchers.IO) {
-                                                loadProjectsInternal(context)
-                                            }
+                                    projects = withContext(Dispatchers.IO) {
+                                        loadProjectsInternal(context)
                                     }
                                 }
                             }
-                        )
-                    }
+                        }
+                    )
+                }
 
-                    item {
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
+                item {
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
