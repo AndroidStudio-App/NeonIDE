@@ -37,7 +37,9 @@ EOF
 
 if [ ! -f "$PREFIX/etc/profile.d/fix_termux-x11_classpath.sh" ]; then
     cat > $PREFIX/etc/profile.d/fix_termux-x11_classpath.sh <<'EOF'
-sed -i 's|/data/data/com.termux/files/usr/libexec/termux-x11/loader.apk|/data/data/com.neonide.studio/files/usr/libexec/termux-x11/loader.apk|g' $PREFIX/bin/termux-x11
+if [ -f "#PREFIX/bin/termux-x11" ]; then
+    sed -i 's|/data/data/com.termux/files/usr/libexec/termux-x11/loader.apk|/data/data/com.neonide.studio/files/usr/libexec/termux-x11/loader.apk|g' $PREFIX/bin/termux-x11
+fi
 EOF
 fi
 
