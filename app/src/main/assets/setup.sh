@@ -35,6 +35,12 @@ export PATH=$PATH:$ANDROID_HOME/build-tools/36.0.0
 export SSL_CERT_FILE=$PREFIX/etc/tls/cert.pem
 EOF
 
+if [ ! -f "$PREFIX/etc/profile.d/fix_termux-x11_classpath.sh" ]; then
+    cat > $PREFIX/etc/profile.d/fix_termux-x11_classpath.sh <<'EOF'
+sed -i 's|/data/data/com.termux/files/usr/libexec/termux-x11/loader.apk|/data/data/com.neonide.studio/files/usr/libexec/termux-x11/loader.apk|g' $PREFIX/bin/termux-x11
+EOF
+fi
+
 echo "--- [4/5] Preparing up Android SDK Tools ---"
 
 mkdir -p "$HOME/android-sdk"
