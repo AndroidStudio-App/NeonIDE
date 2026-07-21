@@ -79,6 +79,11 @@ Some module/package doesn't show in AC(Auto Completion) :
 
 The Editor show's false diagnostic/tooltip
 - Same to AC you need to build the app to produce artifacts to fix diagnostic false error
+## PreviewTab
+<div>
+    <img src="/images/feat/mardown_preview.jpg" width="49%"/>
+    <img src="/images/feat/xmllayout_preciew.jpg" width="49%"/>
+</div>
 ## Screenshots
 <div>
   <img src="/images/01.jpg" width="32%"/>
