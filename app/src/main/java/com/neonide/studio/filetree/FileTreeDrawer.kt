@@ -265,7 +265,8 @@ fun FileTreeDrawer(rootPath: String, onFileClick: (String) -> Unit) {
 
             ClipboardIndicatorBar(
                 clipboard = clipboard,
-                onClear = { clipboard = null }
+                onClear = { clipboard = null },
+                modifier = Modifier.padding(bottom = navigationBarPadding)
             )
         }
     }
