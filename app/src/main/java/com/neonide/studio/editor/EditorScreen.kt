@@ -43,12 +43,14 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.lsp.EditorLspController
+import com.neonide.studio.dialog.EditorColorScheme
 import com.neonide.studio.dialog.TypefaceChoiceDialog
 import com.neonide.studio.editor.bottomsheet.BottomSheetTab
 import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.editor.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.editor.bottomsheet.preview.core.LayoutPreviewEngine
 import com.neonide.studio.ui.theme.findComponentActivity
+import com.neonide.studio.utils.EditorAppearance
 import com.neonide.studio.utils.GradleBuildStatus
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
@@ -166,8 +168,8 @@ fun EditorScreen(
 
     LaunchedEffect(editorState.value) {
         val editor = editorState.value ?: return@LaunchedEffect
-        EditorDialogs.setupTextmate()
-        EditorDialogs.restoreAppearance(context, editor, isDark)
+        EditorAppearance.setupTextmate()
+        EditorAppearance.restoreAppearance(context, editor, isDark)
         Logger.logInfo(
             TAG,
             "theme initialized, colorScheme=${editor.colorScheme::class.simpleName}"
@@ -390,7 +392,7 @@ fun EditorScreen(
 
         // Dialogs
         if (showThemeDialog) {
-            EditorDialogs.ThemeChoiceDialog(
+            EditorColorScheme(
                 editor = editorState.value,
                 onDismiss = { showThemeDialog = false }
             )
