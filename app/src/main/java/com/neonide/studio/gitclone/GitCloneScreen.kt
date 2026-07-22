@@ -36,6 +36,7 @@ import com.neonide.studio.ui.components.AppTopBar
 import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
+import com.neonide.studio.ui.theme.findActivity
 import com.neonide.studio.utils.Divider.horizontalDivider
 import com.neonide.studio.utils.rememberDirectoryLauncher
 
@@ -286,13 +287,14 @@ fun GitCloneScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     AppButton(
                         onClick = {
-                            viewModel.startClone(context) { projectDir ->
-                                val intent = Intent(context, EditorActivity::class.java)
+                            val activity = context.findActivity() ?: return@AppButton
+                            viewModel.startClone(activity) { projectDir ->
+                                val intent = Intent(activity, EditorActivity::class.java)
                                 intent.putExtra(
                                     EditorActivity.EXTRA_PROJECT_DIR,
                                     projectDir.absolutePath
                                 )
-                                context.startActivity(intent)
+                                activity.startActivity(intent)
                                 onFinished()
                             }
                         },

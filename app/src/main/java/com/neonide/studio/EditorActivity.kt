@@ -21,18 +21,32 @@ import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.editor.bottomsheet.buildoutput.BuildOutputBuffer
 import com.neonide.studio.filetree.FileTreeDrawer
 import com.neonide.studio.ui.theme.AppTheme
+import com.neonide.studio.ui.theme.ThemedContent
+import com.neonide.studio.ui.theme.rememberColorSchemeMode
 import com.neonide.studio.utils.GradleService
 import com.neonide.studio.utils.OpenFile
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.widget.SymbolInputView
 import java.io.File
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class EditorActivity : ComponentActivity() {
+    private val openFilesState = mutableStateOf<List<OpenFile>>(emptyList())
+    private val activeFileState = mutableStateOf<OpenFile?>(null)
+    private val editorState = mutableStateOf<CodeEditor?>(null)
+    private val positionTextState = mutableStateOf("")
+    private val bottomSheetVm: BottomSheetViewModel by viewModels()
+    private val settingsState by lazy { EditorSettingsState(this) }
+
+    private val languageProvider: SoraLanguageProvider by lazy { SoraLanguageProvider(this) }
+    private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }
+    private val editorRunner: EditorCodeRunner by lazy {
+        EditorCodeRunner(this, bottomSheetVm)
+    }
+
     companion object {
         const val EXTRA_PROJECT_DIR = "extra_project_dir"
-        private val symbolMap = mapOf(
+        private val symbolMap = linkedMapOf(
             "->" to "\t",
             "{" to "{}",
             "}" to "}",
@@ -54,25 +68,8 @@ class EditorActivity : ComponentActivity() {
             ":" to ":",
             "::" to "::"
         )
-        private val SYMBOLS = symbolMap.keys.toTypedArray()
-        private val SYMBOL_INSERT_TEXT = symbolMap.values.toTypedArray()
-    }
-
-    private val openFilesState = mutableStateOf<List<OpenFile>>(emptyList())
-    private val activeFileState = mutableStateOf<OpenFile?>(null)
-    private val editorState = mutableStateOf<CodeEditor?>(null)
-    private val positionTextState = mutableStateOf("")
-    private val bottomSheetVm: BottomSheetViewModel by viewModels()
-    private val settingsState by lazy { EditorSettingsState(this) }
-
-    private val languageProvider: SoraLanguageProvider by lazy { SoraLanguageProvider(this) }
-    private val lspController by lazy { EditorLspControllerFactory.createOrNoop(this) }
-    private val editorRunner: EditorCodeRunner by lazy {
-        EditorCodeRunner(this, bottomSheetVm)
-    }
-
-    private val symbolInputView by lazy {
-        SymbolInputView(this).apply { addSymbols(SYMBOLS, SYMBOL_INSERT_TEXT) }
+        val SYMBOLS = symbolMap.keys.toTypedArray()
+        val SYMBOL_INSERT_TEXT = symbolMap.values.toTypedArray()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,59 +136,66 @@ class EditorActivity : ComponentActivity() {
         }
 
         mainContent.setContent {
-            AppTheme {
-                EditorScreen(
-                    positionTextState = positionTextState,
-                    bottomSheetVm = bottomSheetVm,
-                    settings = settingsState,
-                    projectPath = projectPath,
-                    openFilesState = openFilesState,
-                    activeFileState = activeFileState,
-                    editorState = editorState,
-                    symbolInputView = symbolInputView,
-                    editorRunner = editorRunner,
-                    languageProvider = languageProvider,
-                    lspController = lspController,
-                    onOpenDrawer = { drawerLayout.openDrawer(Gravity.START) }
-                )
+            val colorSchemeMode = rememberColorSchemeMode()
+            AppTheme(colorSchemeMode = colorSchemeMode) {
+                ThemedContent(colorSchemeMode = colorSchemeMode) {
+                    EditorScreen(
+                        positionTextState = positionTextState,
+                        bottomSheetVm = bottomSheetVm,
+                        settings = settingsState,
+                        projectPath = projectPath,
+                        openFilesState = openFilesState,
+                        activeFileState = activeFileState,
+                        editorState = editorState,
+                        symbols = EditorActivity.SYMBOLS,
+                        symbolInsertText = EditorActivity.SYMBOL_INSERT_TEXT,
+                        editorRunner = editorRunner,
+                        languageProvider = languageProvider,
+                        lspController = lspController,
+                        onOpenDrawer = { drawerLayout.openDrawer(Gravity.START) }
+                    )
+                }
             }
         }
 
         drawerView.setContent {
-            AppTheme {
-                FileTreeDrawer(
-                    rootPath = projectPath.path,
-                    onFileClick = { path ->
-                        if (!path.endsWith(".apk", ignoreCase = true)) {
-                            val file = File(path)
-                            val existingFile = openFilesState.value.find { it.path == path }
+            val colorSchemeMode = rememberColorSchemeMode()
+            AppTheme(colorSchemeMode = colorSchemeMode) {
+                ThemedContent(colorSchemeMode = colorSchemeMode) {
+                    FileTreeDrawer(
+                        rootPath = projectPath.path,
+                        onFileClick = { path ->
+                            if (!path.endsWith(".apk", ignoreCase = true)) {
+                                val file = File(path)
+                                val existingFile = openFilesState.value.find { it.path == path }
 
-                            // Save current text before switching
-                            activeFileState.value?.let { active ->
-                                editorState.value?.text?.toString()?.let { currentText ->
-                                    val updated = active.copy(content = currentText)
-                                    openFilesState.value = openFilesState.value.map {
-                                        if (it.path == updated.path) updated else it
+                                // Save current text before switching
+                                activeFileState.value?.let { active ->
+                                    editorState.value?.text?.toString()?.let { currentText ->
+                                        val updated = active.copy(content = currentText)
+                                        openFilesState.value = openFilesState.value.map {
+                                            if (it.path == updated.path) updated else it
+                                        }
+                                    }
+                                }
+
+                                if (existingFile != null) {
+                                    activeFileState.value = existingFile
+                                } else {
+                                    if (file.exists() && file.isFile) {
+                                        val content = runCatching {
+                                            file.readText()
+                                        }.getOrDefault("")
+                                        val newOpenFile = OpenFile(path, file.name, content)
+                                        openFilesState.value = openFilesState.value + newOpenFile
+                                        activeFileState.value = newOpenFile
                                     }
                                 }
                             }
-
-                            if (existingFile != null) {
-                                activeFileState.value = existingFile
-                            } else {
-                                if (file.exists() && file.isFile) {
-                                    val content = runCatching {
-                                        file.readText()
-                                    }.getOrDefault("")
-                                    val newOpenFile = OpenFile(path, file.name, content)
-                                    openFilesState.value = openFilesState.value + newOpenFile
-                                    activeFileState.value = newOpenFile
-                                }
-                            }
+                            drawerLayout.closeDrawer(Gravity.START)
                         }
-                        drawerLayout.closeDrawer(Gravity.START)
-                    }
-                )
+                    )
+                }
             }
         }
     }

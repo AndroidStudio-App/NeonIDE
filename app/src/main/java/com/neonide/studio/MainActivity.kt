@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,14 +56,12 @@ import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.ui.theme.AppTheme
-import com.neonide.studio.ui.theme.ColorSchemeMode
-import com.neonide.studio.utils.PersistedString
+import com.neonide.studio.ui.theme.ThemedContent
+import com.neonide.studio.ui.theme.findActivity
+import com.neonide.studio.ui.theme.rememberColorSchemeMode
 import com.termux.app.TermuxActivity
 import com.termux.shared.termux.crash.TermuxCrashUtils
 import kotlinx.serialization.Serializable
-
-const val APP_SETTINGS_PREFS = "app_settings"
-const val KEY_COLOR_SCHEME_MODE = "color_scheme_mode"
 
 // route for navhost
 @Serializable object PermissionRoute
@@ -101,13 +98,11 @@ class MainActivity : ComponentActivity() {
         isSetupComplete = isFilesGranted && isInstallGranted && isNotificationsGranted
 
         setContent {
-            val prefs = getSharedPreferences(APP_SETTINGS_PREFS, MODE_PRIVATE)
-            val modeKey by remember {
-                PersistedString(prefs, KEY_COLOR_SCHEME_MODE, ColorSchemeMode.SYSTEM.key)
-            }
-            val colorSchemeMode = ColorSchemeMode.fromKey(modeKey)
+            val colorSchemeMode = rememberColorSchemeMode()
             AppTheme(colorSchemeMode = colorSchemeMode) {
-                mainNavigation()
+                ThemedContent(colorSchemeMode = colorSchemeMode) {
+                    mainNavigation()
+                }
             }
         }
     }
@@ -224,6 +219,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun permissionContent() {
         val context = LocalContext.current
+        val activity = context.findActivity() ?: this@MainActivity
         val allGranted = isFilesGranted && isInstallGranted && isNotificationsGranted
 
         AppColumn(
@@ -246,9 +242,9 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(
                         Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
                     ).apply {
-                        data = Uri.parse("package:${context.packageName}")
+                        data = Uri.parse("package:${activity.packageName}")
                     }
-                    context.startActivity(intent)
+                    activity.startActivity(intent)
                 }
             }
 
@@ -260,9 +256,9 @@ class MainActivity : ComponentActivity() {
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                        data = Uri.parse("package:${context.packageName}")
+                        data = Uri.parse("package:${activity.packageName}")
                     }
-                    context.startActivity(intent)
+                    activity.startActivity(intent)
                 }
             }
 
@@ -274,14 +270,14 @@ class MainActivity : ComponentActivity() {
             ) {
                 val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        putExtra(Settings.EXTRA_APP_PACKAGE, activity.packageName)
                     }
                 } else {
                     Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.parse("package:${context.packageName}")
+                        data = Uri.parse("package:${activity.packageName}")
                     }
                 }
-                context.startActivity(intent)
+                activity.startActivity(intent)
             }
 
             AppButton(

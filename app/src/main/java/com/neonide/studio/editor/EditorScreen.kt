@@ -2,11 +2,10 @@ package com.neonide.studio.editor
 
 import android.content.Context
 import android.content.Intent
-import android.view.ViewGroup
 import android.widget.HorizontalScrollView
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -28,9 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -42,10 +43,12 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.viewinterop.AndroidView
 import com.neonide.studio.app.editor.SoraLanguageProvider
 import com.neonide.studio.app.lsp.EditorLspController
+import com.neonide.studio.dialog.TypefaceChoiceDialog
 import com.neonide.studio.editor.bottomsheet.BottomSheetTab
 import com.neonide.studio.editor.bottomsheet.BottomSheetViewModel
 import com.neonide.studio.editor.bottomsheet.EditorBottomSheetContent
 import com.neonide.studio.editor.bottomsheet.preview.core.LayoutPreviewEngine
+import com.neonide.studio.ui.theme.findComponentActivity
 import com.neonide.studio.utils.GradleBuildStatus
 import com.neonide.studio.utils.OpenFile
 import com.termux.app.TermuxActivity
@@ -73,15 +76,19 @@ fun EditorScreen(
     openFilesState: MutableState<List<OpenFile>>,
     activeFileState: MutableState<OpenFile?>,
     editorState: MutableState<CodeEditor?>,
-    symbolInputView: SymbolInputView,
+    symbols: Array<String>,
+    symbolInsertText: Array<String>,
     editorRunner: EditorCodeRunner,
     languageProvider: SoraLanguageProvider,
     lspController: EditorLspController,
     onOpenDrawer: () -> Unit
 ) {
-    val context = LocalContext.current as ComponentActivity
+    val context = checkNotNull(LocalContext.current.findComponentActivity()) {
+        "EditorScreen requires a ComponentActivity host"
+    }
     val scope = rememberCoroutineScope()
     val scaffoldState = rememberBottomSheetScaffoldState()
+    var symbolInputView by remember { mutableStateOf<SymbolInputView?>(null) }
     val tabs = BottomSheetTab.entries
     val markdownContent = remember { mutableStateOf("") }
     val xmlContentTrigger = remember { mutableStateOf("") }
@@ -113,6 +120,11 @@ fun EditorScreen(
 
     val navBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val peekHeight = 15.dp + navBarHeight
+    val isDark = isSystemInDarkTheme()
+
+    // Dialog state
+    var showThemeDialog by remember { mutableStateOf(false) }
+    var showTypefaceDialog by remember { mutableStateOf(false) }
 
     val gradleRunningState = remember { mutableStateOf(GradleBuildStatus.isRunning) }
     val buildVariant = remember { mutableStateOf("debug") }
@@ -155,7 +167,7 @@ fun EditorScreen(
     LaunchedEffect(editorState.value) {
         val editor = editorState.value ?: return@LaunchedEffect
         EditorDialogs.setupTextmate()
-        EditorDialogs.restoreAppearance(context, editor)
+        EditorDialogs.restoreAppearance(context, editor, isDark)
         Logger.logInfo(
             TAG,
             "theme initialized, colorScheme=${editor.colorScheme::class.simpleName}"
@@ -283,8 +295,8 @@ fun EditorScreen(
                         context.startActivity(Intent(context, TermuxActivity::class.java))
                     }
                 },
-                onSwitchColors = { EditorDialogs.showThemeChoice(context, editorState.value) },
-                onSwitchTypeface = { EditorDialogs.showTypefaceChoice(context, editorState.value) }
+                onSwitchColors = { showThemeDialog = true },
+                onSwitchTypeface = { showTypefaceDialog = true }
             )
         }
     ) { padding ->
@@ -311,7 +323,7 @@ fun EditorScreen(
                 modifier = Modifier.weight(1f),
                 onEditorCreated = { editor ->
                     editorState.value = editor
-                    symbolInputView.bindEditor(editor)
+                    symbolInputView?.bindEditor(editor)
                     editor.subscribeAlways(SelectionChangeEvent::class.java) {
                         updatePositionText(editor, positionTextState)
                     }
@@ -354,10 +366,14 @@ fun EditorScreen(
                 if (settings.isSymbolBarVisible) {
                     AndroidView(
                         factory = { ctx ->
+                            val symbolView = SymbolInputView(ctx).apply {
+                                addSymbols(symbols, symbolInsertText)
+                            }
+                            symbolInputView = symbolView
+                            editorState.value?.let { symbolView.bindEditor(it) }
                             HorizontalScrollView(ctx).apply {
                                 isHorizontalScrollBarEnabled = false
-                                (symbolInputView.parent as? ViewGroup)?.removeView(symbolInputView)
-                                addView(symbolInputView)
+                                addView(symbolView)
                             }
                         },
                         modifier = Modifier.fillMaxWidth().height(48.dp)
@@ -370,6 +386,20 @@ fun EditorScreen(
                     textAlign = TextAlign.Center
                 )
             }
+        }
+
+        // Dialogs
+        if (showThemeDialog) {
+            EditorDialogs.ThemeChoiceDialog(
+                editor = editorState.value,
+                onDismiss = { showThemeDialog = false }
+            )
+        }
+        if (showTypefaceDialog) {
+            TypefaceChoiceDialog(
+                editor = editorState.value,
+                onDismiss = { showTypefaceDialog = false }
+            )
         }
     }
 }

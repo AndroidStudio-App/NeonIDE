@@ -47,6 +47,7 @@ import com.neonide.studio.ui.components.DropdownField
 import com.neonide.studio.ui.components.FormTextField
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppRow
+import com.neonide.studio.ui.theme.findActivity
 import com.neonide.studio.utils.rememberDirectoryLauncher
 import com.termux.shared.termux.TermuxConstants
 import java.io.File
@@ -427,10 +428,11 @@ private fun createProject(
             Toast.LENGTH_LONG
         ).show()
 
-        val intent = Intent(context, EditorActivity::class.java).apply {
+        val activity = context.findActivity() ?: return
+        val intent = Intent(activity, EditorActivity::class.java).apply {
             putExtra(EditorActivity.EXTRA_PROJECT_DIR, projectDir.absolutePath)
         }
-        context.startActivity(intent)
+        activity.startActivity(intent)
         onSuccess()
     } catch (e: android.content.ActivityNotFoundException) {
         Toast.makeText(

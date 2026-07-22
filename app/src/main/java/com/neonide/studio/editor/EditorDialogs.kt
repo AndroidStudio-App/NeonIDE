@@ -1,9 +1,25 @@
 package com.neonide.studio.editor
 
-import android.app.AlertDialog
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.Typeface
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.neonide.studio.R
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -38,49 +54,70 @@ object EditorDialogs {
         ThemeRegistry.getInstance().setTheme("darcula")
     }
 
-    private val typefaceAssets =
-        arrayOf("JetBrainsMono-Regular.ttf", "UbuntuMono-Regular.ttf", "RobotoMono-Regular.ttf")
-
-    fun showTypefaceChoice(context: Context, editor: CodeEditor?) {
-        val fonts = arrayOf("JetBrains Mono", "Ubuntu Mono", "Google/Roboto Mono")
-
-        AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.select_typeface))
-            .setSingleChoiceItems(fonts, -1) { dialog, which ->
-                if (which in typefaceAssets.indices) {
-                    runCatching {
-                        editor?.typefaceText =
-                            Typeface.createFromAsset(context.assets, typefaceAssets[which])
-                    }
-                    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                        .edit().putInt(KEY_TYPEFACE, which).apply()
-                }
-                dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
-    }
-
     private val themeKeys = arrayOf("quietlight", "darcula", "ayu-dark", "solarized_dark")
+    private val themeNames = arrayOf("QuietLight", "Darcula", "Ayu Dark", "Solarized Dark")
 
-    fun showThemeChoice(context: Context, editor: CodeEditor?) {
-        val themes = arrayOf("QuietLight", "Darcula", "Ayu Dark", "Solarized Dark")
+    @Composable
+    fun ThemeChoiceDialog(editor: CodeEditor?, onDismiss: () -> Unit) {
+        val context = LocalContext.current
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val selectedIndex = prefs.getInt(KEY_THEME, -1)
 
-        AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.select_color_scheme))
-            .setItems(themes) { _, which ->
-                if (editor == null) return@setItems
-                if (which !in themeKeys.indices) return@setItems
-                ThemeRegistry.getInstance().setTheme(themeKeys[which])
-                editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                    .edit().putInt(KEY_THEME, which).apply()
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(text = stringResource(R.string.select_color_scheme), fontSize = 18.sp) },
+            text = {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    themeNames.forEachIndexed { index, name ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    if (index in themeKeys.indices && editor != null) {
+                                        ThemeRegistry.getInstance().setTheme(themeKeys[index])
+                                        editor.colorScheme =
+                                            TextMateColorScheme.create(
+                                                ThemeRegistry.getInstance()
+                                            )
+                                        prefs.edit().putInt(KEY_THEME, index).apply()
+                                    }
+                                    onDismiss()
+                                }
+                                .background(MaterialTheme.colorScheme.surface),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = name,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f)
+                                    .padding(vertical = 12.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Start,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            if (index == selectedIndex) {
+                                Text(
+                                    text = "✓",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Text(text = stringResource(android.R.string.cancel), fontSize = 14.sp)
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+        )
     }
 
-    fun restoreAppearance(context: Context, editor: CodeEditor?) {
+    fun restoreAppearance(context: Context, editor: CodeEditor?, isDark: Boolean) {
+        val typefaceAssets =
+            arrayOf("JetBrainsMono-Regular.ttf", "UbuntuMono-Regular.ttf", "RobotoMono-Regular.ttf")
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
         val typefaceIndex = prefs.getInt(KEY_TYPEFACE, -1)
@@ -91,14 +128,11 @@ object EditorDialogs {
             }
         }
 
-        val savedTheme = prefs.getInt(KEY_THEME, -1)
-        val themeName = if (savedTheme in themeKeys.indices) {
-            themeKeys[savedTheme]
+        val themeName = if (isDark) {
+            val savedTheme = prefs.getInt(KEY_THEME, -1)
+            if (savedTheme in themeKeys.indices) themeKeys[savedTheme] else "darcula"
         } else {
-            val isDark =
-                context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
-                    Configuration.UI_MODE_NIGHT_YES
-            if (isDark) "darcula" else "quietlight"
+            "quietlight"
         }
         ThemeRegistry.getInstance().setTheme(themeName)
         editor?.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())

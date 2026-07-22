@@ -12,12 +12,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -56,104 +59,112 @@ fun FileTreeContextMenu(
     val clipboardManager = LocalClipboardManager.current
     val scope = rememberCoroutineScope()
 
+    val themedConfig = LocalConfiguration.current
+    val themedCtx = LocalContext.current
+
     Popup(
         alignment = Alignment.TopStart,
         offset = offset,
         onDismissRequest = onDismiss,
         properties = PopupProperties(focusable = true)
     ) {
-        AppColumn(
-            modifier = Modifier
-                .width(200.dp)
-                .shadow(8.dp, RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(vertical = 4.dp)
+        CompositionLocalProvider(
+            LocalContext provides themedCtx,
+            LocalConfiguration provides themedConfig
         ) {
-            ContextMenuItem(
-                iconRes = R.drawable.ic_file_add,
-                label = stringResource(R.string.new_file),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onNewFile(t)
-                }
-            )
-            ContextMenuItem(
-                iconRes = R.drawable.ic_folder_add,
-                label = stringResource(R.string.new_directory),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onNewDirectory(t)
-                }
-            )
-
-            horizontalDivider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
-
-            ContextMenuItem(
-                iconRes = R.drawable.ic_cut,
-                label = stringResource(R.string.cut),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onCut(t)
-                }
-            )
-            ContextMenuItem(
-                iconRes = R.drawable.ic_copy,
-                label = stringResource(R.string.copy),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onCopy(t)
-                }
-            )
-            ContextMenuItem(
-                iconRes = R.drawable.ic_paste,
-                label = stringResource(R.string.paste),
-                enabled = canPaste,
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onPaste(t)
-                }
-            )
-
-            horizontalDivider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
-
-            ContextMenuItem(
-                iconRes = R.drawable.ic_rename,
-                label = stringResource(R.string.rename),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onRename(t)
-                }
-            )
-            ContextMenuItem(
-                iconRes = R.drawable.ic_delete,
-                label = stringResource(R.string.delete),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onDelete(t)
-                }
-            )
-
-            horizontalDivider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
-
-            ContextMenuItem(
-                iconRes = R.drawable.ic_copy,
-                label = stringResource(R.string.copy_path),
-                onClick = {
-                    val t = target
-                    onDismiss()
-                    onCopyPath(t)
-                    scope.launch {
-                        clipboardManager.setText(AnnotatedString(t.path.toString()))
+            AppColumn(
+                modifier = Modifier
+                    .width(200.dp)
+                    .shadow(8.dp, RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(vertical = 4.dp)
+            ) {
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_file_add,
+                    label = stringResource(R.string.new_file),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onNewFile(t)
                     }
-                }
-            )
+                )
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_folder_add,
+                    label = stringResource(R.string.new_directory),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onNewDirectory(t)
+                    }
+                )
+
+                horizontalDivider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
+
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_cut,
+                    label = stringResource(R.string.cut),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onCut(t)
+                    }
+                )
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_copy,
+                    label = stringResource(R.string.copy),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onCopy(t)
+                    }
+                )
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_paste,
+                    label = stringResource(R.string.paste),
+                    enabled = canPaste,
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onPaste(t)
+                    }
+                )
+
+                horizontalDivider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
+
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_rename,
+                    label = stringResource(R.string.rename),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onRename(t)
+                    }
+                )
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_delete,
+                    label = stringResource(R.string.delete),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onDelete(t)
+                    }
+                )
+
+                horizontalDivider(color = Color.Gray, modifier = Modifier.padding(vertical = 4.dp))
+
+                ContextMenuItem(
+                    iconRes = R.drawable.ic_copy,
+                    label = stringResource(R.string.copy_path),
+                    onClick = {
+                        val t = target
+                        onDismiss()
+                        onCopyPath(t)
+                        scope.launch {
+                            clipboardManager.setText(AnnotatedString(t.path.toString()))
+                        }
+                    }
+                )
+            }
         }
     }
 }

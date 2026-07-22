@@ -11,7 +11,6 @@ import io.github.rosemoe.sora.widget.CodeEditor
 
 @Composable
 fun BuildTab(contentStream: String, isDark: Boolean) {
-    val texmateTheme = if (isDark) "darcula" else "quietlight"
     AndroidView(
         factory = { context ->
             CodeEditor(context).apply {
@@ -22,12 +21,12 @@ fun BuildTab(contentStream: String, isDark: Boolean) {
                 props.stickyScroll = true
                 props.overScrollEnabled = true
                 setInterceptParentHorizontalScrollIfNeeded(false)
-
-                ThemeRegistry.getInstance().setTheme(texmateTheme)
-                colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             }
         },
         update = { editor ->
+            val texmateTheme = if (isDark) "darcula" else "quietlight"
+            ThemeRegistry.getInstance().setTheme(texmateTheme)
+            editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             editor.setText(contentStream)
             editor.post {
                 val line = editor.text.lineCount - 1

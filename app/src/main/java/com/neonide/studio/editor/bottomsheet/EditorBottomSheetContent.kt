@@ -155,6 +155,7 @@ fun EditorBottomSheetContent(
 ) {
     val tabs = remember { mutableStateListOf(BottomSheetTab.BUILD_OUTPUT) }
     val selectedTab by viewModel.selectedTab.observeAsState(0)
+    val isDark = isSystemInDarkTheme()
 
     val activeTerminalSession = remember { mutableStateOf<TerminalSession?>(null) }
     var terminalSessionId by remember { mutableStateOf(0) }
@@ -267,7 +268,7 @@ fun EditorBottomSheetContent(
                     Modifier.clipToBounds().size(0.dp)
                 }
             ) {
-                buildOutputPage(buildOutput, isSystemInDarkTheme())
+                buildOutputPage(buildOutput, isDark)
             }
 
             if (terminalExists) {

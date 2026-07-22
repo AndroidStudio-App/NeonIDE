@@ -48,6 +48,7 @@ import com.neonide.studio.ui.layout.AppBox
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppLazyColumn
 import com.neonide.studio.ui.layout.AppRow
+import com.neonide.studio.ui.theme.findActivity
 import com.neonide.studio.utils.DisplayNameUtils
 import com.neonide.studio.utils.SafeDirLister
 import com.neonide.studio.utils.rememberDirectoryLauncher
@@ -339,8 +340,9 @@ private fun loadProjectsInternal(context: Context): List<File> {
 }
 
 private fun openProject(context: Context, root: File) {
-    WizardPreferences.addRecentProject(context, root.absolutePath)
-    val intent = Intent(context, EditorActivity::class.java)
+    val activity = context.findActivity() ?: return
+    WizardPreferences.addRecentProject(activity, root.absolutePath)
+    val intent = Intent(activity, EditorActivity::class.java)
     intent.putExtra(EditorActivity.EXTRA_PROJECT_DIR, root.absolutePath)
-    context.startActivity(intent)
+    activity.startActivity(intent)
 }
