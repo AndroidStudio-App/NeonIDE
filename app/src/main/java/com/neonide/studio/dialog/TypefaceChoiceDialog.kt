@@ -3,10 +3,8 @@ package com.neonide.studio.dialog
 import android.content.Context
 import android.graphics.Typeface
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -17,7 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
+import com.neonide.studio.ui.components.AppAlertDialog
+import com.neonide.studio.ui.layout.AppColumn
+import com.neonide.studio.ui.layout.AppRow
 import io.github.rosemoe.sora.widget.CodeEditor
 
 private const val KEY_TYPEFACE = "typeface"
@@ -43,33 +45,29 @@ fun TypefaceChoiceDialog(editor: CodeEditor?, onDismiss: () -> Unit) {
         onDismiss()
     }
 
-    AlertDialog(
+    AppAlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.select_typeface),
+                stringResource(R.string.select_typeface),
                 style = MaterialTheme.typography.titleLarge
             )
         },
         text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            AppColumn {
                 fontNames.forEachIndexed { index, name ->
-                    Row(
+                    AppRow(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { applyTypeface(index) },
+                            .fillMaxWidth().padding(vertical = 8.dp).clickable {
+                                applyTypeface(index)
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(selected = index == selectedIndex, onClick = null)
-                        Text(
-                            text = name,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                        Text(name, style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
-        },
-        dismissButton = {},
-        confirmButton = {}
+        }
     )
 }
