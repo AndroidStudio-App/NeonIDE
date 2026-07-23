@@ -3,17 +3,11 @@ package com.neonide.studio.preference
 import android.content.Context.MODE_PRIVATE
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -22,9 +16,9 @@ import com.neonide.studio.R
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.AppListItem
 import com.neonide.studio.ui.components.AppTopBar
+import com.neonide.studio.ui.components.RadioListDialog
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppLazyColumn
-import com.neonide.studio.ui.layout.AppRow
 import com.neonide.studio.ui.theme.ColorSchemeMode
 import com.neonide.studio.utils.PersistedString
 
@@ -59,43 +53,15 @@ fun AppSettingsScreen(title: String, onBack: () -> Unit) {
     }
 
     if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    text = stringResource(R.string.change_color_scheme),
-                    style = MaterialTheme.typography.titleLarge
-                )
+        RadioListDialog(
+            title = stringResource(R.string.change_color_scheme),
+            items = ColorSchemeMode.entries.map { stringResource(it.labelRes) },
+            selectedIndex = ColorSchemeMode.entries.indexOf(selectedMode),
+            onItemClick = { index ->
+                modeKey = ColorSchemeMode.entries[index].key
+                showDialog = false
             },
-            text = {
-                AppColumn(modifier = Modifier.fillMaxWidth()) {
-                    ColorSchemeMode.entries.forEach { mode ->
-                        val selected = mode == selectedMode
-                        AppRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    modeKey = mode.key
-                                    showDialog = false
-                                },
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = selected,
-                                onClick = {
-                                    modeKey = mode.key
-                                    showDialog = false
-                                }
-                            )
-                            Text(
-                                text = stringResource(mode.labelRes),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-                }
-            },
-            confirmButton = {}
+            onDismissRequest = { showDialog = false }
         )
     }
 }
