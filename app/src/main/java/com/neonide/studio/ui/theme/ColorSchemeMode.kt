@@ -12,7 +12,7 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -39,16 +39,22 @@ fun ColorSchemeMode.isDark(): Boolean = when (this) {
 const val APP_SETTINGS_PREFS = "app_settings"
 const val KEY_COLOR_SCHEME_MODE = "color_scheme_mode"
 
+val colorSchemeModeState = mutableStateOf(ColorSchemeMode.SYSTEM)
+
 @Composable
 fun rememberColorSchemeMode(): ColorSchemeMode {
     val context = LocalContext.current
     val prefs = remember(context) {
         context.getSharedPreferences(APP_SETTINGS_PREFS, Context.MODE_PRIVATE)
     }
-    val modeKey by remember(prefs) {
+    val persisted = remember(prefs) {
         PersistedString(prefs, KEY_COLOR_SCHEME_MODE, ColorSchemeMode.SYSTEM.key)
     }
-    return ColorSchemeMode.fromKey(modeKey)
+    // Seed from prefs on first composition
+    remember(persisted) {
+        colorSchemeModeState.value = ColorSchemeMode.fromKey(persisted.value)
+    }
+    return colorSchemeModeState.value
 }
 
 /**

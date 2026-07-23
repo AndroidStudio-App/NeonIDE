@@ -21,6 +21,7 @@ import com.neonide.studio.ui.components.RadioListDialog
 import com.neonide.studio.ui.layout.AppColumn
 import com.neonide.studio.ui.layout.AppLazyColumn
 import com.neonide.studio.ui.theme.ColorSchemeMode
+import com.neonide.studio.ui.theme.colorSchemeModeState
 import com.neonide.studio.utils.PersistedString
 
 @Composable
@@ -59,7 +60,9 @@ fun AppSettingsScreen(title: String, onBack: () -> Unit) {
             items = ColorSchemeMode.entries.map { stringResource(it.labelRes) },
             selectedIndex = ColorSchemeMode.entries.indexOf(selectedMode),
             onItemClick = { index ->
-                modeKey = ColorSchemeMode.entries[index].key
+                val mode = ColorSchemeMode.entries[index]
+                modeKey = mode.key
+                colorSchemeModeState.value = mode
                 showDialog = false
             },
             onDismissRequest = { showDialog = false }
