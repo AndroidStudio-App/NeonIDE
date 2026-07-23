@@ -141,19 +141,23 @@ class LayoutPreviewEngine(
         parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true)
         parser.setInput(StringReader(xmlContent))
 
-        var event = parser.eventType
-        while (event != XmlPullParser.END_DOCUMENT) {
-            if (event == XmlPullParser.START_TAG) {
-                val tag = parser.name?.substringAfterLast(':').orEmpty()
-                // Skip wrapper roots and item wrappers; take the first real drawable.
-                if (tag in NESTED_DRAWABLE_TAGS) {
-                    val xml = serializeCurrentElement(parser, tag)
-                    return NestedDrawable(tag, xml)
+        return try {
+            var event = parser.eventType
+            while (event != XmlPullParser.END_DOCUMENT) {
+                if (event == XmlPullParser.START_TAG) {
+                    val tag = parser.name?.substringAfterLast(':').orEmpty()
+                    // Skip wrapper roots and item wrappers; take the first real drawable.
+                    if (tag in NESTED_DRAWABLE_TAGS) {
+                        val xml = serializeCurrentElement(parser, tag)
+                        return NestedDrawable(tag, xml)
+                    }
                 }
+                event = parser.next()
             }
-            event = parser.next()
+            null
+        } catch (e: Exception) {
+            null
         }
-        return null
     }
 
     private fun extractRootTag(xmlContent: String): String? {
