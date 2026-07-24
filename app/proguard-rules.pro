@@ -49,6 +49,51 @@
 -dontwarn org.eclipse.jgit.util.GSSManagerFactory$DefaultGSSManagerFactory
 -dontwarn org.eclipse.jgit.util.Monitoring
 
+# Keep Okio internal classes that JGit accesses via reflection
+# JGit uses okio.-SegmentedByteString and other internal Okio classes via reflection
+-keep class okio.** { *; }
+-keep class okio.internal.** { *; }
+-keep class okio.-* { *; }
+-keepattributes *Annotation*,Signature,InnerClasses
+
+# Prevent R8 from optimizing/minifying Okio classes - needed for JGit compatibility with Okio 3.x
+-optimizations !class/merging/*,!class/unboxing/*,!method/propagation/*,!method/inlining/*
+-keep class okio.** { *; }
+-keepclassmembers class okio.** { *; }
+
+# Specifically keep the internal SegmentedByteString class that JGit accesses via reflection
+-keep class okio.-SegmentedByteString { *; }
+-keepclassmembers class okio.-SegmentedByteString { <init>(...); }
+
+# Keep Kotlin stdlib classes that JGit might access via reflection
+-keep class kotlin.ranges.** { *; }
+-keep class kotlin.collections.** { *; }
+-keep class kotlin.text.** { *; }
+-keep class kotlin.jvm.internal.** { *; }
+-keep class kotlin.reflect.** { *; }
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+
+# Prevent R8 from removing/optimizing Kotlin stdlib classes
+-keep class kotlin.** { *; }
+-keepclassmembers class kotlin.** { *; }
+
+# Keep ALL JGit classes - JGit uses extensive reflection internally
+-keep class org.eclipse.jgit.** { *; }
+-keepclassmembers class org.eclipse.jgit.** { *; }
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+
+# Keep jcodings classes that JGit uses via reflection
+-keep class org.jcodings.** { *; }
+-keep class org.jruby.** { *; }
+
+# Keep jcodings EncodingList and related classes
+-keep class org.jcodings.EncodingList { *; }
+-keep class org.jcodings.Encoding { *; }
+-keep class org.jcodings.specific.** { *; }
+
+# Keep resource bundles
+-keep class * implements java.util.ResourceBundle { *; }
+
 # --- Sora Editor TextMate Theme / Color Scheme ---
 -keep class io.github.rosemoe.sora.langs.textmate.TextMateColorScheme { *; }
 -keep class io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry { *; }
