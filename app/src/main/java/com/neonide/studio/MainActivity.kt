@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,11 +43,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.neonide.studio.app.home.open.RecentProjectScreen
+import com.neonide.studio.editor.EditorSettingsState
 import com.neonide.studio.extensions.ExtensionsScreen
 import com.neonide.studio.gitclone.GitCloneScreen
 import com.neonide.studio.gitclone.GitViewModel
 import com.neonide.studio.preference.AppSettingsScreen
-import com.neonide.studio.preference.IdeConfigScreen
+import com.neonide.studio.preference.EditorSettingsScreen
+import com.neonide.studio.preference.SettingsScreen
 import com.neonide.studio.projectwizard.CreateProjectScreen
 import com.neonide.studio.ui.components.AppButton
 import com.neonide.studio.ui.components.AppCard
@@ -73,6 +76,8 @@ import kotlinx.serialization.Serializable
 @Serializable object IdeConfigRoute
 
 @Serializable data class AppSettingsRoute(val title: String)
+
+@Serializable data class EditorSettingsRoute(val title: String)
 
 @Serializable object GitLayoutRoute
 
@@ -146,10 +151,13 @@ class MainActivity : ComponentActivity() {
                     CreateProjectScreen(onBack = { navController.popBackStack() })
                 }
                 composable<IdeConfigRoute> {
-                    IdeConfigScreen(
+                    SettingsScreen(
                         onBack = { navController.popBackStack() },
-                        onNavigateToAppSettings = { title ->
+                        onAppSettings = { title ->
                             navController.navigate(AppSettingsRoute(title))
+                        },
+                        onEditorSettings = { title ->
+                            navController.navigate(EditorSettingsRoute(title))
                         }
                     )
                 }
@@ -158,6 +166,14 @@ class MainActivity : ComponentActivity() {
                     AppSettingsScreen(
                         title = route.title,
                         onBack = { navController.popBackStack() }
+                    )
+                }
+                composable<EditorSettingsRoute> { backStackEntry ->
+                    val route = backStackEntry.toRoute<EditorSettingsRoute>()
+                    EditorSettingsScreen(
+                        title = route.title,
+                        onBack = { navController.popBackStack() },
+                        settings = remember { EditorSettingsState(this@MainActivity) }
                     )
                 }
                 composable<GitLayoutRoute> {

@@ -244,6 +244,49 @@
     <string name="dark_mode">Dark</string>
     <string name="light_mode">Light</string>
 
+    <!-- editor features -->
+    <string name="minimap">Minimap</string>
+    <string name="auto_indent">Auto Indent</string>
+    <string name="bracket_highlight">Bracket Highlight</string>
+    <string name="bold_matching_brackets">Bold Matching Brackets</string>
+    <string name="symbol_pair_completion">Symbol Pair Completion</string>
+    <string name="format_pasted_text">Format Pasted Text</string>
+    <string name="sticky_scroll">Sticky Scroll</string>
+    <string name="enhanced_home_end">Enhanced Home/End</string>
+    <string name="scroll_fling">Scroll Fling</string>
+    <string name="overscroll">Overscroll</string>
+    <string name="delete_empty_line_fast">Delete Empty Line Fast</string>
+    <string name="side_block_line">Side Block Line</string>
+    <string name="round_text_bg">Round Text Background</string>
+    <string name="inlay_hints">Inlay Hints</string>
+    <string name="signature_help">Signature Help</string>
+    <string name="hover_info">Hover Info</string>
+    <string name="enhanced_home_end_desc">Home/End jump to the first or last non-whitespace character. Off uses the absolute line start/end.</string>
+    <string name="disable_soft_kbd_hard_kbd_desc">Hide the soft keyboard when a hardware keyboard is available.</string>
+    <string name="hover_info_desc">Show language documentation and type info when hovering a cursor</string>
+    <string name="inlay_hints_desc">Show inline type and parameter hints from the language server.</string>
+    <string name="magnifier_desc">Magnify text under the selection handle while dragging.</string>
+    <string name="soft_keyboard_desc">Allow the on-screen keyboard to open for the editor.</string>
+    <string name="signature_help_desc">Show parameter info while typing function and method calls.</string>
+    <string name="wordwrap_desc">Wrap long lines in the viewport instead of scrolling horizontally.</string>
+    <string name="completion_animation_desc">Animate the completion popup when it opens or closes.</string>
+    <string name="line_number_desc">Show line numbers in the editor gutter.</string>
+    <string name="pin_line_number_desc">Keep line numbers visible while scrolling horizontally.</string>
+    <string name="minimap_desc">Show a code overview map beside the editor.</string>
+    <string name="round_text_bg_desc">Use rounded backgrounds for selection and highlight ranges.</string>
+    <string name="side_block_line_desc">Draw a vertical guide line for indented code blocks.</string>
+    <string name="sticky_scroll_desc">Pin the current scope headers at the top while scrolling.</string>
+    <string name="symbol_bar_desc">Show the symbol insert bar under the editor.</string>
+    <string name="scroll_fling_desc">Allow fling inertia when scrolling the editor.</string>
+    <string name="overscroll_desc">Allow scrolling slightly past the document edges.</string>
+    <string name="auto_indent_desc">Indent new lines to match the previous line.</string>
+    <string name="bracket_highlight_desc">Highlight matching brackets near the cursor.</string>
+    <string name="bold_matching_brackets_desc">Render matching bracket pairs in bold.</string>
+    <string name="delete_empty_line_fast_desc">Delete a whole empty line with one backspace.</string>
+    <string name="format_pasted_text_desc">Format pasted text when a formatter is available.</string>
+    <string name="symbol_pair_completion_desc">Auto-insert closing quotes, brackets, and parentheses.</string>
+    <string name="use_icu_desc">Use ICU for word selection for more accurate Unicode boundaries.</string>
+
     <!-- IDE Config -->
     <string name="app_settings">App Settings</string>
     <string name="save_ide_logs_to_documents">Save IDE logs to Documents</string>

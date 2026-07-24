@@ -209,6 +209,11 @@ fun EditorScreen(
             ) {
                 runCatching {
                     lspController.attach(editor, file, language, projectPath)
+                    lspController.currentEditor()?.apply {
+                        isEnableInlayHint = settings.isInlayHintsEnabled
+                        isEnableSignatureHelp = settings.isSignatureHelpEnabled
+                        isEnableHover = settings.isHoverInfoEnabled
+                    }
                 }.onFailure {
                     Logger.logWarn(TAG, "LSP attach failed: ${it.message}")
                 }
@@ -267,6 +272,7 @@ fun EditorScreen(
             EditorTopBar(
                 settings = settings,
                 editor = editorState.value,
+                lspController = lspController,
                 searchPanelVisible = searchState?.isVisible == true,
                 onSearchPanelToggle = { searchState?.toggle() },
                 onNavigationClick = onOpenDrawer,
@@ -322,6 +328,7 @@ fun EditorScreen(
             )
 
             SoraEditor(
+                settings = settings,
                 modifier = Modifier.weight(1f),
                 onEditorCreated = { editor ->
                     editorState.value = editor

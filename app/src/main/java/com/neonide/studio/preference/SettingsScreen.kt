@@ -26,15 +26,18 @@ import com.neonide.studio.ui.layout.AppLazyColumn
 import com.termux.shared.termux.settings.preferences.TermuxAppSharedPreferences
 
 @Composable
-fun IdeConfigScreen(onBack: () -> Unit, onNavigateToAppSettings: (String) -> Unit) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onAppSettings: (String) -> Unit,
+    onEditorSettings: (String) -> Unit
+) {
     val context = LocalContext.current
     val prefs = remember { TermuxAppSharedPreferences.build(context, false) }
     var isLoggingEnabled by remember { mutableStateOf(prefs?.isIdeFileLoggingEnabled ?: false) }
-    val appSettingsTitle = stringResource(R.string.app_settings)
 
     AppColumn(modifier = Modifier.fillMaxSize()) {
         AppTopBar(
-            title = "IDE Configurations",
+            title = "Settings",
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     AppIcon(painterResource(R.drawable.ic_chevron_left))
@@ -44,8 +47,14 @@ fun IdeConfigScreen(onBack: () -> Unit, onNavigateToAppSettings: (String) -> Uni
         AppLazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 AppListItem(
-                    headlineText = appSettingsTitle,
-                    onClick = { onNavigateToAppSettings(appSettingsTitle) }
+                    headlineText = stringResource(R.string.app_settings),
+                    onClick = onAppSettings
+                )
+            }
+            item {
+                AppListItem(
+                    headlineText = "Editor",
+                    onClick = onEditorSettings
                 )
             }
             item {

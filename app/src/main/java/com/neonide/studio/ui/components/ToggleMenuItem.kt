@@ -9,10 +9,10 @@ import androidx.compose.runtime.Composable
  * Dropdown menu item with a trailing checkbox for toggle/boolean settings.
  */
 @Composable
-fun ToggleMenuItem(text: String, checked: Boolean, onToggle: () -> Unit) {
+fun ToggleMenuItem(text: String, checked: Boolean, onToggle: (Boolean) -> Unit) {
     DropdownMenuItem(
         text = { Text(text) },
-        onClick = onToggle,
+        onClick = { onToggle(!checked) },
         trailingIcon = { Checkbox(checked = checked, onCheckedChange = null) }
     )
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.neonide.studio.R
+import com.neonide.studio.app.lsp.EditorLspController
 import com.neonide.studio.ui.components.AppIcon
 import com.neonide.studio.ui.components.ToggleMenuItem
 import com.neonide.studio.ui.layout.AppBox
@@ -39,6 +40,7 @@ import io.github.rosemoe.sora.widget.component.Magnifier
 fun EditorTopBar(
     settings: EditorSettingsState,
     editor: CodeEditor?,
+    lspController: EditorLspController? = null,
     searchPanelVisible: Boolean,
     onSearchPanelToggle: () -> Unit,
     onNavigationClick: () -> Unit,
@@ -149,76 +151,204 @@ fun EditorTopBar(
                         ToggleMenuItem(
                             text = stringResource(R.string.symbol_bar),
                             checked = settings.isSymbolBarVisible,
-                            onToggle = {
-                                settings.isSymbolBarVisible = !settings.isSymbolBarVisible
-                            }
+                            onToggle = { settings.isSymbolBarVisible = it }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.wordwrap),
                             checked = settings.isWordwrap,
                             onToggle = {
-                                settings.isWordwrap = !settings.isWordwrap
-                                editor?.isWordwrap = settings.isWordwrap
+                                settings.isWordwrap = it
+                                editor?.isWordwrap = it
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.line_number),
                             checked = settings.isLineNumberVisible,
                             onToggle = {
-                                settings.isLineNumberVisible = !settings.isLineNumberVisible
-                                editor?.isLineNumberEnabled = settings.isLineNumberVisible
+                                settings.isLineNumberVisible = it
+                                editor?.isLineNumberEnabled = it
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.pin_line_number),
                             checked = settings.isLineNumberPinned,
                             onToggle = {
-                                settings.isLineNumberPinned = !settings.isLineNumberPinned
-                                editor?.setPinLineNumber(settings.isLineNumberPinned)
+                                settings.isLineNumberPinned = it
+                                editor?.setPinLineNumber(it)
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.minimap),
+                            checked = settings.isMinimapEnabled,
+                            onToggle = {
+                                settings.isMinimapEnabled = it
+                                editor?.props?.showMinimap = it
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.magnifier),
                             checked = settings.isMagnifierEnabled,
                             onToggle = {
-                                settings.isMagnifierEnabled = !settings.isMagnifierEnabled
-                                editor?.getComponent(Magnifier::class.java)?.isEnabled =
-                                    settings.isMagnifierEnabled
+                                settings.isMagnifierEnabled = it
+                                editor?.getComponent(Magnifier::class.java)?.isEnabled = it
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.use_icu),
                             checked = settings.useIcu,
                             onToggle = {
-                                settings.useIcu = !settings.useIcu
-                                editor?.props?.useICULibToSelectWords = settings.useIcu
+                                settings.useIcu = it
+                                editor?.props?.useICULibToSelectWords = it
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.completion_animation),
                             checked = settings.completionAnim,
                             onToggle = {
-                                settings.completionAnim = !settings.completionAnim
+                                settings.completionAnim = it
                                 editor?.getComponent(
                                     EditorAutoCompletion::class.java
-                                )?.setEnabledAnimation(settings.completionAnim)
+                                )?.setEnabledAnimation(it)
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.soft_keyboard),
                             checked = settings.softKbdEnabled,
                             onToggle = {
-                                settings.softKbdEnabled = !settings.softKbdEnabled
-                                editor?.isSoftKeyboardEnabled = settings.softKbdEnabled
+                                settings.softKbdEnabled = it
+                                editor?.isSoftKeyboardEnabled = it
                             }
                         )
                         ToggleMenuItem(
                             text = stringResource(R.string.disable_soft_kbd_hard_kbd),
                             checked = settings.hardKbdDisabled,
                             onToggle = {
-                                settings.hardKbdDisabled = !settings.hardKbdDisabled
-                                editor?.isDisableSoftKbdIfHardKbdAvailable =
-                                    settings.hardKbdDisabled
+                                settings.hardKbdDisabled = it
+                                editor?.isDisableSoftKbdIfHardKbdAvailable = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.auto_indent),
+                            checked = settings.isAutoIndentEnabled,
+                            onToggle = {
+                                settings.isAutoIndentEnabled = it
+                                editor?.props?.autoIndent = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.bracket_highlight),
+                            checked = settings.isBracketHighlightEnabled,
+                            onToggle = {
+                                settings.isBracketHighlightEnabled = it
+                                editor?.props?.highlightMatchingDelimiters = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.bold_matching_brackets),
+                            checked = settings.isBoldMatchingBrackets,
+                            onToggle = {
+                                settings.isBoldMatchingBrackets = it
+                                editor?.props?.boldMatchingDelimiters = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.symbol_pair_completion),
+                            checked = settings.isSymbolPairCompletionEnabled,
+                            onToggle = {
+                                settings.isSymbolPairCompletionEnabled = it
+                                editor?.props?.symbolPairAutoCompletion = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.format_pasted_text),
+                            checked = settings.isFormatPastedTextEnabled,
+                            onToggle = {
+                                settings.isFormatPastedTextEnabled = it
+                                editor?.props?.formatPastedText = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.sticky_scroll),
+                            checked = settings.isStickyScrollEnabled,
+                            onToggle = {
+                                settings.isStickyScrollEnabled = it
+                                editor?.props?.stickyScroll = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.enhanced_home_end),
+                            checked = settings.isEnhancedHomeEndEnabled,
+                            onToggle = {
+                                settings.isEnhancedHomeEndEnabled = it
+                                editor?.props?.enhancedHomeAndEnd = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.scroll_fling),
+                            checked = settings.isScrollFlingEnabled,
+                            onToggle = {
+                                settings.isScrollFlingEnabled = it
+                                editor?.props?.scrollFling = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.overscroll),
+                            checked = settings.isOverScrollEnabled,
+                            onToggle = {
+                                settings.isOverScrollEnabled = it
+                                editor?.props?.overScrollEnabled = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.delete_empty_line_fast),
+                            checked = settings.isDeleteEmptyLineFast,
+                            onToggle = {
+                                settings.isDeleteEmptyLineFast = it
+                                editor?.props?.deleteEmptyLineFast = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.side_block_line),
+                            checked = settings.isSideBlockLineEnabled,
+                            onToggle = {
+                                settings.isSideBlockLineEnabled = it
+                                editor?.let { editor ->
+                                    editor.setBlockLineEnabled(it)
+                                    editor.props.drawSideBlockLine = it
+                                    editor.invalidate()
+                                }
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.round_text_bg),
+                            checked = settings.isRoundTextBackgroundEnabled,
+                            onToggle = {
+                                settings.isRoundTextBackgroundEnabled = it
+                                editor?.props?.enableRoundTextBackground = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.inlay_hints),
+                            checked = settings.isInlayHintsEnabled,
+                            onToggle = {
+                                settings.isInlayHintsEnabled = it
+                                lspController?.currentEditor()?.isEnableInlayHint = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.signature_help),
+                            checked = settings.isSignatureHelpEnabled,
+                            onToggle = {
+                                settings.isSignatureHelpEnabled = it
+                                lspController?.currentEditor()?.isEnableSignatureHelp = it
+                            }
+                        )
+                        ToggleMenuItem(
+                            text = stringResource(R.string.hover_info),
+                            checked = settings.isHoverInfoEnabled,
+                            onToggle = {
+                                settings.isHoverInfoEnabled = it
+                                lspController?.currentEditor()?.isEnableHover = it
                             }
                         )
 
